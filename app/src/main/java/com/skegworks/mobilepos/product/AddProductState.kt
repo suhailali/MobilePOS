@@ -1,0 +1,25 @@
+package com.skegworks.mobilepos.product
+
+data class AddProductState(
+    val textStateVendorId: String = "",
+    val textStateVendorName: String = "",
+    val textStateHsnCode: String = "",
+    val textStateTitle: String = "",
+    val textStateCategoryId: String = "",
+    val textStateCategoryName: String = "",
+    val textStateSku: String = "",
+    val textStateSize: String = "",
+    val textStateColor: String = "",
+    val textStateCost: Double = 0.0,
+    val textStateSalePrice: Double = 0.0,
+    val textStateQuantity: Int = 0,
+    val textStateAlertQuantity: Int = 0,
+    val textStateDescription: String = "",
+    val textStateImageUrl: String = "",
+    val textStateGstPercentage: Double = 0.0,
+    val textStateIsActive: Boolean = true,
+    val textStateDiscountPercentage: Double = 0.0,
+    val textStateCreatedAt: Long = System.currentTimeMillis(),
+    val textStateUpdatedAt: Long = System.currentTimeMillis(),
+    val isSaved: Boolean = false,
+)

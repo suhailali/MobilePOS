@@ -1,0 +1,45 @@
+package com.skegworks.mobilepos.di
+
+import android.content.Context
+import androidx.room.Room
+import com.skegworks.mobilepos.category.CategoryDao
+import com.skegworks.mobilepos.data.Category
+import com.skegworks.mobilepos.databse.AppDatabase
+import com.skegworks.mobilepos.product.ProductDao
+import com.skegworks.mobilepos.vendors.VendorDao
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+class DatabaseModule {
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "mobilepos-db"
+        ).build()
+    }
+
+    @Provides
+    fun provideProductDao(db: AppDatabase): ProductDao {
+        return db.productDao()
+    }
+
+    @Provides
+    fun provideCategoryDao(db: AppDatabase): CategoryDao {
+        return db.categoryDao()
+    }
+
+    @Provides
+    fun provideVendorDao(db: AppDatabase): VendorDao {
+        return db.vendorDao()
+    }
+}
