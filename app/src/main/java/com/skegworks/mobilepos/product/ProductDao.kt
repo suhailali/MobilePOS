@@ -25,4 +25,7 @@ interface ProductDao {
 
     @Delete
     suspend fun deleteProduct(product: Product)
+
+    @Query("SELECT MAX(id) FROM products")
+    suspend fun getMaxId(): Int?
 }

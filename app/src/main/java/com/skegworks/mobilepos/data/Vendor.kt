@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "vendors")
 data class Vendor(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
     @ColumnInfo val name: String,
     @ColumnInfo val address: String,
     @ColumnInfo val city: String,

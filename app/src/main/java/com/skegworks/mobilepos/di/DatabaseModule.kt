@@ -3,7 +3,7 @@ package com.skegworks.mobilepos.di
 import android.content.Context
 import androidx.room.Room
 import com.skegworks.mobilepos.category.CategoryDao
-import com.skegworks.mobilepos.data.Category
+import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.databse.AppDatabase
 import com.skegworks.mobilepos.product.ProductDao
 import com.skegworks.mobilepos.vendors.VendorDao
@@ -25,7 +25,8 @@ class DatabaseModule {
             context,
             AppDatabase::class.java,
             "mobilepos-db"
-        ).build()
+        ).fallbackToDestructiveMigration(false)
+            .build()
     }
 
     @Provides
@@ -41,5 +42,10 @@ class DatabaseModule {
     @Provides
     fun provideVendorDao(db: AppDatabase): VendorDao {
         return db.vendorDao()
+    }
+
+    @Provides
+    fun provideCustomerDao(db: AppDatabase): CustomerDao {
+        return db.customerDao()
     }
 }

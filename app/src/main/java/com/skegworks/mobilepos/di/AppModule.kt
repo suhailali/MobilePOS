@@ -3,6 +3,9 @@ package com.skegworks.mobilepos.di
 import com.skegworks.mobilepos.category.CategoryDao
 import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.category.CategoryRepositoryImpl
+import com.skegworks.mobilepos.customer.CustomerDao
+import com.skegworks.mobilepos.customer.CustomerRepository
+import com.skegworks.mobilepos.customer.CustomerRepositoryImpl
 import com.skegworks.mobilepos.product.ProductDao
 import com.skegworks.mobilepos.product.ProductRepository
 import com.skegworks.mobilepos.product.ProductRepositoryImpl
@@ -41,5 +44,13 @@ class AppModule {
         vendorDao: VendorDao
     ): VendorRepository {
         return VendorRepositoryImpl(vendorDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCustomerRepository(
+        customerDao: CustomerDao
+    ): CustomerRepository {
+        return CustomerRepositoryImpl(customerDao)
     }
 }

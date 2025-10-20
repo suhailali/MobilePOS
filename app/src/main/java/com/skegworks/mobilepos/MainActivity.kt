@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import com.skegworks.mobilepos.category.CategoryActivity
+import com.skegworks.mobilepos.customer.CustomerActivity
 import com.skegworks.mobilepos.home.LandingScreen
 import com.skegworks.mobilepos.product.ProductActivity
 import com.skegworks.mobilepos.sample.SampleListActivity
@@ -28,25 +29,44 @@ class MainActivity : ComponentActivity() {
             MobilePOSTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val list = listOf(
-                        "Sale", "Purchase", "POS", "Dashboard", "Report", "Ledger",
-                        "Customers", "Vendors", "Expenses", "Coupons", "Product", "Orders", "Settings", "Category"
+                        "Sale",
+                        "Purchase",
+                        "POS",
+                        "Dashboard",
+                        "Report",
+                        "Ledger",
+                        "Customers",
+                        "Vendors",
+                        "Expenses",
+                        "Coupons",
+                        "Product",
+                        "Orders",
+                        "Settings",
+                        "Category"
                     )
                     val context = LocalContext.current
                     LandingScreen(
                         modifier = Modifier.padding(innerPadding),
                         list
                     ) { item ->
-                        when(item) {
+                        when (item) {
                             "Vendors" -> {
                                 val intent = Intent(context, VendorActivity::class.java)
                                 context.startActivity(intent)
                             }
+
                             "Product" -> {
                                 val intent = Intent(context, ProductActivity::class.java)
                                 context.startActivity(intent)
                             }
+
                             "Category" -> {
                                 val intent = Intent(context, CategoryActivity::class.java)
+                                context.startActivity(intent)
+                            }
+
+                            "Customers" -> {
+                                val intent = Intent(context, CustomerActivity::class.java)
                                 context.startActivity(intent)
                             }
                         }

@@ -25,4 +25,8 @@ class ProductRepositoryImpl @Inject constructor(private val productDao: ProductD
         // Implementation here
         return emptyList()
     }
+
+    override suspend fun getMaxId(): Int? {
+        return productDao.getMaxId()
+    }
 }

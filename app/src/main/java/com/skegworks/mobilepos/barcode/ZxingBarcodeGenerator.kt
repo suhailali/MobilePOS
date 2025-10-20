@@ -1,9 +1,14 @@
 package com.skegworks.mobilepos.barcode
 
 import coil3.Bitmap
+import com.google.zxing.MultiFormatWriter
+import com.google.zxing.common.BitMatrix
 import com.journeyapps.barcodescanner.BarcodeEncoder
+import jakarta.inject.Inject
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.set
 
-class ZxingBarcodeGenerator : BarcodeGenerator {
+class ZxingBarcodeGenerator @Inject constructor(): BarcodeGenerator {
     override suspend fun generateBarcode(
         data: String,
         barcodeFormat: BarcodeFormat,
@@ -25,6 +30,22 @@ class ZxingBarcodeGenerator : BarcodeGenerator {
 
         val barcodeEncoder = BarcodeEncoder()
         val bitmap = barcodeEncoder.encodeBitmap(data, format, width, height)
+
+//        val size = 512 //pixels
+//        val bitMatrix: BitMatrix = MultiFormatWriter().encode(
+//            data,
+//            com.google.zxing.BarcodeFormat.QR_CODE,  // 👈 change format here
+//            size,
+//            size
+//        )
+//
+//        val bitmap = createBitmap(size, size, android.graphics.Bitmap.Config.RGB_565)
+//        for (x in 0 until size) {
+//            for (y in 0 until size) {
+//                bitmap[x, y] =
+//                    if (bitMatrix[x, y]) android.graphics.Color.BLACK else android.graphics.Color.WHITE
+//            }
+//        }
         return bitmap
     }
 }

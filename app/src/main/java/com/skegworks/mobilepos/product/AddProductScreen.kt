@@ -1,34 +1,55 @@
 package com.skegworks.mobilepos.product
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.unit.dp
+import com.skegworks.mobilepos.ui.component.ReadOnlyTextField
+import com.skegworks.mobilepos.ui.component.SimpleBottomSheet
 import com.skegworks.mobilepos.ui.component.SimpleTextField
+import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
 fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
     val state = viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
 
+    var isCategorySheetOpen by remember { mutableStateOf(false) }
+    var isVendorSheetOpen by remember { mutableStateOf(false) }
+    var isInputGstPercentageSheetOpen by remember { mutableStateOf(false) }
+    var isOutputGstPercentageSheetOpen by remember { mutableStateOf(false) }
+    var isSaleMarginSheetOpen by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        viewModel.handleIntent(AddProductIntent.LoadCategories)
+        viewModel.handleIntent(AddProductIntent.LoadVendors)
+    }
     Column(
         modifier = modifier.verticalScroll(scrollState).fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        SimpleTextField(textState = state.value.textStateCategoryName, "Category") {
-            viewModel.handleIntent(AddProductIntent.UpdateCategory(it))
+        ReadOnlyTextField(textState = state.value.textStateCategoryName, "Category") {
+            isCategorySheetOpen = true
         }
-        SimpleTextField(textState = state.value.textStateVendorName, "Vendor") {
-            viewModel.handleIntent(AddProductIntent.UpdateVendor(it))
-        }
-        SimpleTextField(textState = state.value.textStateSku, "SKU") {
-            viewModel.handleIntent(AddProductIntent.UpdateSku(it))
+        ReadOnlyTextField(textState = state.value.textStateVendorName, "Vendor") {
+            isVendorSheetOpen = true
         }
         SimpleTextField(textState = state.value.textStateTitle, "Title") {
             viewModel.handleIntent(AddProductIntent.UpdateTitle(it))
@@ -39,14 +60,70 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         SimpleTextField(textState = state.value.textStateColor, "Color") {
             viewModel.handleIntent(AddProductIntent.UpdateColor(it))
         }
-        SimpleTextField(textState = state.value.textStateCost.toString(), "Cost") {
-            val cost = it.toDoubleOrNull() ?: 0.0
-            viewModel.handleIntent(AddProductIntent.UpdateCost(cost))
+        ReadOnlyTextField(textState = state.value.textStateSku, "SKU") {
+            // No action on click
         }
-        SimpleTextField(textState = state.value.textStateSalePrice.toString(), "Sale Price", ) {
-            val salePrice = it.toDoubleOrNull() ?: 0.0
-            viewModel.handleIntent(AddProductIntent.UpdateSalePrice(salePrice))
+        Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+        Button(onClick = {
+            viewModel.handleIntent(AddProductIntent.GenerateSku)
+        }) {
+            Text("Generate SKU")
         }
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        state.value.barcodeBitmap?.let { bmp ->
+            Image(
+                bitmap = bmp.asImageBitmap(),
+                contentDescription = "Barcode",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+            )
+        }
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+
+        SimpleTextField(textState = state.value.textStateItemPrice.toString(), "Item Price") {
+            val price = it.toDoubleOrNull() ?: 0.0
+            viewModel.handleIntent(AddProductIntent.UpdateItemPrice(price))
+        }
+
+        ReadOnlyTextField(textState = state.value.textStateInputGstPercentage.toString(), "Input GST %") {
+            isInputGstPercentageSheetOpen = true
+        }
+        ReadOnlyTextField(textState = state.value.textStateOutputGstPercentage.toString(), "Output GST %") {
+            isOutputGstPercentageSheetOpen = true
+        }
+
+        ReadOnlyTextField(textState = state.value.textStateSaleMargin.toString(), "Sale Margin") {
+            isSaleMarginSheetOpen = true
+        }
+
+        Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+        Button(onClick = {
+            viewModel.handleIntent(AddProductIntent.CalculatePricing)
+        }) {
+            Text("Calculate Cost & Price with GST")
+        }
+        Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+
+        ReadOnlyTextField(textState = state.value.textStateInputGst.toString(), "Input GST") {
+
+        }
+
+        ReadOnlyTextField(textState = state.value.textStateCost.toString(), "Cost") {
+            // No action on click
+        }
+
+        ReadOnlyTextField(textState = state.value.textStateSalePriceWithoutGst.toString(), "Sale Price Without GST") {
+
+        }
+
+        ReadOnlyTextField(textState = state.value.textStateOutputGst.toString(), "Output GST") {
+
+        }
+        ReadOnlyTextField(textState = state.value.textStateSalePrice.toString(), "Sale Price") {
+
+        }
+
         SimpleTextField(textState = state.value.textStateQuantity.toString(), "Quantity", ) {
             val quantity = it.toIntOrNull() ?: 0
             viewModel.handleIntent(AddProductIntent.UpdateQuantity(quantity))
@@ -58,10 +135,6 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         SimpleTextField(textState = state.value.textStateHsnCode, "HSN Code") {
             viewModel.handleIntent(AddProductIntent.UpdateHsnCode(it))
         }
-        SimpleTextField(textState = state.value.textStateGstPercentage.toString(), "GST Percentage") {
-            val gstPercentage = it.toDoubleOrNull() ?: 0.0
-            viewModel.handleIntent(AddProductIntent.UpdateGstPercentage(gstPercentage))
-        }
         SimpleTextField(textState = state.value.textStateDiscountPercentage.toString(), "Discount Percentage") {
             val discountPercentage = it.toDoubleOrNull() ?: 0.0
             viewModel.handleIntent(AddProductIntent.UpdateDiscountPercentage(discountPercentage))
@@ -69,18 +142,91 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         SimpleTextField(textState = state.value.textStateDescription, "Description") {
             viewModel.handleIntent(AddProductIntent.UpdateDescription(it))
         }
-        SimpleTextField(textState = state.value.textStateImageUrl, "Image URL") {
-            viewModel.handleIntent(AddProductIntent.UpdateImageUrl(it))
-        }
+//        SimpleTextField(textState = state.value.textStateImageUrl, "Image URL") {
+//            viewModel.handleIntent(AddProductIntent.UpdateImageUrl(it))
+//        }
+        Spacer(modifier = Modifier.padding(Dimens.MEDIUM_PADDING.dp))
 
         Button(onClick = {
-            viewModel.handleIntent(AddProductIntent.Save)
+            //viewModel.handleIntent(AddProductIntent.Save)
+            isCategorySheetOpen = true
         }) {
             Text("Save")
         }
 
         if (state.value.isSaved) {
             Text("Value Saved Successfully")
+        }
+    }
+    if (isCategorySheetOpen) {
+        SimpleBottomSheet(
+            list = state.value.categories,
+            onItemSelected = {
+                viewModel.handleIntent(AddProductIntent.UpdateCategory(it))
+                isCategorySheetOpen = false
+            },
+            labelSelector = {
+                it.name
+            }
+        ) {
+            isCategorySheetOpen = false
+        }
+    }
+
+    if (isVendorSheetOpen) {
+        SimpleBottomSheet(
+            list = state.value.vendors,
+            onItemSelected = {
+                viewModel.handleIntent(AddProductIntent.UpdateVendor(it))
+                isVendorSheetOpen = false
+            },
+            labelSelector = {
+                it.name
+            }
+        ) {
+            isVendorSheetOpen = false
+        }
+    }
+    if (isInputGstPercentageSheetOpen) {
+        SimpleBottomSheet(
+            list = state.value.gstPercentages,
+            onItemSelected = {
+                viewModel.handleIntent(AddProductIntent.UpdateInputGstPercentage(it))
+                isInputGstPercentageSheetOpen = false
+            },
+            labelSelector = {
+                it.toString()
+            }
+        ) {
+            isInputGstPercentageSheetOpen = false
+        }
+    }
+    if (isOutputGstPercentageSheetOpen) {
+        SimpleBottomSheet(
+            list = state.value.gstPercentages,
+            onItemSelected = {
+                viewModel.handleIntent(AddProductIntent.UpdateOutputGstPercentage(it))
+                isOutputGstPercentageSheetOpen = false
+            },
+            labelSelector = {
+                it.toString()
+            }
+        ) {
+            isOutputGstPercentageSheetOpen = false
+        }
+    }
+    if (isSaleMarginSheetOpen) {
+        SimpleBottomSheet(
+            list = state.value.saleMargins,
+            onItemSelected = {
+                viewModel.handleIntent(AddProductIntent.UpdateSaleMargin(it))
+                isSaleMarginSheetOpen = false
+            },
+            labelSelector = {
+                it.toString()
+            }
+        ) {
+            isSaleMarginSheetOpen = false
         }
     }
 }

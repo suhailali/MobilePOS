@@ -8,4 +8,6 @@ interface ProductRepository {
     suspend fun deleteProduct(product: Product)
     suspend fun getProductById(id: String): Product?
     suspend fun getAllProducts(): List<Product>
+
+    suspend fun getMaxId(): Int?
 }
