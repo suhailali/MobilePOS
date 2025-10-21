@@ -10,14 +10,21 @@ class GenerateBarCodeUseCase @Inject constructor(private val barCodeGenerator: B
         val barcode = barCodeGenerator.generateBarcode(
             data = sku,
             barcodeFormat = com.skegworks.mobilepos.barcode.BarcodeFormat.CODE_128,
-            width = 1000,
+            width = 620,
             height = 250
         )
+        // 2480 * 3508 (A4 size at 300dpi
+        // 2480 / 5 = 496
+        // 3508 / 8 = 438
+
+        // 2480 * 3508 (A4 size at 300dpi
+        // 2480 / 4 = 620
+        // 3508 / 10 = 350.8
         val barcodeBitmap = BarcodeBitmapEditorImpl(
             "NADHIKA",
             sku,
             "1000",
-        ).editBitmap(1000, 250, barcode)
+        ).editBitmap(620, 350, barcode)
         return barcodeBitmap
     }
 }

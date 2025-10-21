@@ -9,13 +9,15 @@ class PdfGeneratorImpl: PdfGenerator {
     override suspend fun generatePdf(imageBitmaps: List<Bitmap>): PdfDocument {
         // Implementation here
         val pdfDocument = PdfDocument()
-        val pageWidth = 595
-        val pageHeight = 842
+        //2480 x 3508 (A4 size at 300dpi
+        //595 x 842 (A4 size at 72dpi
+        val pageWidth = 2480
+        val pageHeight = 3508
         val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 1).create()
         val page = pdfDocument.startPage(pageInfo)
         val canvas = page.canvas
-        val columns = 5
-        val rows = 8
+        val columns = 4
+        val rows = 10
         val totalImages = columns * rows
         val cellWidth = pageWidth / columns
         val cellHeight = pageHeight / rows

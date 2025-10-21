@@ -29,7 +29,7 @@ class BarcodeBitmapEditorImpl(
 
         // 🔹 Dynamically scale text size based on bitmap width
         val maxTextWidth = bitmap.width * 0.9f // leave 10% margin
-        var textSize = 48f  // start big
+        var textSize =36f  // start big
         paint.textSize = textSize
 
         // shrink text if it exceeds the width
