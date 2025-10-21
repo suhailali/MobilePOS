@@ -309,4 +309,22 @@ class ProductViewModel @Inject constructor(
             )
         }
     }
+
+    fun fetchProducts() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _state.update { it.copy(isLoading = true) }
+            try {
+                val productList = productRepository.getAllProducts()
+                _state.update {
+                    it.copy(
+                        products = productList,
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                println("PVM fetchProducts crash: ${e.localizedMessage}")
+                _state.update { it.copy(isLoading = false) }
+            }
+        }
+    }
 }

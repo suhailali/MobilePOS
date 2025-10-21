@@ -21,9 +21,9 @@ class ProductActivity : ComponentActivity() {
             MobilePOSTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val viewModel: ProductViewModel by viewModels<ProductViewModel>()
-                    AddProductScreen(
-                        modifier = Modifier.padding(innerPadding),
-                        viewModel
+                    ProductScreenNavigation(
+                        viewModel = viewModel,
+                        modifier = Modifier.padding(innerPadding)
                     )
                 }
             }

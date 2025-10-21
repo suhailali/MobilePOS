@@ -2,6 +2,7 @@ package com.skegworks.mobilepos.product
 
 import android.graphics.Bitmap
 import com.skegworks.mobilepos.data.Category
+import com.skegworks.mobilepos.data.Product
 import com.skegworks.mobilepos.data.Vendor
 
 data class AddProductState(
@@ -44,6 +45,8 @@ data class AddProductState(
     val saleMargins: List<Int> = listOf(0, 5, 10, 15, 20, 25, 30, 35, 40, 43, 45, 48, 50, 53, 55, 58, 60, 65, 70, 75, 80, 85, 90, 95, 100),
     val isLoading: Boolean = false,
     val barcodeBitmap: Bitmap? = null,
+
+    val products: List<Product> = emptyList()
 ) {
     fun clearState(): AddProductState {
         return AddProductState(

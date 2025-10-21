@@ -148,8 +148,7 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         Spacer(modifier = Modifier.padding(Dimens.MEDIUM_PADDING.dp))
 
         Button(onClick = {
-            //viewModel.handleIntent(AddProductIntent.Save)
-            isCategorySheetOpen = true
+            viewModel.handleIntent(AddProductIntent.Save)
         }) {
             Text("Save")
         }
