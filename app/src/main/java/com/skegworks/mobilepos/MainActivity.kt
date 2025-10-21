@@ -13,13 +13,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import coil3.Bitmap
+import com.skegworks.mobilepos.barcode.ZxingBarcodeGenerator
 import com.skegworks.mobilepos.category.CategoryActivity
 import com.skegworks.mobilepos.customer.CustomerActivity
+import com.skegworks.mobilepos.utils.files.FileHandlerImpl
 import com.skegworks.mobilepos.home.LandingScreen
+import com.skegworks.mobilepos.pdf.PdfGeneratorImpl
+import com.skegworks.mobilepos.product.GenerateBarCodeUseCase
 import com.skegworks.mobilepos.product.ProductActivity
-import com.skegworks.mobilepos.sample.SampleListActivity
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import com.skegworks.mobilepos.vendors.VendorActivity
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +74,25 @@ class MainActivity : ComponentActivity() {
                                 val intent = Intent(context, CustomerActivity::class.java)
                                 context.startActivity(intent)
                             }
+                            "Ledger" -> {
+                                val barcodeUseCase = GenerateBarCodeUseCase(ZxingBarcodeGenerator())
+                                runBlocking {
+
+                                    val listOfBitmaps = mutableListOf<Bitmap>()
+                                    for(i in 0..39) {
+                                        val bitmap = barcodeUseCase.invoke("12345678901${i}")
+                                        listOfBitmaps.add(bitmap)
+                                    }
+                                    println("List of bitmaps generated")
+                                    val pdfGenerator = PdfGeneratorImpl()
+                                    val pdf = pdfGenerator.generatePdf(listOfBitmaps)
+                                    println("PDF File generated")
+                                    val fileHandler = FileHandlerImpl(context)
+                                    val pdfFile = fileHandler.writePdfDocument(pdf)
+                                    println("PDF File written at: $pdfFile")
+                                }
+                            }
+
                         }
                     }
                 }

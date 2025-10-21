@@ -1,12 +1,8 @@
 package com.skegworks.mobilepos.barcode
 
 import coil3.Bitmap
-import com.google.zxing.MultiFormatWriter
-import com.google.zxing.common.BitMatrix
 import com.journeyapps.barcodescanner.BarcodeEncoder
 import jakarta.inject.Inject
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.set
 
 class ZxingBarcodeGenerator @Inject constructor(): BarcodeGenerator {
     override suspend fun generateBarcode(

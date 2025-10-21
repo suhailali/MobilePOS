@@ -2,6 +2,7 @@ package com.skegworks.mobilepos.product
 
 import android.graphics.Bitmap
 import com.skegworks.mobilepos.barcode.BarcodeGenerator
+import com.skegworks.mobilepos.utils.bitmap.BarcodeBitmapEditorImpl
 import jakarta.inject.Inject
 
 class GenerateBarCodeUseCase @Inject constructor(private val barCodeGenerator: BarcodeGenerator) {
@@ -12,6 +13,11 @@ class GenerateBarCodeUseCase @Inject constructor(private val barCodeGenerator: B
             width = 1000,
             height = 250
         )
-        return barcode
+        val barcodeBitmap = BarcodeBitmapEditorImpl(
+            "NADHIKA",
+            sku,
+            "1000",
+        ).editBitmap(1000, 250, barcode)
+        return barcodeBitmap
     }
 }
