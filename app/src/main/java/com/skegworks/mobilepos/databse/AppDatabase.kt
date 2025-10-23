@@ -17,7 +17,7 @@ import com.skegworks.mobilepos.vendors.VendorDao
         Product::class,
         Vendor::class,
         Customer::class
-    ], version = 5
+    ], version = 6
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao

@@ -12,6 +12,7 @@ data class Customer(
     @ColumnInfo val phone: String,
     @ColumnInfo val address: String,
     @ColumnInfo(name = "is_active") val isActive: Boolean,
+    @ColumnInfo(name = "is_synced") val isSynced: Boolean = false,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
 )

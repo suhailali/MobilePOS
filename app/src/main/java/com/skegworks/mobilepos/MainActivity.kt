@@ -13,12 +13,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.os.bundleOf
 import coil3.Bitmap
 import com.skegworks.mobilepos.barcode.ZxingBarcodeGenerator
 import com.skegworks.mobilepos.category.CategoryActivity
 import com.skegworks.mobilepos.customer.CustomerActivity
 import com.skegworks.mobilepos.utils.files.FileHandlerImpl
 import com.skegworks.mobilepos.home.LandingScreen
+import com.skegworks.mobilepos.login.LoginActivity
 import com.skegworks.mobilepos.pdf.PdfGeneratorImpl
 import com.skegworks.mobilepos.product.GenerateBarCodeUseCase
 import com.skegworks.mobilepos.product.ProductActivity
@@ -47,7 +49,9 @@ class MainActivity : ComponentActivity() {
                         "Product",
                         "Orders",
                         "Settings",
-                        "Category"
+                        "Category",
+                        "Login",
+                        "CreateUser"
                     )
                     val context = LocalContext.current
                     LandingScreen(
@@ -74,12 +78,13 @@ class MainActivity : ComponentActivity() {
                                 val intent = Intent(context, CustomerActivity::class.java)
                                 context.startActivity(intent)
                             }
+
                             "Ledger" -> {
                                 val barcodeUseCase = GenerateBarCodeUseCase(ZxingBarcodeGenerator())
                                 runBlocking {
 
                                     val listOfBitmaps = mutableListOf<Bitmap>()
-                                    for(i in 0..39) {
+                                    for (i in 0..39) {
                                         val bitmap = barcodeUseCase.invoke("12345678901${i}")
                                         listOfBitmaps.add(bitmap)
                                     }
@@ -93,6 +98,23 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
 
+                            "Login" -> {
+                                // For testing purpose only
+                                val intent = Intent(context, LoginActivity::class.java)
+                                val bundle = bundleOf()
+                                bundle.putBoolean("isCreateUser", false)
+                                intent.putExtras(bundle)
+                                context.startActivity(intent)
+                            }
+
+                            "CreateUser" -> {
+                                // For testing purpose only
+                                val intent = Intent(context, LoginActivity::class.java)
+                                val bundle = bundleOf()
+                                bundle.putBoolean("isCreateUser", true)
+                                intent.putExtras(bundle)
+                                context.startActivity(intent)
+                            }
                         }
                     }
                 }
