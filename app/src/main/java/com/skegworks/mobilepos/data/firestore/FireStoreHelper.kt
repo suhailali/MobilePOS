@@ -2,21 +2,25 @@ package com.skegworks.mobilepos.data.firestore
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.SetOptions
 
 class FirestoreHelper {
 
     private val db = FirebaseFirestore.getInstance()
 
     /** Add a document to a collection **/
-    fun addDocument(
+    fun <T> addDocument(
         collection: String,
-        data: Map<String, Any>,
+        id: String,
+        data: T,
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        db.collection(collection)
-            .add(data)
-            .addOnSuccessListener { docRef -> onSuccess(docRef.id) }
+        val userRef = db.collection(collection)
+            .document(id)
+
+        userRef.set(data as Any, SetOptions.merge())
+            .addOnSuccessListener { onSuccess(id) }
             .addOnFailureListener { e -> onFailure(e) }
     }
 

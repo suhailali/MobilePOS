@@ -28,4 +28,7 @@ interface ProductDao {
 
     @Query("SELECT MAX(id) FROM products")
     suspend fun getMaxId(): Int?
+
+    @Query("SELECT * FROM products WHERE is_synced = 0")
+    suspend fun getUnsynced(): List<Product>
 }

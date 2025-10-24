@@ -30,3 +30,27 @@ class ProductRepositoryImpl @Inject constructor(private val productDao: ProductD
         return productDao.getMaxId()
     }
 }
+
+//class ProductRepository(
+//    private val dao: ProductDao,
+//    private val firestore: FirebaseFirestore
+//) {
+//
+//    suspend fun addProduct(product: ProductEntity) {
+//        dao.insert(product.copy(isSynced = false))
+//    }
+//
+//    suspend fun syncWithFirestore() {
+//        val unsynced = dao.getUnsynced()
+//        for (item in unsynced) {
+//            try {
+//                firestore.collection("products").document(item.id)
+//                    .set(item)
+//                    .await()
+//                dao.insert(item.copy(isSynced = true))
+//            } catch (e: Exception) {
+//                Log.e("Sync", "Failed to sync ${item.id}: ${e.message}")
+//            }
+//        }
+//    }
+//}

@@ -6,10 +6,10 @@ import com.skegworks.mobilepos.data.Product
 import com.skegworks.mobilepos.data.Vendor
 
 data class AddProductState(
-    val textStateCategoryId: Int = -1,
+    val textStateCategoryId: String = "",
     val textStateCategoryName: String = "",
 
-    val textStateVendorId: Int = -1,
+    val textStateVendorId: String = "",
     val textStateVendorName: String = "",
 
     val textStateTitle: String = "",

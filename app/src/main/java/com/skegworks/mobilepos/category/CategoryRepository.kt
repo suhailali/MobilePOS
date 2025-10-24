@@ -12,4 +12,15 @@ interface CategoryRepository {
     suspend fun updateCategory(category: Category)
 
     suspend fun deleteCategory(category: Category)
+
+    suspend fun syncCategory(
+        category: Category,
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    )
+
+    suspend fun syncAllCategories(
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    )
 }

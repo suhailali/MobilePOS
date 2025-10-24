@@ -159,12 +159,12 @@ class VendorViewModel @Inject constructor(private val repository: VendorReposito
 //        addVendorToFirebase(vendorDetails)
     }
 
-    private fun addVendorToFirebase(vendor: Map<String, String>) {
-        val firestore = FirestoreHelper()
-        firestore.addDocument("vendors", vendor,
-            onSuccess = { id -> Log.d("Firestore", "Added with ID: $id") },
-            onFailure = { e -> Log.e("Firestore", "Error: $e") })
-    }
+//    private fun addVendorToFirebase(vendor: Map<String, String>) {
+//        val firestore = FirestoreHelper()
+//        firestore.addDocument("vendors", vendor,
+//            onSuccess = { id -> Log.d("Firestore", "Added with ID: $id") },
+//            onFailure = { e -> Log.e("Firestore", "Error: $e") })
+//    }
 }
 
 

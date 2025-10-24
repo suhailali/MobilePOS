@@ -9,6 +9,7 @@ import com.skegworks.mobilepos.customer.CustomerRepositoryImpl
 import com.skegworks.mobilepos.product.ProductDao
 import com.skegworks.mobilepos.product.ProductRepository
 import com.skegworks.mobilepos.product.ProductRepositoryImpl
+import com.skegworks.mobilepos.sync.SyncData
 import com.skegworks.mobilepos.vendors.VendorDao
 import com.skegworks.mobilepos.vendors.VendorRepository
 import com.skegworks.mobilepos.vendors.VendorRepositoryImpl
@@ -33,9 +34,10 @@ class AppModule {
     @Provides
     @Singleton
     fun provideCategoryRepository(
-        categoryDao: CategoryDao
+        categoryDao: CategoryDao,
+        syncData: SyncData
     ): CategoryRepository {
-        return CategoryRepositoryImpl(categoryDao)
+        return CategoryRepositoryImpl(categoryDao, syncData)
     }
 
     @Provides

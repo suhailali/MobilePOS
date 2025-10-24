@@ -1,5 +1,6 @@
 package com.skegworks.mobilepos.category
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.data.Category
@@ -7,14 +8,17 @@ import com.skegworks.mobilepos.product.AddProductState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @HiltViewModel
-class CategoryViewModel @Inject constructor(private val repository: CategoryRepository): ViewModel() {
+class CategoryViewModel @Inject constructor(private val syncCategoryUseCase: SyncCategoryUseCase) :
+    ViewModel() {
 
     private val _state = MutableStateFlow(AddCategoryState())
     val state: StateFlow<AddCategoryState> = _state.asStateFlow()
@@ -41,12 +45,14 @@ class CategoryViewModel @Inject constructor(private val repository: CategoryRepo
                     isSaved = false
                 )
             }
+
             is AddCategoryIntent.UpdateUpdatedAt -> _state.update {
                 it.copy(
                     textStateUpdatedAt = intent.updatedAt,
                     isSaved = false
                 )
             }
+
             is AddCategoryIntent.Save -> {
                 _state.update {
                     it.copy(
@@ -54,12 +60,13 @@ class CategoryViewModel @Inject constructor(private val repository: CategoryRepo
                     )
                 }
                 viewModelScope.launch(Dispatchers.IO) {
-                    repository.insertCategory(Category(
+                    val category = Category(
                         name = state.value.textStateCategoryName,
                         description = state.value.textStateDescription,
                         createdAt = state.value.textStateCreatedAt,
                         updatedAt = state.value.textStateUpdatedAt,
-                    ))
+                    )
+                    syncCategoryUseCase(category)
                 }
             }
         }

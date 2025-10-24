@@ -3,10 +3,11 @@ package com.skegworks.mobilepos.data
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(tableName = "vendors")
 data class Vendor(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey val id: String = UUID.randomUUID().toString(),
     @ColumnInfo val name: String,
     @ColumnInfo val address: String,
     @ColumnInfo val city: String,
@@ -14,13 +15,13 @@ data class Vendor(
     @ColumnInfo val country: String,
     @ColumnInfo val phone: String,
     @ColumnInfo val email: String,
-    @ColumnInfo val zipCode: String,
+    @ColumnInfo(name = "zip_code") val zipCode: String,
     @ColumnInfo val gst: String,
-    @ColumnInfo val gstPercentage: String,
+    @ColumnInfo(name = "gst_percentage") val gstPercentage: String,
     @ColumnInfo val currency: String,
     @ColumnInfo(name = "is_active") val isActive: Boolean = false,
     @ColumnInfo(name = "is_synced") val isSynced: Boolean = false,
-    @ColumnInfo val createdAt: Long = System.currentTimeMillis(),
-    @ColumnInfo val updatedAt: Long = System.currentTimeMillis()
+    @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = "updated_at") val updatedAt: Long = System.currentTimeMillis()
 
 )

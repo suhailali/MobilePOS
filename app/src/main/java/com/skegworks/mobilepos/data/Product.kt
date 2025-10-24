@@ -3,15 +3,16 @@ package com.skegworks.mobilepos.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ColumnInfo
+import java.util.UUID
 
 @Entity(tableName = "products")
 data class Product(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    @ColumnInfo(name = "vendor_id") val vendorId: Int,
+    @PrimaryKey val id: String = UUID.randomUUID().toString(),
+    @ColumnInfo(name = "vendor_id") val vendorId: String,
     @ColumnInfo(name = "vendor_Name") val vendorName: String,
     @ColumnInfo(name = "hsn_code") val hsnCode: String,
     @ColumnInfo(name = "title") val title: String,
-    @ColumnInfo(name = "category_id") val categoryId: Int,
+    @ColumnInfo(name = "category_id") val categoryId: String,
     @ColumnInfo(name = "category_Name") val categoryName: String,
     @ColumnInfo(name = "sku") val sku: String,
     @ColumnInfo(name = "size") val size: String,
@@ -31,7 +32,8 @@ data class Product(
     @ColumnInfo(name = "alert_quantity") val alertQuantity: Int,
     @ColumnInfo(name = "description") val description: String,
     @ColumnInfo(name = "image_url") val imageUrl: String,
-    @ColumnInfo(name = "is_active") val isActive: Boolean,
+    @ColumnInfo(name = "is_active") val isActive: Boolean = true,
+    @ColumnInfo(name = "is_synced") val isSynced: Boolean = false,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
     @ColumnInfo(name = "discount_percentage") val discountPercentage: Double = 0.0,
