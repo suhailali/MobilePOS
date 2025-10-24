@@ -8,15 +8,16 @@ import com.skegworks.mobilepos.vendors.VendorRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
+    private val syncProductUseCase: SyncProductUseCase,
     private val productRepository: ProductRepository,
     private val categoryRepository: CategoryRepository,
     private val vendorRepository: VendorRepository,
@@ -191,49 +192,51 @@ class ProductViewModel @Inject constructor(
             }
 
             is AddProductIntent.Save -> {
-                _state.update {
-                    it.copy(
-                        isSaved = true
-                    )
-                }
-
                 viewModelScope.launch(Dispatchers.IO) {
-                    productRepository.insertProduct(
-                        Product(
-                            vendorName = state.value.textStateVendorName,
-                            vendorId = state.value.textStateVendorId,
-                            categoryId = state.value.textStateCategoryId,
-                            hsnCode = state.value.textStateHsnCode,
-                            title = state.value.textStateTitle,
-                            categoryName = state.value.textStateCategoryName,
-                            sku = state.value.textStateSku,
-                            size = state.value.textStateSize,
-                            color = state.value.textStateColor,
+                    val product = Product(
+                        vendorName = state.value.textStateVendorName,
+                        vendorId = state.value.textStateVendorId,
+                        categoryId = state.value.textStateCategoryId,
+                        hsnCode = state.value.textStateHsnCode,
+                        title = state.value.textStateTitle,
+                        categoryName = state.value.textStateCategoryName,
+                        sku = state.value.textStateSku,
+                        size = state.value.textStateSize,
+                        color = state.value.textStateColor,
 
 
-                            quantity = state.value.textStateQuantity,
-                            alertQuantity = state.value.textStateAlertQuantity,
-                            description = state.value.textStateDescription,
-                            imageUrl = state.value.textStateImageUrl,
+                        quantity = state.value.textStateQuantity,
+                        alertQuantity = state.value.textStateAlertQuantity,
+                        description = state.value.textStateDescription,
+                        imageUrl = state.value.textStateImageUrl,
 
-                            itemPrice = state.value.textStateItemPrice,
-                            inputGstPercentage = state.value.textStateInputGstPercentage,
-                            inputGst = state.value.textStateInputGst,
-                            outputGstPercentage = state.value.textStateOutputGstPercentage,
-                            outputGst = state.value.textStateOutputGst,
-                            saleMargin = state.value.textStateSaleMargin,
-                            cost = state.value.textStateCost,
-                            salePriceWithoutGst = state.value.textStateSalePriceWithoutGst,
-                            salePrice = state.value.textStateSalePrice,
-                            finalRoundedOffPrice = state.value.textStateFinalRoundedOffPrice,
+                        itemPrice = state.value.textStateItemPrice,
+                        inputGstPercentage = state.value.textStateInputGstPercentage,
+                        inputGst = state.value.textStateInputGst,
+                        outputGstPercentage = state.value.textStateOutputGstPercentage,
+                        outputGst = state.value.textStateOutputGst,
+                        saleMargin = state.value.textStateSaleMargin,
+                        cost = state.value.textStateCost,
+                        salePriceWithoutGst = state.value.textStateSalePriceWithoutGst,
+                        salePrice = state.value.textStateSalePrice,
+                        finalRoundedOffPrice = state.value.textStateFinalRoundedOffPrice,
 
 
-                            isActive = state.value.textStateIsActive,
-                            discountPercentage = state.value.textStateDiscountPercentage,
-                            createdAt = state.value.textStateCreatedAt,
-                            updatedAt = state.value.textStateUpdatedAt
-                        )
+                        isActive = state.value.textStateIsActive,
+                        discountPercentage = state.value.textStateDiscountPercentage,
+                        createdAt = state.value.textStateCreatedAt,
+                        updatedAt = state.value.textStateUpdatedAt
                     )
+                    syncProductUseCase(product)
+                    _state.update {
+                        it.copy(
+                            isSaved = true
+                        )
+                    }
+                    delay(1000)
+                    _state.update {
+                        it.clearState()
+                    }
                 }
             }
         }

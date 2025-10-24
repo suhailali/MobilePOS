@@ -34,7 +34,7 @@ data class Product(
     @ColumnInfo(name = "description") val description: String,
     @ColumnInfo(name = "image_url") val imageUrl: String,
     @ColumnInfo(name = "is_active") val isActive: Boolean = true,
-    @ColumnInfo(name = "is_synced") val isSynced: Boolean = false,
+    @ColumnInfo(name = "is_synced") var isSynced: Boolean = false,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
     @ColumnInfo(name = "discount_percentage") val discountPercentage: Double = 0.0,

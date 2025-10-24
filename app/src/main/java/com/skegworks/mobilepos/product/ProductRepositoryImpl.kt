@@ -1,9 +1,13 @@
 package com.skegworks.mobilepos.product
 
 import com.skegworks.mobilepos.data.Product
+import com.skegworks.mobilepos.sync.SyncData
 import javax.inject.Inject
 
-class ProductRepositoryImpl @Inject constructor(private val productDao: ProductDao): ProductRepository {
+class ProductRepositoryImpl @Inject constructor(
+    private val productDao: ProductDao,
+    private val syncData: SyncData
+) : ProductRepository {
     override suspend fun insertProduct(product: Product) {
         productDao.insertProduct(product)
     }
@@ -29,28 +33,34 @@ class ProductRepositoryImpl @Inject constructor(private val productDao: ProductD
     override suspend fun getMaxId(): Int? {
         return productDao.getMaxId()
     }
-}
 
-//class ProductRepository(
-//    private val dao: ProductDao,
-//    private val firestore: FirebaseFirestore
-//) {
-//
-//    suspend fun addProduct(product: ProductEntity) {
-//        dao.insert(product.copy(isSynced = false))
-//    }
-//
-//    suspend fun syncWithFirestore() {
-//        val unsynced = dao.getUnsynced()
-//        for (item in unsynced) {
-//            try {
-//                firestore.collection("products").document(item.id)
-//                    .set(item)
-//                    .await()
-//                dao.insert(item.copy(isSynced = true))
-//            } catch (e: Exception) {
-//                Log.e("Sync", "Failed to sync ${item.id}: ${e.message}")
-//            }
-//        }
-//    }
-//}
+    override suspend fun syncProduct(
+        product: Product,
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        syncData.syncData(
+            name = "products",
+            id = product.id,
+            data = product,
+            onSuccess = onSuccess,
+            onFailure = onFailure
+        )
+    }
+
+    override suspend fun syncAllProducts(
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val products = productDao.getAllProducts()
+        for (product in products) {
+            syncData.syncData(
+                name = "products",
+                id = product.id,
+                data = product,
+                onSuccess = onSuccess,
+                onFailure = onFailure
+            )
+        }
+    }
+}

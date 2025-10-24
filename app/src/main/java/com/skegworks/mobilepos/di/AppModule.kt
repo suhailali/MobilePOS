@@ -26,9 +26,10 @@ class AppModule {
     @Provides
     @Singleton
     fun provideProductRepository(
-        productDao: ProductDao
+        productDao: ProductDao,
+        syncData: SyncData
     ): ProductRepository {
-        return ProductRepositoryImpl(productDao)
+        return ProductRepositoryImpl(productDao, syncData)
     }
 
     @Provides
