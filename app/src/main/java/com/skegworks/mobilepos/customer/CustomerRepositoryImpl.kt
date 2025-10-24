@@ -1,8 +1,12 @@
 package com.skegworks.mobilepos.customer
 
 import com.skegworks.mobilepos.data.Customer
+import com.skegworks.mobilepos.sync.SyncData
 
-class CustomerRepositoryImpl(private val customerDao: CustomerDao): CustomerRepository {
+class CustomerRepositoryImpl(
+    private val customerDao: CustomerDao,
+    private val syncData: SyncData
+) : CustomerRepository {
     override suspend fun insertCustomer(customer: Customer) {
         customerDao.insertCustomer(customer)
     }
@@ -21,5 +25,35 @@ class CustomerRepositoryImpl(private val customerDao: CustomerDao): CustomerRepo
 
     override suspend fun deleteCustomer(customer: Customer) {
         customerDao.deleteCustomer(customer)
+    }
+
+    override suspend fun syncCustomer(
+        customer: Customer,
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        syncData.syncData(
+            name = "customers",
+            id = customer.id,
+            data = customer,
+            onSuccess = onSuccess,
+            onFailure = onFailure
+        )
+    }
+
+    override suspend fun syncAllCustomers(
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        val customers = customerDao.getAllCategories()
+        for (customer in customers) {
+            syncData.syncData(
+                name = "customers",
+                id = customer.id,
+                data = customer,
+                onSuccess = onSuccess,
+                onFailure = onFailure
+            )
+        }
     }
 }

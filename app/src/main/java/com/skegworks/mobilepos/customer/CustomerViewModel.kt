@@ -6,6 +6,7 @@ import com.skegworks.mobilepos.data.Customer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class CustomerViewModel @Inject constructor(private val repository: CustomerRepository): ViewModel() {
+class CustomerViewModel @Inject constructor(private val syncCustomerUseCase: SyncCustomerUseCase) :
+    ViewModel() {
 
     private val _state = MutableStateFlow(AddCustomerState())
     val state: StateFlow<AddCustomerState> = _state.asStateFlow()
@@ -33,12 +35,14 @@ class CustomerViewModel @Inject constructor(private val repository: CustomerRepo
                     isSaved = false
                 )
             }
+
             is AddCustomerIntent.UpdateEmail -> _state.update {
                 it.copy(
                     textStateEmail = intent.email,
                     isSaved = false
                 )
             }
+
             is AddCustomerIntent.UpdatePhone -> _state.update {
                 it.copy(
                     textStatePhone = intent.phone,
@@ -52,30 +56,36 @@ class CustomerViewModel @Inject constructor(private val repository: CustomerRepo
                     isSaved = false
                 )
             }
+
             is AddCustomerIntent.UpdateUpdatedAt -> _state.update {
                 it.copy(
                     textStateUpdatedAt = intent.updatedAt,
                     isSaved = false
                 )
             }
+
             is AddCustomerIntent.Save -> {
-                _state.update {
-                    it.copy(
-                        isSaved = true
-                    )
-                }
+                val customer = Customer(
+                    name = _state.value.textStateName,
+                    email = _state.value.textStateEmail,
+                    phone = _state.value.textStatePhone,
+                    address = _state.value.textStateAddress,
+                    isActive = _state.value.textStateIsActive,
+                    createdAt = _state.value.textStateCreatedAt,
+                    updatedAt = _state.value.textStateUpdatedAt
+                )
+
                 viewModelScope.launch(Dispatchers.IO) {
-                    repository.insertCustomer(
-                        Customer(
-                            name = _state.value.textStateName,
-                            email = _state.value.textStateEmail,
-                            phone = _state.value.textStatePhone,
-                            address = _state.value.textStateAddress,
-                            isActive = _state.value.textStateIsActive,
-                            createdAt = _state.value.textStateCreatedAt,
-                            updatedAt = _state.value.textStateUpdatedAt
+                    syncCustomerUseCase(customer)
+                    _state.update {
+                        it.copy(
+                            isSaved = true
                         )
-                    )
+                    }
+                    delay(1000)
+                    _state.update {
+                        it.clearState()
+                    }
                 }
             }
         }

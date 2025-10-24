@@ -8,6 +8,7 @@ import com.skegworks.mobilepos.data.firestore.FirestoreHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class VendorViewModel @Inject constructor(private val repository: VendorRepository) : ViewModel() {
+class VendorViewModel @Inject constructor(private val syncVendorUseCase: SyncVendorUseCase) : ViewModel() {
 
     private val _state = MutableStateFlow(VendorDetailsState())
     val state: StateFlow<VendorDetailsState> = _state.asStateFlow()
@@ -101,40 +102,31 @@ class VendorViewModel @Inject constructor(private val repository: VendorReposito
 
             VendorDetailsIntent.Save -> {
                 val currentState = _state.value
-//                saveData(currentState)
+                val vendor = Vendor(
+                    name = currentState.textStateName,
+                    address = currentState.textStateAddress,
+                    city = currentState.textStateCity,
+                    state = currentState.textStateState,
+                    country = currentState.textStateCountry,
+                    phone = currentState.textStatePhone,
+                    email = currentState.textStateEmail,
+                    zipCode = currentState.textStateZipCode,
+                    gst = currentState.textStateGST,
+                    gstPercentage = currentState.textStateGSTPercentage,
+                    currency = currentState.textStateCurrency,
+                )
 
                 viewModelScope.launch(Dispatchers.IO) {
-                    repository.insertVendor(
-                        Vendor(
-                            name = currentState.textStateName,
-                            address = currentState.textStateAddress,
-                            city = currentState.textStateCity,
-                            state = currentState.textStateState,
-                            country = currentState.textStateCountry,
-                            phone = currentState.textStatePhone,
-                            email = currentState.textStateEmail,
-                            zipCode = currentState.textStateZipCode,
-                            gst = currentState.textStateGST,
-                            gstPercentage = currentState.textStateGSTPercentage,
-                            currency = currentState.textStateCurrency,
+                    syncVendorUseCase(vendor)
+                    _state.update {
+                        it.copy(
+                            isSaved = true
                         )
-                    )
-                }
-                _state.update {
-                    it.copy(
-                        textStateName = "",
-                        textStateAddress = "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        isSaved = true
-                    )
+                    }
+                    delay(1000)
+                    _state.update {
+                        it.clearState()
+                    }
                 }
             }
         }

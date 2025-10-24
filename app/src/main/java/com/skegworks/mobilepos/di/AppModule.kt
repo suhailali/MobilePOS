@@ -43,16 +43,18 @@ class AppModule {
     @Provides
     @Singleton
     fun provideVendorRepository(
-        vendorDao: VendorDao
+        vendorDao: VendorDao,
+        syncData: SyncData
     ): VendorRepository {
-        return VendorRepositoryImpl(vendorDao)
+        return VendorRepositoryImpl(vendorDao, syncData)
     }
 
     @Provides
     @Singleton
     fun provideCustomerRepository(
-        customerDao: CustomerDao
+        customerDao: CustomerDao,
+        syncData: SyncData
     ): CustomerRepository {
-        return CustomerRepositoryImpl(customerDao)
+        return CustomerRepositoryImpl(customerDao, syncData)
     }
 }

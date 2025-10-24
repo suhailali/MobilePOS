@@ -12,4 +12,15 @@ interface VendorRepository {
     suspend fun updateVendor(vendor: Vendor)
 
     suspend fun deleteVendor(vendor: Vendor)
+
+    suspend fun syncVendor(
+        vendor: Vendor,
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    )
+
+    suspend fun syncAllCategories(
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    )
 }

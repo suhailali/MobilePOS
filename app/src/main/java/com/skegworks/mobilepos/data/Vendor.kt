@@ -20,7 +20,7 @@ data class Vendor(
     @ColumnInfo(name = "gst_percentage") val gstPercentage: String,
     @ColumnInfo val currency: String,
     @ColumnInfo(name = "is_active") val isActive: Boolean = false,
-    @ColumnInfo(name = "is_synced") val isSynced: Boolean = false,
+    @ColumnInfo(name = "is_synced") var isSynced: Boolean = false,
     @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis(),
     @ColumnInfo(name = "updated_at") val updatedAt: Long = System.currentTimeMillis()
 

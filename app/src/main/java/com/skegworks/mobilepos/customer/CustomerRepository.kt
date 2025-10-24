@@ -1,5 +1,6 @@
 package com.skegworks.mobilepos.customer
 
+import com.skegworks.mobilepos.data.Category
 import com.skegworks.mobilepos.data.Customer
 
 interface CustomerRepository {
@@ -12,4 +13,15 @@ interface CustomerRepository {
     suspend fun updateCustomer(customer: Customer)
 
     suspend fun deleteCustomer(customer: Customer)
+
+    suspend fun syncCustomer(
+        customer: Customer,
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    )
+
+    suspend fun syncAllCustomers(
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    )
 }
