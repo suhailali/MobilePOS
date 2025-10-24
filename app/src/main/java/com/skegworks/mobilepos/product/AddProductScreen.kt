@@ -123,6 +123,9 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         ReadOnlyTextField(textState = state.value.textStateSalePrice.toString(), "Sale Price") {
 
         }
+        ReadOnlyTextField(textState = state.value.textStateFinalRoundedOffPrice.toString(), "Final Round Off Price") {
+
+        }
 
         SimpleTextField(textState = state.value.textStateQuantity.toString(), "Quantity", ) {
             val quantity = it.toIntOrNull() ?: 0

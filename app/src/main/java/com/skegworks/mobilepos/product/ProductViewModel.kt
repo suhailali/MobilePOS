@@ -225,6 +225,8 @@ class ProductViewModel @Inject constructor(
                             cost = state.value.textStateCost,
                             salePriceWithoutGst = state.value.textStateSalePriceWithoutGst,
                             salePrice = state.value.textStateSalePrice,
+                            finalRoundedOffPrice = state.value.textStateFinalRoundedOffPrice,
+
 
                             isActive = state.value.textStateIsActive,
                             discountPercentage = state.value.textStateDiscountPercentage,
@@ -297,6 +299,7 @@ class ProductViewModel @Inject constructor(
         val salePriceBeforeGst = cost + (cost * saleMargin / 100)
         val outputGst = (salePriceBeforeGst * outputGstPercentage) / 100
         val salePrice = salePriceBeforeGst + outputGst
+        val finalRoundedOffPrice = salePrice.toInt()
 
         _state.update {
             it.copy(
@@ -305,6 +308,7 @@ class ProductViewModel @Inject constructor(
                 textStateSalePriceWithoutGst = salePriceBeforeGst,
                 textStateOutputGst = outputGst,
                 textStateSalePrice = salePrice,
+                textStateFinalRoundedOffPrice = finalRoundedOffPrice,
                 isSaved = false
             )
         }

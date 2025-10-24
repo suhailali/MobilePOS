@@ -28,6 +28,7 @@ data class AddProductState(
     val textStateSalePriceWithoutGst: Double = 0.0,
     val textStateOutputGst: Double = 0.0,
     val textStateSalePrice: Double = 0.0,
+    val textStateFinalRoundedOffPrice: Int = 0,
 
     val textStateHsnCode: String = "",
     val textStateQuantity: Int = 0,

@@ -7,8 +7,10 @@ import com.skegworks.mobilepos.data.Category
 import com.skegworks.mobilepos.product.AddProductState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.Delay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,11 +56,6 @@ class CategoryViewModel @Inject constructor(private val syncCategoryUseCase: Syn
             }
 
             is AddCategoryIntent.Save -> {
-                _state.update {
-                    it.copy(
-                        isSaved = true
-                    )
-                }
                 viewModelScope.launch(Dispatchers.IO) {
                     val category = Category(
                         name = state.value.textStateCategoryName,
@@ -67,6 +64,15 @@ class CategoryViewModel @Inject constructor(private val syncCategoryUseCase: Syn
                         updatedAt = state.value.textStateUpdatedAt,
                     )
                     syncCategoryUseCase(category)
+                    _state.update {
+                        it.copy(
+                            isSaved = true
+                        )
+                    }
+                    delay(1000)
+                    _state.update {
+                        it.clearState()
+                    }
                 }
             }
         }

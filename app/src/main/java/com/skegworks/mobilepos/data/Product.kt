@@ -27,6 +27,7 @@ data class Product(
     @ColumnInfo(name = "cost") val cost: Double,
     @ColumnInfo(name = "sale_price_without_gst") val salePriceWithoutGst: Double,
     @ColumnInfo(name = "sale_price") val salePrice: Double,
+    @ColumnInfo(name = "final_rounded_off_price") val finalRoundedOffPrice: Int,
 
     @ColumnInfo(name = "quantity") val quantity: Int,
     @ColumnInfo(name = "alert_quantity") val alertQuantity: Int,

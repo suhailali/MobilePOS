@@ -13,4 +13,8 @@ data class VendorDetailsState(
     val textStateGSTPercentage: String = "",
     val textStateCurrency: String = "Rupees",
     val isSaved: Boolean = false
-)
+) {
+    fun clearState(): VendorDetailsState {
+        return VendorDetailsState()
+    }
+}

@@ -8,4 +8,8 @@ data class AddCategoryState(
     val textStateCreatedAt: Long = System.currentTimeMillis(),
     val textStateUpdatedAt: Long = System.currentTimeMillis(),
     val isSaved: Boolean = false,
-)
+) {
+    fun clearState(): AddCategoryState {
+        return AddCategoryState()
+    }
+}
