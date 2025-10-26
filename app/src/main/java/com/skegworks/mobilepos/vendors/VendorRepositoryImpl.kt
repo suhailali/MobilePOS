@@ -26,7 +26,7 @@ class VendorRepositoryImpl @Inject constructor(private val vendorDao: VendorDao,
     }
 
     override suspend fun syncVendor(vendor: Vendor, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
-        syncData.syncData(
+        syncData.uploadData(
             name = "vendors",
             id = vendor.id,
             data = vendor,
@@ -41,7 +41,7 @@ class VendorRepositoryImpl @Inject constructor(private val vendorDao: VendorDao,
     ) {
         val vendors = vendorDao.getAllVendors()
         for (vendor in vendors) {
-            syncData.syncData(
+            syncData.uploadData(
                 name = "categories",
                 id = vendor.id,
                 data = vendor,

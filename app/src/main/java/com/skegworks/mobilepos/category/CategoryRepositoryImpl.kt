@@ -24,8 +24,12 @@ class CategoryRepositoryImpl(private val categoryDao: CategoryDao, private val s
         categoryDao.deleteCategory(category)
     }
 
+    override suspend fun deleteAllCategories() {
+        categoryDao.deleteAllCategories()
+    }
+
     override suspend fun syncCategory(category: Category, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
-        syncData.syncData(
+        syncData.uploadData(
             name = "categories",
             id = category.id,
             data = category,
@@ -40,7 +44,7 @@ class CategoryRepositoryImpl(private val categoryDao: CategoryDao, private val s
     ) {
         val categories = categoryDao.getAllCategories()
         for (category in categories) {
-            syncData.syncData(
+            syncData.uploadData(
                 name = "categories",
                 id = category.id,
                 data = category,

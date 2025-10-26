@@ -39,7 +39,7 @@ class ProductRepositoryImpl @Inject constructor(
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        syncData.syncData(
+        syncData.uploadData(
             name = "products",
             id = product.id,
             data = product,
@@ -54,7 +54,7 @@ class ProductRepositoryImpl @Inject constructor(
     ) {
         val products = productDao.getAllProducts()
         for (product in products) {
-            syncData.syncData(
+            syncData.uploadData(
                 name = "products",
                 id = product.id,
                 data = product,

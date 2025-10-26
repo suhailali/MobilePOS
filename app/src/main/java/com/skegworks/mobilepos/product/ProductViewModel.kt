@@ -25,6 +25,12 @@ class ProductViewModel @Inject constructor(
     private val generateBarCodeUseCase: GenerateBarCodeUseCase,
 ) : ViewModel() {
 
+    init {
+        viewModelScope.launch {
+            categoryRepository.deleteAllCategories()
+        }
+    }
+
     private val _state = MutableStateFlow(AddProductState())
     val state: StateFlow<AddProductState> = _state.asStateFlow()
 

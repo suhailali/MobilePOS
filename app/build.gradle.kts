@@ -58,6 +58,7 @@ dependencies {
     ksp(libs.androidx.room.compiler) // If using annotation processing tool (kapt)
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.navigation.compose)

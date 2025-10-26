@@ -3,10 +3,11 @@ package com.skegworks.mobilepos.data.firestore
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
+import kotlinx.coroutines.tasks.await
 
-class FirestoreHelper {
+class FirestoreHelper(val db: FirebaseFirestore = FirebaseFirestore.getInstance()) {
 
-    private val db = FirebaseFirestore.getInstance()
+//    private val db = FirebaseFirestore.getInstance()
 
     /** Add a document to a collection **/
     fun <T> addDocument(
@@ -63,5 +64,24 @@ class FirestoreHelper {
             .delete()
             .addOnSuccessListener { onSuccess() }
             .addOnFailureListener { e -> onFailure(e) }
+    }
+
+    suspend fun <T> addDocument(
+        collection: String,
+        id: String,
+        data: T,
+    ): Result<Unit> = runCatching {
+        val userRef = db.collection(collection)
+            .document(id)
+        userRef.set(data as Any, SetOptions.merge()).await()
+    }
+
+    /** Get all documents from a collection **/
+    suspend fun <T> getAllDocuments(
+        collection: String,
+        clazz: Class<T>
+    ): Result<List<T>> = runCatching {
+        val snapshot = db.collection(collection).get().await()
+        snapshot.documents.mapNotNull { it.toObject(clazz) }
     }
 }

@@ -17,7 +17,10 @@ import androidx.core.os.bundleOf
 import coil3.Bitmap
 import com.skegworks.mobilepos.barcode.ZxingBarcodeGenerator
 import com.skegworks.mobilepos.category.CategoryActivity
+import com.skegworks.mobilepos.category.CategoryDao
 import com.skegworks.mobilepos.customer.CustomerActivity
+import com.skegworks.mobilepos.data.Category
+import com.skegworks.mobilepos.databse.AppDatabase
 import com.skegworks.mobilepos.utils.files.FileHandlerImpl
 import com.skegworks.mobilepos.home.LandingScreen
 import com.skegworks.mobilepos.login.LoginActivity
@@ -114,6 +117,10 @@ class MainActivity : ComponentActivity() {
                                 bundle.putBoolean("isCreateUser", true)
                                 intent.putExtras(bundle)
                                 context.startActivity(intent)
+                            }
+
+                            "Coupons" -> {
+
                             }
                         }
                     }

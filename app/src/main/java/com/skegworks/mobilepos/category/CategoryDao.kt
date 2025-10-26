@@ -18,4 +18,11 @@ interface CategoryDao {
 
     @Delete
     suspend fun deleteCategory(category: Category)
+
+    suspend fun deleteAllCategories() {
+        val categories = getAllCategories()
+        for (category in categories) {
+            deleteCategory(category)
+        }
+    }
 }

@@ -13,6 +13,8 @@ interface CategoryRepository {
 
     suspend fun deleteCategory(category: Category)
 
+    suspend fun deleteAllCategories()
+
     suspend fun syncCategory(
         category: Category,
         onSuccess: (String) -> Unit,

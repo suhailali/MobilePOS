@@ -29,6 +29,9 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".splash.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.MobilePOS">
             <intent-filter>

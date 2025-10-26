@@ -32,7 +32,7 @@ class CustomerRepositoryImpl(
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        syncData.syncData(
+        syncData.uploadData(
             name = "customers",
             id = customer.id,
             data = customer,
@@ -47,7 +47,7 @@ class CustomerRepositoryImpl(
     ) {
         val customers = customerDao.getAllCategories()
         for (customer in customers) {
-            syncData.syncData(
+            syncData.uploadData(
                 name = "customers",
                 id = customer.id,
                 data = customer,
