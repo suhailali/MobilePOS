@@ -8,16 +8,18 @@ import com.skegworks.mobilepos.data.domain.Category
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.domain.Vendor
 import com.skegworks.mobilepos.data.domain.Customer
+import com.skegworks.mobilepos.data.local.CategoryEntity
+import com.skegworks.mobilepos.data.local.CustomerEntity
 import com.skegworks.mobilepos.product.ProductDao
 import com.skegworks.mobilepos.vendors.VendorDao
 
 @Database(
     entities = [
-        Category::class,
+        CategoryEntity::class,
         Product::class,
         Vendor::class,
-        Customer::class
-    ], version = 8
+        CustomerEntity::class
+    ], version = 9
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao

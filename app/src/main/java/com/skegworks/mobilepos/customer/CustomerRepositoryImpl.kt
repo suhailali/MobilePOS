@@ -1,6 +1,9 @@
 package com.skegworks.mobilepos.customer
 
 import com.skegworks.mobilepos.data.domain.Customer
+import com.skegworks.mobilepos.data.mapper.toDomain
+import com.skegworks.mobilepos.data.mapper.toEntity
+import com.skegworks.mobilepos.data.mapper.toFirestoreDto
 import com.skegworks.mobilepos.sync.SyncData
 
 class CustomerRepositoryImpl(
@@ -8,23 +11,25 @@ class CustomerRepositoryImpl(
     private val syncData: SyncData
 ) : CustomerRepository {
     override suspend fun insertCustomer(customer: Customer) {
-        customerDao.insertCustomer(customer)
+        customerDao.insertCustomer(customer.toEntity())
     }
 
     override suspend fun getCustomerById(id: String): Customer? {
-        return customerDao.getCustomerById(id)
+        return customerDao.getCustomerById(id)?.toDomain()
     }
 
     override suspend fun getAllCustomers(): List<Customer> {
-        return customerDao.getAllCustomers()
+        return customerDao.getAllCustomers().map {
+            it.toDomain()
+        }
     }
 
     override suspend fun updateCustomer(customer: Customer) {
-        customerDao.updateCustomer(customer)
+        customerDao.updateCustomer(customer.toEntity())
     }
 
     override suspend fun deleteCustomer(customer: Customer) {
-        customerDao.deleteCustomer(customer)
+        customerDao.deleteCustomer(customer.toEntity())
     }
 
     override suspend fun syncCustomer(
@@ -35,7 +40,7 @@ class CustomerRepositoryImpl(
         syncData.uploadData(
             name = "customers",
             id = customer.id,
-            data = customer,
+            data = customer.toFirestoreDto(),
             onSuccess = onSuccess,
             onFailure = onFailure
         )
@@ -45,6 +50,7 @@ class CustomerRepositoryImpl(
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
+        //TODO transform data if required
         val customers = customerDao.getAllCustomers()
         for (customer in customers) {
             syncData.uploadData(

@@ -1,21 +1,21 @@
 package com.skegworks.mobilepos.customer
 import androidx.room.*
-import com.skegworks.mobilepos.data.domain.Customer
+import com.skegworks.mobilepos.data.local.CustomerEntity
 
 @Dao
 interface CustomerDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCustomer(customer: Customer)
+    suspend fun insertCustomer(customer: CustomerEntity)
 
     @Query("SELECT * FROM customers WHERE id = :id")
-    suspend fun getCustomerById(id: String): Customer?
+    suspend fun getCustomerById(id: String): CustomerEntity?
 
     @Query("SELECT * FROM customers")
-    suspend fun getAllCustomers(): List<Customer>
+    suspend fun getAllCustomers(): List<CustomerEntity>
 
     @Update
-    suspend fun updateCustomer(customer: Customer)
+    suspend fun updateCustomer(customer: CustomerEntity)
 
     @Delete
-    suspend fun deleteCustomer(customer: Customer)
+    suspend fun deleteCustomer(customer: CustomerEntity)
 }

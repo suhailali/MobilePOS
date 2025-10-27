@@ -2,7 +2,8 @@ package com.skegworks.mobilepos.customer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.skegworks.mobilepos.data.Customer
+import com.skegworks.mobilepos.data.domain.Customer
+import com.skegworks.mobilepos.utils.UUIDGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +15,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class CustomerViewModel @Inject constructor(private val syncCustomerUseCase: SyncCustomerUseCase) :
+class CustomerViewModel @Inject constructor(
+    private val syncCustomerUseCase: SyncCustomerUseCase,
+    private val uuidGenerator: UUIDGenerator
+) :
     ViewModel() {
 
     private val _state = MutableStateFlow(AddCustomerState())
@@ -72,7 +76,9 @@ class CustomerViewModel @Inject constructor(private val syncCustomerUseCase: Syn
                     address = _state.value.textStateAddress,
                     isActive = _state.value.textStateIsActive,
                     createdAt = _state.value.textStateCreatedAt,
-                    updatedAt = _state.value.textStateUpdatedAt
+                    updatedAt = _state.value.textStateUpdatedAt,
+                    isSynced = true,
+                    id = uuidGenerator.generateUUID()
                 )
 
                 viewModelScope.launch(Dispatchers.IO) {

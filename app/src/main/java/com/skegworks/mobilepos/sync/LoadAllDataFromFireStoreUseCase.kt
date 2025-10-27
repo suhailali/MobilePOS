@@ -7,6 +7,7 @@ import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.domain.Vendor
 import com.skegworks.mobilepos.data.mapper.toDomain
 import com.skegworks.mobilepos.data.remote.firestore.CategoryFireStoreDto
+import com.skegworks.mobilepos.data.remote.firestore.CustomerFireStoreDto
 import com.skegworks.mobilepos.product.ProductRepository
 import com.skegworks.mobilepos.vendors.VendorRepository
 import kotlinx.coroutines.CoroutineScope
@@ -93,10 +94,10 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     }
 
     private suspend fun getCustomers() {
-        val result = syncDataWithFireStore.downloadAll("customers", Customer::class.java)
+        val result = syncDataWithFireStore.downloadAll("customers", CustomerFireStoreDto::class.java)
         if (result.isSuccess) {
             for (customer in result.getOrNull().orEmpty()) {
-                customerRepository.insertCustomer(customer)
+                customerRepository.insertCustomer(customer.toDomain())
             }
         } else {
             throw result.exceptionOrNull() ?: Exception("Unknown error while loading customers")
