@@ -10,14 +10,16 @@ import com.skegworks.mobilepos.data.domain.Vendor
 import com.skegworks.mobilepos.data.domain.Customer
 import com.skegworks.mobilepos.data.local.CategoryEntity
 import com.skegworks.mobilepos.data.local.CustomerEntity
+import com.skegworks.mobilepos.data.local.ProductEntity
+import com.skegworks.mobilepos.data.local.VendorEntity
 import com.skegworks.mobilepos.product.ProductDao
 import com.skegworks.mobilepos.vendors.VendorDao
 
 @Database(
     entities = [
         CategoryEntity::class,
-        Product::class,
-        Vendor::class,
+        ProductEntity::class,
+        VendorEntity::class,
         CustomerEntity::class
     ], version = 9
 )

@@ -1,6 +1,9 @@
 package com.skegworks.mobilepos.product
 
 import com.skegworks.mobilepos.data.domain.Product
+import com.skegworks.mobilepos.data.mapper.toDomain
+import com.skegworks.mobilepos.data.mapper.toEntity
+import com.skegworks.mobilepos.data.mapper.toFirestoreDto
 import com.skegworks.mobilepos.sync.SyncData
 import javax.inject.Inject
 
@@ -9,7 +12,7 @@ class ProductRepositoryImpl @Inject constructor(
     private val syncData: SyncData
 ) : ProductRepository {
     override suspend fun insertProduct(product: Product) {
-        productDao.insertProduct(product)
+        productDao.insertProduct(product.toEntity())
     }
 
     override suspend fun updateProduct(product: Product) {
@@ -27,7 +30,9 @@ class ProductRepositoryImpl @Inject constructor(
 
     override suspend fun getAllProducts(): List<Product> {
         // Implementation here
-        return productDao.getAllProducts()
+        return productDao.getAllProducts().map {
+            it.toDomain()
+        }
     }
 
     override suspend fun getMaxId(): Int? {
@@ -42,7 +47,7 @@ class ProductRepositoryImpl @Inject constructor(
         syncData.uploadData(
             name = "products",
             id = product.id,
-            data = product,
+            data = product.toFirestoreDto(),
             onSuccess = onSuccess,
             onFailure = onFailure
         )
@@ -52,6 +57,7 @@ class ProductRepositoryImpl @Inject constructor(
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
+        //TODO do transformation if required
         val products = productDao.getAllProducts()
         for (product in products) {
             syncData.uploadData(

@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.vendors
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.data.domain.Vendor
+import com.skegworks.mobilepos.utils.UUIDGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +15,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class VendorViewModel @Inject constructor(private val syncVendorUseCase: SyncVendorUseCase) : ViewModel() {
+class VendorViewModel @Inject constructor(
+    private val syncVendorUseCase: SyncVendorUseCase,
+    private val uuidGenerator: UUIDGenerator
+) : ViewModel() {
 
     private val _state = MutableStateFlow(VendorDetailsState())
     val state: StateFlow<VendorDetailsState> = _state.asStateFlow()
@@ -112,6 +116,11 @@ class VendorViewModel @Inject constructor(private val syncVendorUseCase: SyncVen
                     gst = currentState.textStateGST,
                     gstPercentage = currentState.textStateGSTPercentage,
                     currency = currentState.textStateCurrency,
+                    isSynced = true,
+                    isActive = true,
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = System.currentTimeMillis(),
+                    id = uuidGenerator.generateUUID()
                 )
 
                 viewModelScope.launch(Dispatchers.IO) {
@@ -129,32 +138,6 @@ class VendorViewModel @Inject constructor(private val syncVendorUseCase: SyncVen
             }
         }
     }
-
-    private fun saveData(currentState: VendorDetailsState) {
-        // do the operation
-        val vendorDetails = mapOf(
-            "Name" to currentState.textStateName,
-            "Address" to currentState.textStateAddress,
-            "City" to currentState.textStateCity,
-            "State" to currentState.textStateState,
-            "Phone" to currentState.textStatePhone,
-            "Email" to currentState.textStateEmail,
-            "ZipCode" to currentState.textStateZipCode,
-            "GST" to currentState.textStateGST,
-            "GST" to currentState.textStateGSTPercentage,
-            "Currency" to currentState.textStateCurrency,
-            )
-
-
-//        addVendorToFirebase(vendorDetails)
-    }
-
-//    private fun addVendorToFirebase(vendor: Map<String, String>) {
-//        val firestore = FirestoreHelper()
-//        firestore.addDocument("vendors", vendor,
-//            onSuccess = { id -> Log.d("Firestore", "Added with ID: $id") },
-//            onFailure = { e -> Log.e("Firestore", "Error: $e") })
-//    }
 }
 
 

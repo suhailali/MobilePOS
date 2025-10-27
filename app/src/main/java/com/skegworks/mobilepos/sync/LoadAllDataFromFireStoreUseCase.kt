@@ -2,12 +2,11 @@ package com.skegworks.mobilepos.sync
 
 import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.customer.CustomerRepository
-import com.skegworks.mobilepos.data.domain.Customer
-import com.skegworks.mobilepos.data.domain.Product
-import com.skegworks.mobilepos.data.domain.Vendor
 import com.skegworks.mobilepos.data.mapper.toDomain
 import com.skegworks.mobilepos.data.remote.firestore.CategoryFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CustomerFireStoreDto
+import com.skegworks.mobilepos.data.remote.firestore.ProductFireStoreDto
+import com.skegworks.mobilepos.data.remote.firestore.VendorFireStoreDto
 import com.skegworks.mobilepos.product.ProductRepository
 import com.skegworks.mobilepos.vendors.VendorRepository
 import kotlinx.coroutines.CoroutineScope
@@ -83,10 +82,10 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     }
 
     private suspend fun getProducts() {
-        val result = syncDataWithFireStore.downloadAll("products", Product::class.java)
+        val result = syncDataWithFireStore.downloadAll("products", ProductFireStoreDto::class.java)
         if (result.isSuccess) {
             for (product in result.getOrNull().orEmpty()) {
-                productRepository.insertProduct(product)
+                productRepository.insertProduct(product.toDomain())
             }
         } else {
             throw result.exceptionOrNull() ?: Exception("Unknown error while loading product")
@@ -105,10 +104,10 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     }
 
     private suspend fun getVendors() {
-        val result = syncDataWithFireStore.downloadAll("vendors", Vendor::class.java)
+        val result = syncDataWithFireStore.downloadAll("vendors", VendorFireStoreDto::class.java)
         if (result.isSuccess) {
             for (vendor in result.getOrNull().orEmpty()) {
-                vendorRepository.insertVendor(vendor)
+                vendorRepository.insertVendor(vendor.toDomain())
             }
         } else {
             throw result.exceptionOrNull() ?: Exception("Unknown error while loading vendor")

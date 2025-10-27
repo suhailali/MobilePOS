@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.data.domain.Product
+import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.vendors.VendorRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -23,6 +24,7 @@ class ProductViewModel @Inject constructor(
     private val vendorRepository: VendorRepository,
     private val generateSkuUseCase: GenerateSkuUseCase,
     private val generateBarCodeUseCase: GenerateBarCodeUseCase,
+    private val uuidGenerator: UUIDGenerator
 ) : ViewModel() {
 
     init {
@@ -229,9 +231,11 @@ class ProductViewModel @Inject constructor(
 
 
                         isActive = state.value.textStateIsActive,
+                        isSynced = true,
                         discountPercentage = state.value.textStateDiscountPercentage,
                         createdAt = state.value.textStateCreatedAt,
-                        updatedAt = state.value.textStateUpdatedAt
+                        updatedAt = state.value.textStateUpdatedAt,
+                        id = uuidGenerator.generateUUID()
                     )
                     syncProductUseCase(product)
                     _state.update {
