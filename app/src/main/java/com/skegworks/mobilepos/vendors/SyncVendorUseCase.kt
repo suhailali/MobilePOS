@@ -1,7 +1,7 @@
 package com.skegworks.mobilepos.vendors
 
 import android.util.Log
-import com.skegworks.mobilepos.data.Vendor
+import com.skegworks.mobilepos.data.domain.Vendor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

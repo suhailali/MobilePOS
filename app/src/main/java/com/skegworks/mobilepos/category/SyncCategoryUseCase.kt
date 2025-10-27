@@ -1,7 +1,7 @@
 package com.skegworks.mobilepos.category
 
 import android.util.Log
-import com.skegworks.mobilepos.data.Category
+import com.skegworks.mobilepos.data.domain.Category
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

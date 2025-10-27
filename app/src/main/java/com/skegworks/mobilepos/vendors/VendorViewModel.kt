@@ -1,10 +1,8 @@
 package com.skegworks.mobilepos.vendors
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.skegworks.mobilepos.data.Vendor
-import com.skegworks.mobilepos.data.firestore.FirestoreHelper
+import com.skegworks.mobilepos.data.domain.Vendor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers

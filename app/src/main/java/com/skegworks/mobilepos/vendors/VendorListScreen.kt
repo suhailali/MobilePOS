@@ -16,7 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
-import com.skegworks.mobilepos.data.Vendor
+import com.skegworks.mobilepos.data.domain.Vendor
 
 
 @Composable

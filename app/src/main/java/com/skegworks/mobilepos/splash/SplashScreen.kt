@@ -19,6 +19,7 @@ import kotlinx.coroutines.delay
 fun SplashScreen(modifier: Modifier, viewModel: SplashViewModel, onNavigateToMain: () -> Unit) {
     val state by viewModel.uiState.collectAsState()
 
+
     LaunchedEffect(state) {
         when (state) {
             is SplashUiState.Success -> {
@@ -31,6 +32,11 @@ fun SplashScreen(modifier: Modifier, viewModel: SplashViewModel, onNavigateToMai
             else -> Unit
         }
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadAllData()
+    }
+
     Column {
         SplashLogo()
         Box(

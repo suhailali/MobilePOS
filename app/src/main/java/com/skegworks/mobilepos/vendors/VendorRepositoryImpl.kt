@@ -1,6 +1,6 @@
 package com.skegworks.mobilepos.vendors
 
-import com.skegworks.mobilepos.data.Vendor
+import com.skegworks.mobilepos.data.domain.Vendor
 import com.skegworks.mobilepos.sync.SyncData
 import javax.inject.Inject
 

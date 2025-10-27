@@ -1,6 +1,6 @@
 package com.skegworks.mobilepos.customer
 import androidx.room.*
-import com.skegworks.mobilepos.data.Customer
+import com.skegworks.mobilepos.data.domain.Customer
 
 @Dao
 interface CustomerDao {
@@ -11,7 +11,7 @@ interface CustomerDao {
     suspend fun getCustomerById(id: String): Customer?
 
     @Query("SELECT * FROM customers")
-    suspend fun getAllCategories(): List<Customer>
+    suspend fun getAllCustomers(): List<Customer>
 
     @Update
     suspend fun updateCustomer(customer: Customer)

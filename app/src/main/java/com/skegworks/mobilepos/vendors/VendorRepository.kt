@@ -1,6 +1,6 @@
 package com.skegworks.mobilepos.vendors
 
-import com.skegworks.mobilepos.data.Vendor
+import com.skegworks.mobilepos.data.domain.Vendor
 
 interface VendorRepository {
     suspend fun insertVendor(vendor: Vendor)

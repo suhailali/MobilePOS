@@ -1,7 +1,7 @@
 package com.skegworks.mobilepos.product
 
-import com.skegworks.mobilepos.data.Category
-import com.skegworks.mobilepos.data.Vendor
+import com.skegworks.mobilepos.data.domain.Category
+import com.skegworks.mobilepos.data.domain.Vendor
 
 sealed class AddProductIntent {
     data class UpdateVendor(val vendor: Vendor): AddProductIntent()

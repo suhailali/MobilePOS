@@ -1,4 +1,4 @@
-package com.skegworks.mobilepos.data.firestore
+package com.skegworks.mobilepos.data.remote.firestore
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot

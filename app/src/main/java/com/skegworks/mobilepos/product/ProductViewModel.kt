@@ -3,7 +3,7 @@ package com.skegworks.mobilepos.product
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.category.CategoryRepository
-import com.skegworks.mobilepos.data.Product
+import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.vendors.VendorRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject

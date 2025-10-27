@@ -2,7 +2,7 @@ package com.skegworks.mobilepos.di
 
 import com.skegworks.mobilepos.barcode.BarcodeGenerator
 import com.skegworks.mobilepos.barcode.ZxingBarcodeGenerator
-import com.skegworks.mobilepos.data.firestore.FirestoreHelper
+import com.skegworks.mobilepos.data.remote.firestore.FirestoreHelper
 import com.skegworks.mobilepos.sku.SkuGenerator
 import com.skegworks.mobilepos.sku.SkuGeneratorImpl
 import com.skegworks.mobilepos.sync.SyncData

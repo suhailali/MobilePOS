@@ -1,6 +1,6 @@
 package com.skegworks.mobilepos.sync
 
-import com.skegworks.mobilepos.data.firestore.FirestoreHelper
+import com.skegworks.mobilepos.data.remote.firestore.FirestoreHelper
 import javax.inject.Inject
 
 class SyncDataWithFireStore @Inject constructor(private val firestoreHelper: FirestoreHelper) :

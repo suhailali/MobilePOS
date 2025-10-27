@@ -1,7 +1,7 @@
 package com.skegworks.mobilepos.customer
 
 import android.util.Log
-import com.skegworks.mobilepos.data.Customer
+import com.skegworks.mobilepos.data.domain.Customer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

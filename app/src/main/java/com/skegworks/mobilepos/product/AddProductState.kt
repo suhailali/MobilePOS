@@ -1,9 +1,9 @@
 package com.skegworks.mobilepos.product
 
 import android.graphics.Bitmap
-import com.skegworks.mobilepos.data.Category
-import com.skegworks.mobilepos.data.Product
-import com.skegworks.mobilepos.data.Vendor
+import com.skegworks.mobilepos.data.domain.Category
+import com.skegworks.mobilepos.data.domain.Product
+import com.skegworks.mobilepos.data.domain.Vendor
 
 data class AddProductState(
     val textStateCategoryId: String = "",

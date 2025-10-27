@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.skegworks.mobilepos.data.Vendor
+import com.skegworks.mobilepos.data.domain.Vendor
 
 @Dao
 interface VendorDao {

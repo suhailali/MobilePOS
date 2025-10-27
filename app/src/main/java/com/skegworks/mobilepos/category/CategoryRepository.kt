@@ -1,6 +1,6 @@
 package com.skegworks.mobilepos.category
 
-import com.skegworks.mobilepos.data.Category
+import com.skegworks.mobilepos.data.domain.Category
 
 interface CategoryRepository {
     suspend fun insertCategory(category: Category)

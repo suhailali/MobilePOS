@@ -1,14 +1,13 @@
 package com.skegworks.mobilepos.customer
 
-import com.skegworks.mobilepos.data.Category
-import com.skegworks.mobilepos.data.Customer
+import com.skegworks.mobilepos.data.domain.Customer
 
 interface CustomerRepository {
     suspend fun insertCustomer(customer: Customer)
 
     suspend fun getCustomerById(id: String) : Customer?
 
-    suspend fun getAllCategories(): List<Customer>
+    suspend fun getAllCustomers(): List<Customer>
 
     suspend fun updateCustomer(customer: Customer)
 

@@ -1,6 +1,6 @@
 package com.skegworks.mobilepos.product
 
-import com.skegworks.mobilepos.data.Product
+import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.sync.SyncData
 import javax.inject.Inject
 

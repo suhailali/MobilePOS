@@ -4,10 +4,10 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.skegworks.mobilepos.category.CategoryDao
 import com.skegworks.mobilepos.customer.CustomerDao
-import com.skegworks.mobilepos.data.Category
-import com.skegworks.mobilepos.data.Product
-import com.skegworks.mobilepos.data.Vendor
-import com.skegworks.mobilepos.data.Customer
+import com.skegworks.mobilepos.data.domain.Category
+import com.skegworks.mobilepos.data.domain.Product
+import com.skegworks.mobilepos.data.domain.Vendor
+import com.skegworks.mobilepos.data.domain.Customer
 import com.skegworks.mobilepos.product.ProductDao
 import com.skegworks.mobilepos.vendors.VendorDao
 

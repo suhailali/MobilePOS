@@ -1,6 +1,6 @@
 package com.skegworks.mobilepos.customer
 
-import com.skegworks.mobilepos.data.Customer
+import com.skegworks.mobilepos.data.domain.Customer
 import com.skegworks.mobilepos.sync.SyncData
 
 class CustomerRepositoryImpl(
@@ -15,8 +15,8 @@ class CustomerRepositoryImpl(
         return customerDao.getCustomerById(id)
     }
 
-    override suspend fun getAllCategories(): List<Customer> {
-        return customerDao.getAllCategories()
+    override suspend fun getAllCustomers(): List<Customer> {
+        return customerDao.getAllCustomers()
     }
 
     override suspend fun updateCustomer(customer: Customer) {
@@ -45,7 +45,7 @@ class CustomerRepositoryImpl(
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     ) {
-        val customers = customerDao.getAllCategories()
+        val customers = customerDao.getAllCustomers()
         for (customer in customers) {
             syncData.uploadData(
                 name = "customers",

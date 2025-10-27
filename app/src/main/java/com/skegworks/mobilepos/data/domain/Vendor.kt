@@ -1,4 +1,4 @@
-package com.skegworks.mobilepos.data
+package com.skegworks.mobilepos.data.domain
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -1,6 +1,6 @@
 package com.skegworks.mobilepos.product
 
-import com.skegworks.mobilepos.data.Product
+import com.skegworks.mobilepos.data.domain.Product
 
 interface ProductRepository {
     suspend fun insertProduct(product: Product)

@@ -1,25 +1,24 @@
 package com.skegworks.mobilepos.category
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.skegworks.mobilepos.data.Category
-import com.skegworks.mobilepos.product.AddProductState
+import com.skegworks.mobilepos.data.domain.Category
+import com.skegworks.mobilepos.utils.UUIDGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
-import kotlinx.coroutines.Delay
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @HiltViewModel
-class CategoryViewModel @Inject constructor(private val syncCategoryUseCase: SyncCategoryUseCase) :
+class CategoryViewModel @Inject constructor(
+    private val syncCategoryUseCase: SyncCategoryUseCase,
+    private val uuidGenerator: UUIDGenerator
+) :
     ViewModel() {
 
     private val _state = MutableStateFlow(AddCategoryState())
@@ -62,6 +61,9 @@ class CategoryViewModel @Inject constructor(private val syncCategoryUseCase: Syn
                         description = state.value.textStateDescription,
                         createdAt = state.value.textStateCreatedAt,
                         updatedAt = state.value.textStateUpdatedAt,
+                        isActive = true,
+                        isSynced = true,
+                        id = uuidGenerator.generateUUID()
                     )
                     syncCategoryUseCase(category)
                     _state.update {
