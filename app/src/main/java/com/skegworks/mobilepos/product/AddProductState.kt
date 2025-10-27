@@ -42,7 +42,7 @@ data class AddProductState(
     val isSaved: Boolean = false,
     val categories: List<Category> = emptyList(),
     val vendors: List<Vendor> = emptyList(),
-    val gstPercentages: List<Double> = listOf(0.0, 1.0, 2.5, 5.0, 6.0, 18.0, 28.0),
+    val gstPercentages: List<Double> = listOf(0.0, 1.0, 2.5, 5.0, 6.0, 12.0, 18.0, 28.0),
     val saleMargins: List<Int> = listOf(0, 5, 10, 15, 20, 25, 30, 35, 40, 43, 45, 48, 50, 53, 55, 58, 60, 65, 70, 75, 80, 85, 90, 95, 100),
     val isLoading: Boolean = false,
     val barcodeBitmap: Bitmap? = null,
