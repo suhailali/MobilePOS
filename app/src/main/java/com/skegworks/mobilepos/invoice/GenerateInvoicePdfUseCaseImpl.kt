@@ -25,8 +25,8 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
                 isAntiAlias = true
                 textSize = 14f
             }
-            val bold = Paint(paint).apply { textSize = 12f; isFakeBoldText = true }
-            val small = Paint(paint).apply { textSize = 10f }
+            val bold = Paint(paint).apply { textSize = 10f; isFakeBoldText = true }
+            val small = Paint(paint).apply { textSize = 8f }
 
             var y = 20f
 
@@ -36,28 +36,38 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
             canvas.drawText(title, (pageWidthPt - titleWidth) / 2f, y, bold)
             y += 20f
 
+            val rightIndex = pageWidthPt - 100f
+
 // Store details
-            canvas.drawText(invoice.business.name, 10f, y, paint);
+            canvas.drawText(invoice.business.name, 10f, y, paint)
+            canvas.drawText("Invoice No.: " + invoice.invoiceNumber, rightIndex - 20, y, bold)
             y += 14f
             drawMultilineText(canvas, invoice.business.address, 10f, y, small, pageWidthPt - 20)
+            canvas.drawText("Date: " + invoice.invoiceDate, rightIndex, y, small)
             y += 30f
-            canvas.drawText("Contact: ${invoice.business.mobile}", 10f, y, small); y += 12f
-            canvas.drawText("GSTIN: ${invoice.business.gstNumber}", 10f, y, small); y += 12f
-            canvas.drawText("Email: ${invoice.business.email}", 10f, y, small); y += 18f
+            canvas.drawText("Contact: ${invoice.business.mobile}", 10f, y, small)
+            canvas.drawText("Customer: ${invoice.customer.name}", rightIndex, y, small)
+            y += 12f
+            canvas.drawText("GSTIN: ${invoice.business.gstNumber}", 10f, y, small)
+            canvas.drawText("Phone: ${invoice.customer.phone}", rightIndex, y, small)
+            y += 12f
+            canvas.drawText("Email: ${invoice.business.email}", 10f, y, small)
+            y += 18f
 
 // Customer
-            canvas.drawText("Customer: ${invoice.customer.name}", 10f, y, small); y += 12f
-            canvas.drawText("Phone: ${invoice.customer.phone}", 10f, y, small); y += 18f
+
 
 // Table heading
             val startX = 10f
-            val colSnoW = 30f
-            val colItemW = 150f
-            val colHsnW = 60f
+            val colSnoW = 20f
+            val colItemW = 120f
+            val colHsnW = 50f
             val colRateW = 50f
-            val colQtyW = 40f
+            val colQtyW = 30f
+            val colDiscW = 40f
             val colGstW = 40f
-            val colAmtW = 60f
+
+            val totalW = 10 + 4 + 30 + 4 + 140 + 4 + 60 + 4 + 50 + 4 + 40 + 4 + 40 + 4 + 40 + 4 + 10
 
 // Draw header background line
             paint.style = Paint.Style.STROKE
@@ -69,8 +79,9 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
             canvas.drawText("HSN", startX + colSnoW + colItemW + 4, headerY + 12, small)
             canvas.drawText("Rate", startX + colSnoW + colItemW + colHsnW + 4, headerY + 12, small)
             canvas.drawText("Qty", startX + colSnoW + colItemW + colHsnW + colRateW + 4, headerY + 12, small)
-            canvas.drawText("GST", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + 4, headerY + 12, small)
-            canvas.drawText("Amount", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colGstW + 4, headerY + 12, small)
+            canvas.drawText("Disc.", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + 4, headerY + 12, small)
+            canvas.drawText("GST", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + 4, headerY + 12, small)
+            canvas.drawText("Amount", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + colGstW + 4, headerY + 12, small)
 
             y += 20f
 
@@ -82,12 +93,14 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
                 canvas.drawText(index.toString(), startX + 4, rowY + 12, small)
 // Wrap item name if too long
                 val itemName = item.title
-                canvas.drawText(itemName, startX + colSnoW + 4, rowY + 12, small)
+//                canvas.drawText(itemName + "afcgh uuytff jjuy", startX + colSnoW + 4, rowY + 12, small)
+                drawMultilineText(canvas, itemName + "afcgh uuytff jjuy", startX + colSnoW + 4, rowY + 12, small, pageWidthPt/4  )
                 canvas.drawText(item.hsnCode, startX + colSnoW + colItemW + 4, rowY + 12, small)
                 canvas.drawText(formatAmount(item.finalRoundedOffPrice), startX + colSnoW + colItemW + colHsnW + 4, rowY + 12, small)
                 canvas.drawText(item.quantity.toString(), startX + colSnoW + colItemW + colHsnW + colRateW + 4, rowY + 12, small)
-                canvas.drawText(formatAmount(item.outputGst), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + 4, rowY + 12, small)
-                canvas.drawText(formatAmount(item.quantity * item.finalRoundedOffPrice), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colGstW + 4, rowY + 12, small)
+                canvas.drawText("100.00", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW +4, rowY + 12, small)
+                canvas.drawText(formatAmount(item.outputGst), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW +4, rowY + 12, small)
+                canvas.drawText(formatAmount(item.quantity * item.finalRoundedOffPrice), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + colGstW + 4, rowY + 12, small)
 
                 y += 18f
                 index++
@@ -103,12 +116,12 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
             val finalPrice = total
 
             val rightX = pageWidthPt - 10f
-            val labelX = rightX - 120f
+            val labelX = rightX - 140f
 
             canvas.drawText("Total:", labelX, y + 12f, small)
             canvas.drawText(formatAmount(total), rightX - 50f, y + 12f, small)
             y += 14f
-            canvas.drawText("Discounted Amount:", labelX, y + 12f, small)
+            canvas.drawText("Discount:", labelX, y + 12f, small)
             canvas.drawText(formatAmount(totalDiscount), rightX - 50f, y + 12f, small)
             y += 14f
             canvas.drawText("Final Price:", labelX, y + 12f, bold)
