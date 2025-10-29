@@ -1,5 +1,6 @@
 package com.skegworks.mobilepos.pos
 
+import android.graphics.pdf.PdfDocument
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.data.domain.Product
 import kotlin.time.Clock
@@ -16,4 +17,6 @@ data class POSState @OptIn(ExperimentalTime::class) constructor(
     val totalPrice: Double = 0.0,
     val totalDiscount: Double = 0.0,
     val finalPriceToPay: Double = 0.0,
+    val invoicePDF: PdfDocument? = null,
+    val pdfGenerated: Boolean = false
 )

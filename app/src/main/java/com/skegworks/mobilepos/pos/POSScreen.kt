@@ -13,8 +13,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.product.ProductListRow
@@ -22,6 +24,17 @@ import com.skegworks.mobilepos.product.ProductListRow
 @Composable
 fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigator) {
     val state = viewModel.state.collectAsState()
+
+    val context = LocalContext.current
+
+    LaunchedEffect(state.value.pdfGenerated) {
+        if (state.value.pdfGenerated) {
+            state.value.invoicePDF?.let {
+                viewModel.printPdf(context, it, "Invoice")
+            }
+        }
+    }
+
     val scrollState = rememberScrollState()
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier.height(3.dp))
