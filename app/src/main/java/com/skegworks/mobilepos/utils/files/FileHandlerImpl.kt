@@ -16,7 +16,7 @@ class FileHandlerImpl @Inject constructor(private val context: Context): FileHan
             put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
 
             // 👇 This automatically creates Downloads/MyApp folder
-            put(MediaStore.Downloads.RELATIVE_PATH, "Download/MyApp/")
+            put(MediaStore.Downloads.RELATIVE_PATH, "Download/POSMobile/")
         }
 
         val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)

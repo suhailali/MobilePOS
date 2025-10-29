@@ -29,7 +29,10 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("POS")
-                Button(onClick = { navigator.navigateToAddItem() }) {
+                Button(onClick = {
+                    viewModel.handleIntent(POSIntent.AddProduct)
+                    //navigator.navigateToAddItem()
+                }) {
                     Text("BarCode")
                 }
 
@@ -62,7 +65,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
         Text("To Pay ${state.value.finalPriceToPay}")
 
         Button(onClick = {
-
+            viewModel.handleIntent(POSIntent.PrintInvoice)
         }) {
             Text("Print")
         }

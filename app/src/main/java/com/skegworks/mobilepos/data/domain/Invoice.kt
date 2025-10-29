@@ -4,10 +4,9 @@ data class Invoice(
     val invoiceNumber: String,
     val invoiceDate: String,
     val totalPrice: Double,
-    val items: List<Product>,
+    val items: List<InvoiceItem>,
     val totalDiscount: Double,
     val finalPrice: Double,
-    val customerID: String,
-    val customerName: String,
-    val customerNumber: String,
+    val customer: Customer,
+    val business: Business,
 )

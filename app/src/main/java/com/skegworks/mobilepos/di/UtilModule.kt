@@ -1,5 +1,6 @@
 package com.skegworks.mobilepos.di
 
+import android.content.Context
 import com.skegworks.mobilepos.barcode.BarcodeGenerator
 import com.skegworks.mobilepos.barcode.ZxingBarcodeGenerator
 import com.skegworks.mobilepos.data.remote.firestore.FirestoreHelper
@@ -9,9 +10,12 @@ import com.skegworks.mobilepos.sync.SyncData
 import com.skegworks.mobilepos.sync.SyncDataWithFireStore
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.UUIDGeneratorImpl
+import com.skegworks.mobilepos.utils.files.FileHandler
+import com.skegworks.mobilepos.utils.files.FileHandlerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -44,5 +48,10 @@ class UtilModule {
     @Provides
     fun provideUUIDGenerator(): UUIDGenerator {
         return UUIDGeneratorImpl()
+    }
+
+    @Provides
+    fun providesFileHandler(@ApplicationContext context: Context): FileHandler {
+        return FileHandlerImpl(context)
     }
 }
