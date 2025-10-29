@@ -22,6 +22,7 @@ import com.skegworks.mobilepos.utils.files.FileHandlerImpl
 import com.skegworks.mobilepos.home.LandingScreen
 import com.skegworks.mobilepos.login.LoginActivity
 import com.skegworks.mobilepos.pdf.PdfGeneratorImpl
+import com.skegworks.mobilepos.pos.POSActivity
 import com.skegworks.mobilepos.product.GenerateBarCodeUseCase
 import com.skegworks.mobilepos.product.ProductActivity
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
@@ -116,8 +117,9 @@ class MainActivity : ComponentActivity() {
                                 context.startActivity(intent)
                             }
 
-                            "Coupons" -> {
-
+                            "POS" -> {
+                                val intent = Intent(context, POSActivity::class.java)
+                                context.startActivity(intent)
                             }
                         }
                     }

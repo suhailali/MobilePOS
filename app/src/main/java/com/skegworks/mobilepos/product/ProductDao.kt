@@ -17,6 +17,9 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE id = :id")
     suspend fun getProductById(id: String): ProductEntity?
 
+    @Query("SELECT * FROM products WHERE sku = :sku")
+    suspend fun getProductBySku(sku: String): ProductEntity?
+
     @Query("SELECT * FROM products")
     suspend fun getAllProducts(): List<ProductEntity>
 
