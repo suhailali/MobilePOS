@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.data.mapper.toInvoiceItem
 import com.skegworks.mobilepos.print.SeznikPrinterManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -44,7 +45,23 @@ class POSViewModel @Inject constructor(
                         searchingProduct = false,
                         productFound = true,
                         product = product,
-                        addedProducts = it.addedProducts + product
+                        invoiceItems = it.invoiceItems + product.toInvoiceItem()
+                    )
+                }
+
+                var totalPrice = 0
+                var discounts = 0.0
+                _state.value.invoiceItems.forEach{ item ->
+                    totalPrice = totalPrice + item.finalRoundedOffPrice
+                    discounts = discounts + item.discountedAmount
+                }
+
+                val finalPriceToPay = totalPrice - discounts
+                _state.update {
+                    it.copy(
+                        totalPrice = totalPrice.toDouble(),
+                        totalDiscount = discounts,
+                        finalPriceToPay = finalPriceToPay
                     )
                 }
             }
