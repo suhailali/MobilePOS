@@ -302,7 +302,7 @@ class ProductViewModel @Inject constructor(
         val saleMargin = state.value.textStateSaleMargin
 
         val inputGst = (itemPrice * inputGstPercentage) / 100
-        val cost = itemPrice + inputGst
+        val cost = itemPrice
         val salePriceBeforeGst = cost + (cost * saleMargin / 100)
         val outputGst = (salePriceBeforeGst * outputGstPercentage) / 100
         val salePrice = salePriceBeforeGst + outputGst
