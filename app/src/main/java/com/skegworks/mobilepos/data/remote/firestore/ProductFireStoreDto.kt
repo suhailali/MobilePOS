@@ -33,6 +33,6 @@ data class ProductFireStoreDto(
     val updatedAt: Long = 0L,
     val discountPercentage: Double = 0.0,
     val discountAmount: Double = 0.0,
-    val createdBy: String,
-    val updatedBy: String
+    val createdBy: String = "",
+    val updatedBy: String = ""
 )
