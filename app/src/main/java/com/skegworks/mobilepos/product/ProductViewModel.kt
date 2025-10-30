@@ -121,7 +121,7 @@ class ProductViewModel @Inject constructor(
 
             is AddProductIntent.CalculatePricing -> {
                 val isValid = haveFieldForPriceCalculationValid()
-                updatePriceCalculationState(isValid)
+                updatePriceCalculationValidationState(isValid)
                 if (isValid.not()) return
                 calculatePricing()
             }
@@ -201,6 +201,20 @@ class ProductViewModel @Inject constructor(
 
             is AddProductIntent.AddAnother,
             is AddProductIntent.Save -> {
+
+                val isSkuValid = haveFieldsForSkuValid()
+                updateSkuValidationState(isSkuValid)
+
+                val isPriceValid = haveFieldForPriceCalculationValid()
+                updatePriceCalculationValidationState(isPriceValid)
+
+                val isSaveValid = haveFieldForSaveProductValid()
+                updateSaveProductValidationState(isSaveValid)
+
+                if (isSaveValid.not() || isPriceValid.not() || isSaveValid.not()) {
+                    return
+                }
+
                 viewModelScope.launch(Dispatchers.IO) {
                     val product = Product(
                         vendorName = state.value.textStateVendorName,
@@ -406,7 +420,7 @@ class ProductViewModel @Inject constructor(
         return isValid
     }
 
-    private fun updatePriceCalculationState(isValid: Boolean) {
+    private fun updatePriceCalculationValidationState(isValid: Boolean) {
         if (isValid) {
             _state.update {
                 it.copy(
@@ -426,6 +440,31 @@ class ProductViewModel @Inject constructor(
                     textStateOutputGst = 0.0,
                     textStateFinalRoundedOffPrice = 0,
                     textStatePriceAfterDiscountWithoutGst = 0.0
+                )
+            }
+        }
+    }
+
+    private fun haveFieldForSaveProductValid(): Boolean {
+        val hsnCode = state.value.textStateHsnCode
+        val quantity = state.value.textStateQuantity
+
+        val isValid = hsnCode.isNotEmpty() && quantity > 0
+        return isValid
+    }
+
+    private fun updateSaveProductValidationState(isValid: Boolean) {
+        if(isValid) {
+            _state.update {
+                it.copy(
+                    errorSave = false,
+                )
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    errorSave = true,
+                    validationErrorMessageSave = "HSN Code and Quantity are required",
                 )
             }
         }
