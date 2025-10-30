@@ -120,6 +120,9 @@ class ProductViewModel @Inject constructor(
             }
 
             is AddProductIntent.CalculatePricing -> {
+                val isValid = haveFieldForPriceCalculationValid()
+                updatePriceCalculationState(isValid)
+                if (isValid.not()) return
                 calculatePricing()
             }
 
@@ -378,15 +381,51 @@ class ProductViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     errorSku = false,
-                    validationErrorMessageSku = "Title and Category are required",
-                    textStateSku = ""
+                    validationErrorMessageSku = "Title and Category are required"
                 )
             }
         } else {
             _state.update {
                 it.copy(
                     errorSku = true,
-                    validationErrorMessageSku = "Title and Category are required"
+                    validationErrorMessageSku = "Title and Category are required",
+                    textStateSku = ""
+                )
+            }
+        }
+    }
+
+    private fun haveFieldForPriceCalculationValid(): Boolean {
+        val itemPrice = state.value.textStateItemPrice
+        val outputGstPercentage = state.value.textStateOutputGstPercentage
+
+        val saleMargin = state.value.textStateSaleMargin
+
+        val isValid = itemPrice != 0.0 && outputGstPercentage != 0.0 && saleMargin != 0
+
+        return isValid
+    }
+
+    private fun updatePriceCalculationState(isValid: Boolean) {
+        if (isValid) {
+            _state.update {
+                it.copy(
+                    errorCalculatePrice = false,
+                )
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    errorCalculatePrice = true,
+                    validationErrorMessageCalculatePrice = "Item Price, Output GST % and Sale Margin are required",
+                    textStateInputGst = 0.0,
+                    textStateCost = 0.0,
+                    textStateSalePrice = 0.0,
+                    textStateDiscountAmount = 0.0,
+                    textStateSalePriceWithoutGst = 0.0,
+                    textStateOutputGst = 0.0,
+                    textStateFinalRoundedOffPrice = 0,
+                    textStatePriceAfterDiscountWithoutGst = 0.0
                 )
             }
         }
