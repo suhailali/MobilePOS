@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import com.skegworks.mobilepos.ui.component.ReadOnlyTextField
@@ -72,6 +73,15 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         ReadOnlyTextField(textState = state.value.textStateSku, "SKU") {
             // No action on click
         }
+
+        if (state.value.errorSku) {
+            Text(
+                text = state.value.validationErrorMessageSku,
+                modifier = Modifier.padding(Dimens.SMALL_PADDING.dp),
+                color = Color.Red
+            )
+        }
+
         Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
         Button(onClick = {
             viewModel.handleIntent(AddProductIntent.GenerateSku)
@@ -119,6 +129,13 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
             isDiscountSheetOpen = true
         }
 
+        if (state.value.errorCalculatePrice) {
+            Text(
+                text = state.value.validationErrorMessageCalculatePrice,
+                modifier = Modifier.padding(Dimens.SMALL_PADDING.dp),
+                color = Color.Red
+            )
+        }
         Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
         Button(onClick = {
             viewModel.handleIntent(AddProductIntent.CalculatePricing)
@@ -159,7 +176,10 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         ReadOnlyTextField(textState = state.value.textStateOutputGst.toString(), "Output GST") {
 
         }
-        ReadOnlyTextField(textState = state.value.textStateSalePrice.toString(), "Sale Price With GST") {
+        ReadOnlyTextField(
+            textState = state.value.textStateSalePrice.toString(),
+            "Sale Price With GST"
+        ) {
 
         }
         ReadOnlyTextField(
@@ -188,6 +208,13 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
 //        SimpleTextField(textState = state.value.textStateImageUrl, "Image URL") {
 //            viewModel.handleIntent(AddProductIntent.UpdateImageUrl(it))
 //        }
+        if (state.value.errorSave) {
+            Text(
+                text = state.value.validationErrorMessageSave,
+                modifier = Modifier.padding(Dimens.SMALL_PADDING.dp),
+                color = Color.Red
+            )
+        }
         Spacer(modifier = Modifier.padding(Dimens.MEDIUM_PADDING.dp))
 
         Row(

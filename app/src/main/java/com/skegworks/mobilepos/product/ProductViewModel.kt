@@ -181,6 +181,9 @@ class ProductViewModel @Inject constructor(
             }
 
             is AddProductIntent.GenerateSku -> {
+                val isValid = haveFieldsForSkuValid()
+                updateSkuValidationState(isValid)
+                if (isValid.not()) return
                 viewModelScope.launch(Dispatchers.IO) {
                     val sku = generateSku()
                     _state.update {
@@ -192,6 +195,7 @@ class ProductViewModel @Inject constructor(
                     generateBarcodeBitmap(sku)
                 }
             }
+
             is AddProductIntent.AddAnother,
             is AddProductIntent.Save -> {
                 viewModelScope.launch(Dispatchers.IO) {
@@ -320,7 +324,8 @@ class ProductViewModel @Inject constructor(
         val cost = itemPrice
         val salePriceBeforeGst = cost + (cost * saleMargin / 100)
 
-        val priceAfterDiscount = salePriceBeforeGst - (salePriceBeforeGst * discountPercentage / 100)
+        val priceAfterDiscount =
+            salePriceBeforeGst - (salePriceBeforeGst * discountPercentage / 100)
         val discountAmount = salePriceBeforeGst - priceAfterDiscount
 
         val outputGst = (priceAfterDiscount * outputGstPercentage) / 100
@@ -356,6 +361,33 @@ class ProductViewModel @Inject constructor(
             } catch (e: Exception) {
                 println("PVM fetchProducts crash: ${e.localizedMessage}")
                 _state.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    private fun haveFieldsForSkuValid(): Boolean {
+        val title = state.value.textStateTitle
+        val category = state.value.textStateCategoryName
+
+        val isGood = title.isNotEmpty() && category.isNotEmpty()
+        return isGood
+    }
+
+    private fun updateSkuValidationState(isValid: Boolean) {
+        if (isValid) {
+            _state.update {
+                it.copy(
+                    errorSku = false,
+                    validationErrorMessageSku = "Title and Category are required",
+                    textStateSku = ""
+                )
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    errorSku = true,
+                    validationErrorMessageSku = "Title and Category are required"
+                )
             }
         }
     }
