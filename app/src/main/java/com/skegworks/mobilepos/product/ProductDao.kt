@@ -29,7 +29,7 @@ interface ProductDao {
     @Delete
     suspend fun deleteProduct(product: ProductEntity)
 
-    @Query("SELECT MAX(id) FROM products")
+    @Query("SELECT Count(*) FROM products")
     suspend fun getMaxId(): Int?
 
     @Query("SELECT * FROM products WHERE is_synced = 0")
