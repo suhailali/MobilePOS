@@ -37,7 +37,10 @@ fun ProductFireStoreDto.toDomain(): Product {
         isSynced = isSynced,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        discountPercentage = discountPercentage
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy
     )
 }
 
@@ -72,7 +75,10 @@ fun Product.toFirestoreDto(): ProductFireStoreDto {
         isSynced = isSynced,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        discountPercentage = discountPercentage
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy
     )
 }
 
@@ -107,7 +113,10 @@ fun ProductEntity.toDomain(): Product {
         isSynced = isSynced,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        discountPercentage = discountPercentage
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy
     )
 }
 
@@ -142,7 +151,10 @@ fun Product.toEntity(): ProductEntity {
         isSynced = isSynced,
         createdAt = createdAt,
         updatedAt = updatedAt,
-        discountPercentage = discountPercentage
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy
     )
 }
 

@@ -32,4 +32,7 @@ data class Product(
     val createdAt: Long,
     val updatedAt: Long,
     val discountPercentage: Double,
+    val discountAmount: Double,
+    val createdBy: String,
+    val updatedBy: String
 )
