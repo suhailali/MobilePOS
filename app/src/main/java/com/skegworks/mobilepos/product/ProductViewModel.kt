@@ -192,7 +192,7 @@ class ProductViewModel @Inject constructor(
                     generateBarcodeBitmap(sku)
                 }
             }
-
+            is AddProductIntent.AddAnother,
             is AddProductIntent.Save -> {
                 viewModelScope.launch(Dispatchers.IO) {
                     val product = Product(
@@ -234,15 +234,26 @@ class ProductViewModel @Inject constructor(
                         createdBy = "",
                         updatedBy = "",
                     )
-                    syncProductUseCase(product)
+                    // syncProductUseCase(product)
                     _state.update {
                         it.copy(
                             isSaved = true
                         )
                     }
                     delay(1000)
-                    _state.update {
-                        it.clearState()
+                    if (intent is AddProductIntent.AddAnother) {
+                        _state.update {
+                            it.copy(
+                                textStateSize = "",
+                                textStateColor = "",
+                                textStateQuantity = 0,
+                                textStateAlertQuantity = 0
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.clearState()
+                        }
                     }
                 }
             }

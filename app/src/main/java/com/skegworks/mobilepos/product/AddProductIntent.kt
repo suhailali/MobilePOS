@@ -29,6 +29,7 @@ sealed class AddProductIntent {
     data class UpdateCreatedAt(val createdAt: Long) : AddProductIntent()
     data class UpdateUpdatedAt(val updatedAt: Long) : AddProductIntent()
     object Save : AddProductIntent()
+    object AddAnother : AddProductIntent()
 
     data object LoadCategories : AddProductIntent()
     data object LoadVendors : AddProductIntent()

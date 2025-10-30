@@ -1,7 +1,9 @@
 package com.skegworks.mobilepos.product
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -188,10 +190,22 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
 //        }
         Spacer(modifier = Modifier.padding(Dimens.MEDIUM_PADDING.dp))
 
-        Button(onClick = {
-            viewModel.handleIntent(AddProductIntent.Save)
-        }) {
-            Text("Save")
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+        )
+        {
+            Button(onClick = {
+                viewModel.handleIntent(AddProductIntent.Save)
+            }) {
+                Text("Save")
+            }
+
+            Button(onClick = {
+                viewModel.handleIntent(AddProductIntent.AddAnother)
+            }) {
+                Text("Add Another Size/Color")
+            }
         }
 
         if (state.value.isSaved) {
