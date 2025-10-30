@@ -9,15 +9,9 @@ class SkuGeneratorImpl : SkuGenerator {
         size: String,
         sequence: Int
     ): String {
-        val categoryCode = category.take(3).uppercase()
-        val vendorCode = vendor.take(3).uppercase()
-        val titleCode = title.take(3).uppercase()
-        val colorCode = color.take(3).uppercase()
-        val sizeCode =
-            size.takeIf { it.length > 1 }?.take(2)?.uppercase() ?: (size.take(1).uppercase() + "T")
-
+        val categoryCode = category.take(4).uppercase()
+        val titleCode = title.replace("\\s+".toRegex(), "").take(4).uppercase()
         val sequenceCode = sequence.toString().padStart(6, '0')
-
-        return "$categoryCode$vendorCode$titleCode$colorCode$sizeCode$sequenceCode"
+        return "$categoryCode$titleCode$sequenceCode"
     }
 }
