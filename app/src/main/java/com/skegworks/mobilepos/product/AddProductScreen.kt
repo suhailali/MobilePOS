@@ -36,13 +36,20 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
     var isInputGstPercentageSheetOpen by remember { mutableStateOf(false) }
     var isOutputGstPercentageSheetOpen by remember { mutableStateOf(false) }
     var isSaleMarginSheetOpen by remember { mutableStateOf(false) }
+    var isSizeSheetOpen by remember { mutableStateOf(false) }
+    var isColorSheetOpen by remember { mutableStateOf(false) }
+    var isDiscountSheetOpen by remember { mutableStateOf(false) }
+    var isQuantitySheetOpen by remember { mutableStateOf(false) }
+    var isAlertQuantitySheetOpen by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(AddProductIntent.LoadCategories)
         viewModel.handleIntent(AddProductIntent.LoadVendors)
     }
     Column(
-        modifier = modifier.verticalScroll(scrollState).fillMaxWidth(),
+        modifier = modifier
+            .verticalScroll(scrollState)
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ReadOnlyTextField(textState = state.value.textStateCategoryName, "Category") {
@@ -54,11 +61,11 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         SimpleTextField(textState = state.value.textStateTitle, "Title") {
             viewModel.handleIntent(AddProductIntent.UpdateTitle(it))
         }
-        SimpleTextField(textState = state.value.textStateSize, "Size") {
-            viewModel.handleIntent(AddProductIntent.UpdateSize(it))
+        ReadOnlyTextField(textState = state.value.textStateSize, "Size") {
+            isSizeSheetOpen = true
         }
-        SimpleTextField(textState = state.value.textStateColor, "Color") {
-            viewModel.handleIntent(AddProductIntent.UpdateColor(it))
+        ReadOnlyTextField(textState = state.value.textStateColor, "Color") {
+            isColorSheetOpen = true
         }
         ReadOnlyTextField(textState = state.value.textStateSku, "SKU") {
             // No action on click
@@ -86,15 +93,28 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
             viewModel.handleIntent(AddProductIntent.UpdateItemPrice(price))
         }
 
-        ReadOnlyTextField(textState = state.value.textStateInputGstPercentage.toString(), "Input GST %") {
+        ReadOnlyTextField(
+            textState = state.value.textStateInputGstPercentage.toString(),
+            "Input GST %"
+        ) {
             isInputGstPercentageSheetOpen = true
         }
-        ReadOnlyTextField(textState = state.value.textStateOutputGstPercentage.toString(), "Output GST %") {
+        ReadOnlyTextField(
+            textState = state.value.textStateOutputGstPercentage.toString(),
+            "Output GST %"
+        ) {
             isOutputGstPercentageSheetOpen = true
         }
 
         ReadOnlyTextField(textState = state.value.textStateSaleMargin.toString(), "Sale Margin") {
             isSaleMarginSheetOpen = true
+        }
+
+        ReadOnlyTextField(
+            textState = state.value.textStateDiscountPercentage.toString(),
+            "Discount Percentage"
+        ) {
+            isDiscountSheetOpen = true
         }
 
         Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
@@ -113,35 +133,53 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
             // No action on click
         }
 
-        ReadOnlyTextField(textState = state.value.textStateSalePriceWithoutGst.toString(), "Sale Price Without GST") {
+        ReadOnlyTextField(
+            textState = state.value.textStateSalePriceWithoutGst.toString(),
+            "Price With Margin Without GST"
+        ) {
+
+        }
+
+        ReadOnlyTextField(
+            textState = state.value.textStateDiscountAmount.toString(),
+            "Discount Amount"
+        ) {
+
+        }
+
+        ReadOnlyTextField(
+            textState = state.value.textStatePriceAfterDiscountWithoutGst.toString(),
+            "Price After Discount Without GST"
+        ) {
 
         }
 
         ReadOnlyTextField(textState = state.value.textStateOutputGst.toString(), "Output GST") {
 
         }
-        ReadOnlyTextField(textState = state.value.textStateSalePrice.toString(), "Sale Price") {
+        ReadOnlyTextField(textState = state.value.textStateSalePrice.toString(), "Sale Price With GST") {
 
         }
-        ReadOnlyTextField(textState = state.value.textStateFinalRoundedOffPrice.toString(), "Final Round Off Price") {
+        ReadOnlyTextField(
+            textState = state.value.textStateFinalRoundedOffPrice.toString(),
+            "Final Round Off Price"
+        ) {
 
         }
 
-        SimpleTextField(textState = state.value.textStateQuantity.toString(), "Quantity", ) {
-            val quantity = it.toIntOrNull() ?: 0
-            viewModel.handleIntent(AddProductIntent.UpdateQuantity(quantity))
+        ReadOnlyTextField(textState = state.value.textStateQuantity.toString(), "Quantity") {
+            isQuantitySheetOpen = true
         }
-        SimpleTextField(textState = state.value.textStateAlertQuantity.toString(), "Alert Quantity", ) {
-            val alertQuantity = it.toIntOrNull() ?: 0
-            viewModel.handleIntent(AddProductIntent.UpdateAlertQuantity(alertQuantity))
+        ReadOnlyTextField(
+            textState = state.value.textStateAlertQuantity.toString(),
+            "Alert Quantity",
+        ) {
+            isAlertQuantitySheetOpen = true
         }
         SimpleTextField(textState = state.value.textStateHsnCode, "HSN Code") {
             viewModel.handleIntent(AddProductIntent.UpdateHsnCode(it))
         }
-        SimpleTextField(textState = state.value.textStateDiscountPercentage.toString(), "Discount Percentage") {
-            val discountPercentage = it.toDoubleOrNull() ?: 0.0
-            viewModel.handleIntent(AddProductIntent.UpdateDiscountPercentage(discountPercentage))
-        }
+
         SimpleTextField(textState = state.value.textStateDescription, "Description") {
             viewModel.handleIntent(AddProductIntent.UpdateDescription(it))
         }
@@ -229,6 +267,76 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
             }
         ) {
             isSaleMarginSheetOpen = false
+        }
+    }
+    if (isColorSheetOpen) {
+        SimpleBottomSheet(
+            list = state.value.color,
+            onItemSelected = {
+                viewModel.handleIntent(AddProductIntent.UpdateColor(it.toString()))
+                isColorSheetOpen = false
+            },
+            labelSelector = {
+                it.toString()
+            }
+        ) {
+            isColorSheetOpen = false
+        }
+    }
+    if (isSizeSheetOpen) {
+        SimpleBottomSheet(
+            list = state.value.size,
+            onItemSelected = {
+                viewModel.handleIntent(AddProductIntent.UpdateSize(it))
+                isSizeSheetOpen = false
+            },
+            labelSelector = {
+                it.toString()
+            }
+        ) {
+            isSizeSheetOpen = false
+        }
+    }
+    if (isDiscountSheetOpen) {
+        SimpleBottomSheet(
+            list = state.value.discountPercentages,
+            onItemSelected = {
+                viewModel.handleIntent(AddProductIntent.UpdateDiscountPercentage(it))
+                isDiscountSheetOpen = false
+            },
+            labelSelector = {
+                it.toString()
+            }
+        ) {
+            isDiscountSheetOpen = false
+        }
+    }
+    if (isQuantitySheetOpen) {
+        SimpleBottomSheet(
+            list = state.value.quantity,
+            onItemSelected = {
+                viewModel.handleIntent(AddProductIntent.UpdateQuantity(it))
+                isQuantitySheetOpen = false
+            },
+            labelSelector = {
+                it.toString()
+            }
+        ) {
+            isQuantitySheetOpen = false
+        }
+    }
+    if (isAlertQuantitySheetOpen) {
+        SimpleBottomSheet(
+            list = state.value.quantity,
+            onItemSelected = {
+                viewModel.handleIntent(AddProductIntent.UpdateAlertQuantity(it))
+                isAlertQuantitySheetOpen = false
+            },
+            labelSelector = {
+                it.toString()
+            }
+        ) {
+            isAlertQuantitySheetOpen = false
         }
     }
 }

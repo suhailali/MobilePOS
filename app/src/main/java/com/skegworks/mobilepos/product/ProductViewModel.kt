@@ -219,6 +219,8 @@ class ProductViewModel @Inject constructor(
                         outputGst = state.value.textStateOutputGst,
                         saleMargin = state.value.textStateSaleMargin,
                         cost = state.value.textStateCost,
+                        discountPercentage = state.value.textStateDiscountPercentage,
+                        discountAmount = state.value.textStateDiscountAmount,
                         salePriceWithoutGst = state.value.textStateSalePriceWithoutGst,
                         salePrice = state.value.textStateSalePrice,
                         finalRoundedOffPrice = state.value.textStateFinalRoundedOffPrice,
@@ -226,10 +228,11 @@ class ProductViewModel @Inject constructor(
 
                         isActive = state.value.textStateIsActive,
                         isSynced = true,
-                        discountPercentage = state.value.textStateDiscountPercentage,
                         createdAt = state.value.textStateCreatedAt,
                         updatedAt = state.value.textStateUpdatedAt,
-                        id = uuidGenerator.generateUUID()
+                        id = uuidGenerator.generateUUID(),
+                        createdBy = "",
+                        updatedBy = "",
                     )
                     syncProductUseCase(product)
                     _state.update {
@@ -300,12 +303,17 @@ class ProductViewModel @Inject constructor(
         val inputGstPercentage = state.value.textStateInputGstPercentage
         val outputGstPercentage = state.value.textStateOutputGstPercentage
         val saleMargin = state.value.textStateSaleMargin
+        val discountPercentage = state.value.textStateDiscountPercentage
 
         val inputGst = (itemPrice * inputGstPercentage) / 100
         val cost = itemPrice
         val salePriceBeforeGst = cost + (cost * saleMargin / 100)
-        val outputGst = (salePriceBeforeGst * outputGstPercentage) / 100
-        val salePrice = salePriceBeforeGst + outputGst
+
+        val priceAfterDiscount = salePriceBeforeGst - (salePriceBeforeGst * discountPercentage / 100)
+        val discountAmount = salePriceBeforeGst - priceAfterDiscount
+
+        val outputGst = (priceAfterDiscount * outputGstPercentage) / 100
+        val salePrice = priceAfterDiscount + outputGst
         val finalRoundedOffPrice = salePrice.toInt()
 
         _state.update {
@@ -314,6 +322,8 @@ class ProductViewModel @Inject constructor(
                 textStateCost = cost,
                 textStateSalePriceWithoutGst = salePriceBeforeGst,
                 textStateOutputGst = outputGst,
+                textStatePriceAfterDiscountWithoutGst = priceAfterDiscount,
+                textStateDiscountAmount = discountAmount,
                 textStateSalePrice = salePrice,
                 textStateFinalRoundedOffPrice = finalRoundedOffPrice,
                 isSaved = false
