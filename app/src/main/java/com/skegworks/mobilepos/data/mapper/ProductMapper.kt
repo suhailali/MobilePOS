@@ -180,7 +180,7 @@ fun Product.toInvoiceItem(): InvoiceItem {
         salePriceWithoutGst = salePriceWithoutGst,
         salePrice = salePrice,
         finalRoundedOffPrice = finalRoundedOffPrice,
-        quantity = quantity,
+
         alertQuantity = alertQuantity,
         description = description,
         imageUrl = imageUrl,
@@ -189,15 +189,22 @@ fun Product.toInvoiceItem(): InvoiceItem {
         createdAt = createdAt,
         updatedAt = updatedAt,
         discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
 
         discountAppliedInPercentage = 0.0,
         discountedAmount = 0.0,
         priceAfterDiscount = 0.0,
 
+
         productId = id,
         invoiceId = "",
         invoiceNumber = "",
         invoiceDate = 0L,
+        createdBy = "",
+        updatedBy = "",
+        //TODO - this quantity is not same as Product
+        quantity = 0,
+
     )
 }
 

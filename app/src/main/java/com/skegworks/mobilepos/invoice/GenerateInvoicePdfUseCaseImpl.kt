@@ -25,10 +25,10 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
                 isAntiAlias = true
                 textSize = 14f
             }
-            val bold = Paint(paint).apply { textSize = 10f; isFakeBoldText = true }
-            val small = Paint(paint).apply { textSize = 8f }
+            val bold = Paint(paint).apply { textSize = 9f; isFakeBoldText = true }
+            val small = Paint(paint).apply { textSize = 7f }
 
-            var y = 20f
+            var y = 30f
 
 // Title centered
             val title = "INVOICE"
@@ -77,10 +77,10 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
             canvas.drawText("S.No", startX + 4, headerY + 12, small)
             canvas.drawText("Item", startX + colSnoW + 4, headerY + 12, small)
             canvas.drawText("HSN", startX + colSnoW + colItemW + 4, headerY + 12, small)
-            canvas.drawText("Rate", startX + colSnoW + colItemW + colHsnW + 4, headerY + 12, small)
-            canvas.drawText("Qty", startX + colSnoW + colItemW + colHsnW + colRateW + 4, headerY + 12, small)
+            canvas.drawText("MRP", startX + colSnoW + colItemW + colHsnW + 4, headerY + 12, small)
             canvas.drawText("Disc.", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + 4, headerY + 12, small)
-            canvas.drawText("GST", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + 4, headerY + 12, small)
+            canvas.drawText("Tax%", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + 4, headerY + 12, small)
+            canvas.drawText("Qty", startX + colSnoW + colItemW + colHsnW + colRateW + 4, headerY + 12, small)
             canvas.drawText("Amount", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + colGstW + 4, headerY + 12, small)
 
             y += 20f
@@ -94,13 +94,13 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
 // Wrap item name if too long
                 val itemName = item.title
 //                canvas.drawText(itemName + "afcgh uuytff jjuy", startX + colSnoW + 4, rowY + 12, small)
-                drawMultilineText(canvas, itemName + "afcgh uuytff jjuy", startX + colSnoW + 4, rowY + 12, small, pageWidthPt/4  )
+                drawMultilineText(canvas, itemName, startX + colSnoW + 4, rowY + 12, small, pageWidthPt/4  )
                 canvas.drawText(item.hsnCode, startX + colSnoW + colItemW + 4, rowY + 12, small)
                 canvas.drawText(formatAmount(item.finalRoundedOffPrice), startX + colSnoW + colItemW + colHsnW + 4, rowY + 12, small)
+                canvas.drawText(formatAmount(item.discountedAmount), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW +4, rowY + 12, small)
+                canvas.drawText(formatAmount(item.outputGstPercentage), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW +4, rowY + 12, small)
                 canvas.drawText(item.quantity.toString(), startX + colSnoW + colItemW + colHsnW + colRateW + 4, rowY + 12, small)
-                canvas.drawText("100.00", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW +4, rowY + 12, small)
-                canvas.drawText(formatAmount(item.outputGst), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW +4, rowY + 12, small)
-                canvas.drawText(formatAmount(item.quantity * item.finalRoundedOffPrice), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + colGstW + 4, rowY + 12, small)
+                canvas.drawText(formatAmount(item.quantity * item.priceAfterDiscount), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + colGstW + 4, rowY + 12, small)
 
                 y += 18f
                 index++
