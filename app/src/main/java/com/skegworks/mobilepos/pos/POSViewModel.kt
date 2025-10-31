@@ -19,7 +19,9 @@ import com.skegworks.mobilepos.data.domain.Business
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.mapper.toInvoiceItem
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
+import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.print.SeznikPrinterManager
+import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.files.FileHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +40,9 @@ class POSViewModel @Inject constructor(
     private val getProductFromBarcodeUseCase: GetProductFromBarcodeUseCase,
     private val generateInvoicePdfUseCase: GenerateInvoicePdfUseCase,
     private val customerRepository: CustomerRepository,
-    private val fileHandler: FileHandler
+    private val fileHandler: FileHandler,
+    private val uuidGenerator: UUIDGenerator,
+    private val syncInvoiceUseCase: SyncInvoiceUseCase
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(POSState())
@@ -65,7 +69,7 @@ class POSViewModel @Inject constructor(
                         searchingProduct = false,
                         productFound = true,
                         product = product,
-                        invoiceItems = it.invoiceItems + product.toInvoiceItem(),
+                        invoiceItems = it.invoiceItems + product.toInvoiceItem(uuidGenerator.generateUUID()),
                     )
                 }
 
@@ -101,6 +105,13 @@ class POSViewModel @Inject constructor(
             is POSIntent.PrintInvoice -> {
                 createInvoice()
             }
+            is POSIntent.Payment -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    _state.value.invoice?.let {
+                        syncInvoiceUseCase.invoke(it)
+                    }
+                }
+            }
         }
     }
 
@@ -108,6 +119,7 @@ class POSViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val customer = customerRepository.getAllCustomers().first()
             val business = Business(
+                id = uuidGenerator.generateUUID(),
                 name = "Jyothika",
                 mobile = "9995 42 9878",
                 email = "nadhik@gmail.com",
@@ -115,6 +127,7 @@ class POSViewModel @Inject constructor(
                 address = "AbcdEfghihs, jjs, sjks, djhjdk, 676567"
             )
             val invoice = Invoice(
+                id = uuidGenerator.generateUUID(),
                 business = business,
                 customer = customer,
                 invoiceNumber = "123456789",
@@ -122,11 +135,13 @@ class POSViewModel @Inject constructor(
                 items = _state.value.invoiceItems,
                 totalPrice = _state.value.totalPrice,
                 totalDiscount = _state.value.totalDiscount,
-                finalPrice = _state.value.finalPriceToPay
+                finalPrice = _state.value.finalPriceToPay,
+                isSynced = false
             )
             val pdf = generateInvoicePdfUseCase.generatePdf(invoice)
             _state.update {
                 it.copy(
+                    invoice = invoice,
                     invoicePDF = pdf,
                     pdfGenerated = true,
                 )

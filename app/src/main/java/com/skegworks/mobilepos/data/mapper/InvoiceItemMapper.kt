@@ -1,164 +1,11 @@
 package com.skegworks.mobilepos.data.mapper
 
 import com.skegworks.mobilepos.data.domain.InvoiceItem
-import com.skegworks.mobilepos.data.domain.Product
-import com.skegworks.mobilepos.data.local.ProductEntity
-import com.skegworks.mobilepos.data.remote.firestore.ProductFireStoreDto
-import java.util.UUID
+import com.skegworks.mobilepos.data.local.InvoiceItemEntity
+import com.skegworks.mobilepos.data.remote.firestore.InvoiceItemFireStoreDto
 
 // --- Firestore DTO -> Domain ---
-fun ProductFireStoreDto.toDomain(): Product {
-    return Product(
-        id = id,
-        vendorId = vendorId,
-        vendorName = vendorName,
-        hsnCode = hsnCode,
-        title = title,
-        categoryId = categoryId,
-        categoryName = categoryName,
-        sku = sku,
-        size = size,
-        color = color,
-        itemPrice = itemPrice,
-        inputGstPercentage = inputGstPercentage,
-        inputGst = inputGst,
-        outputGstPercentage = outputGstPercentage,
-        outputGst = outputGst,
-        saleMargin = saleMargin,
-        cost = cost,
-        salePriceWithoutGst = salePriceWithoutGst,
-        salePrice = salePrice,
-        finalRoundedOffPrice = finalRoundedOffPrice,
-        quantity = quantity,
-        alertQuantity = alertQuantity,
-        description = description,
-        imageUrl = imageUrl,
-        isActive = isActive,
-        isSynced = isSynced,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-        discountPercentage = discountPercentage,
-        discountAmount = discountAmount,
-        createdBy = createdBy,
-        updatedBy = updatedBy
-    )
-}
-
-// --- Domain -> Firestore DTO ---
-fun Product.toFirestoreDto(): ProductFireStoreDto {
-    return ProductFireStoreDto(
-        id = id,
-        vendorId = vendorId,
-        vendorName = vendorName,
-        hsnCode = hsnCode,
-        title = title,
-        categoryId = categoryId,
-        categoryName = categoryName,
-        sku = sku,
-        size = size,
-        color = color,
-        itemPrice = itemPrice,
-        inputGstPercentage = inputGstPercentage,
-        inputGst = inputGst,
-        outputGstPercentage = outputGstPercentage,
-        outputGst = outputGst,
-        saleMargin = saleMargin,
-        cost = cost,
-        salePriceWithoutGst = salePriceWithoutGst,
-        salePrice = salePrice,
-        finalRoundedOffPrice = finalRoundedOffPrice,
-        quantity = quantity,
-        alertQuantity = alertQuantity,
-        description = description,
-        imageUrl = imageUrl,
-        isActive = isActive,
-        isSynced = isSynced,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-        discountPercentage = discountPercentage,
-        discountAmount = discountAmount,
-        createdBy = createdBy,
-        updatedBy = updatedBy
-    )
-}
-
-// --- Room Entity -> Domain ---
-fun ProductEntity.toDomain(): Product {
-    return Product(
-        id = id,
-        vendorId = vendorId,
-        vendorName = vendorName,
-        hsnCode = hsnCode,
-        title = title,
-        categoryId = categoryId,
-        categoryName = categoryName,
-        sku = sku,
-        size = size,
-        color = color,
-        itemPrice = itemPrice,
-        inputGstPercentage = inputGstPercentage,
-        inputGst = inputGst,
-        outputGstPercentage = outputGstPercentage,
-        outputGst = outputGst,
-        saleMargin = saleMargin,
-        cost = cost,
-        salePriceWithoutGst = salePriceWithoutGst,
-        salePrice = salePrice,
-        finalRoundedOffPrice = finalRoundedOffPrice,
-        quantity = quantity,
-        alertQuantity = alertQuantity,
-        description = description,
-        imageUrl = imageUrl,
-        isActive = isActive,
-        isSynced = isSynced,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-        discountPercentage = discountPercentage,
-        discountAmount = discountAmount,
-        createdBy = createdBy,
-        updatedBy = updatedBy
-    )
-}
-
-// --- Domain -> Room Entity ---
-fun Product.toEntity(): ProductEntity {
-    return ProductEntity(
-        id = id,
-        vendorId = vendorId,
-        vendorName = vendorName,
-        hsnCode = hsnCode,
-        title = title,
-        categoryId = categoryId,
-        categoryName = categoryName,
-        sku = sku,
-        size = size,
-        color = color,
-        itemPrice = itemPrice,
-        inputGstPercentage = inputGstPercentage,
-        inputGst = inputGst,
-        outputGstPercentage = outputGstPercentage,
-        outputGst = outputGst,
-        saleMargin = saleMargin,
-        cost = cost,
-        salePriceWithoutGst = salePriceWithoutGst,
-        salePrice = salePrice,
-        finalRoundedOffPrice = finalRoundedOffPrice,
-        quantity = quantity,
-        alertQuantity = alertQuantity,
-        description = description,
-        imageUrl = imageUrl,
-        isActive = isActive,
-        isSynced = isSynced,
-        createdAt = createdAt,
-        updatedAt = updatedAt,
-        discountPercentage = discountPercentage,
-        discountAmount = discountAmount,
-        createdBy = createdBy,
-        updatedBy = updatedBy
-    )
-}
-
-fun Product.toInvoiceItem(id: String): InvoiceItem {
+fun InvoiceItemFireStoreDto.toDomain(): InvoiceItem {
     return InvoiceItem(
         id = id,
         vendorId = vendorId,
@@ -180,25 +27,140 @@ fun Product.toInvoiceItem(id: String): InvoiceItem {
         salePriceWithoutGst = salePriceWithoutGst,
         salePrice = salePrice,
         finalRoundedOffPrice = finalRoundedOffPrice,
+        quantity = quantity,
         isActive = isActive,
         isSynced = isSynced,
         createdAt = createdAt,
         updatedAt = updatedAt,
         discountPercentage = discountPercentage,
         discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy,
+        productId = productId,
+        invoiceId = invoiceId,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        priceAfterDiscount = priceAfterDiscount
+    )
+}
 
-        priceAfterDiscount = finalRoundedOffPrice - discountAmount,
+// --- Domain -> Firestore DTO ---
+fun InvoiceItem.toFirestoreDto(): InvoiceItemFireStoreDto {
+    return InvoiceItemFireStoreDto(
+        id = id,
+        vendorId = vendorId,
+        vendorName = vendorName,
+        hsnCode = hsnCode,
+        title = title,
+        categoryId = categoryId,
+        categoryName = categoryName,
+        sku = sku,
+        size = size,
+        color = color,
+        itemPrice = itemPrice,
+        inputGstPercentage = inputGstPercentage,
+        inputGst = inputGst,
+        outputGstPercentage = outputGstPercentage,
+        outputGst = outputGst,
+        saleMargin = saleMargin,
+        cost = cost,
+        salePriceWithoutGst = salePriceWithoutGst,
+        salePrice = salePrice,
+        finalRoundedOffPrice = finalRoundedOffPrice,
+        quantity = quantity,
+        isActive = isActive,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy,
+        productId = productId,
+        invoiceId = invoiceId,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        priceAfterDiscount = priceAfterDiscount
+    )
+}
 
+// --- Room Entity -> Domain ---
+fun InvoiceItemEntity.toDomain(): InvoiceItem {
+    return InvoiceItem(
+        id = id,
+        vendorId = vendorId,
+        vendorName = vendorName,
+        hsnCode = hsnCode,
+        title = title,
+        categoryId = categoryId,
+        categoryName = categoryName,
+        sku = sku,
+        size = size,
+        color = color,
+        itemPrice = itemPrice,
+        inputGstPercentage = inputGstPercentage,
+        inputGst = inputGst,
+        outputGstPercentage = outputGstPercentage,
+        outputGst = outputGst,
+        saleMargin = saleMargin,
+        cost = cost,
+        salePriceWithoutGst = salePriceWithoutGst,
+        salePrice = salePrice,
+        finalRoundedOffPrice = finalRoundedOffPrice,
+        quantity = quantity,
+        isActive = isActive,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy,
+        productId = productId,
+        invoiceId = invoiceId,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        priceAfterDiscount = priceAfterDiscount
+    )
+}
 
-        productId = id,
-        invoiceId = "",
-        invoiceNumber = "",
-        invoiceDate = 0L,
-        createdBy = "",
-        updatedBy = "",
-        //TODO - this quantity is not same as Product
-        quantity = 0,
-
+// --- Domain -> Room Entity ---
+fun InvoiceItem.toEntity(): InvoiceItemEntity {
+    return InvoiceItemEntity(
+        id = id,
+        vendorId = vendorId,
+        vendorName = vendorName,
+        hsnCode = hsnCode,
+        title = title,
+        categoryId = categoryId,
+        categoryName = categoryName,
+        sku = sku,
+        size = size,
+        color = color,
+        itemPrice = itemPrice,
+        inputGstPercentage = inputGstPercentage,
+        inputGst = inputGst,
+        outputGstPercentage = outputGstPercentage,
+        outputGst = outputGst,
+        saleMargin = saleMargin,
+        cost = cost,
+        salePriceWithoutGst = salePriceWithoutGst,
+        salePrice = salePrice,
+        finalRoundedOffPrice = finalRoundedOffPrice,
+        quantity = quantity,
+        isActive = isActive,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy,
+        productId = productId,
+        invoiceId = invoiceId,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        priceAfterDiscount = priceAfterDiscount
     )
 }
 

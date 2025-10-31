@@ -24,9 +24,6 @@ data class InvoiceItem(
     val finalRoundedOffPrice: Int,
 
     val quantity: Int,
-    val alertQuantity: Int,
-    val description: String,
-    val imageUrl: String,
     val isActive: Boolean,
     var isSynced: Boolean,
     val createdAt: Long,

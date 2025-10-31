@@ -49,7 +49,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     Text("BarCode")
                 }
 
-                Button(onClick = { }) {
+                Button(onClick = { viewModel.handleIntent(POSIntent.Payment)}) {
                     Text("Pay")
                 }
             }

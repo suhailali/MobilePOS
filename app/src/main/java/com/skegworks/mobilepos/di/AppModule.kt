@@ -6,6 +6,10 @@ import com.skegworks.mobilepos.category.CategoryRepositoryImpl
 import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.CustomerRepositoryImpl
+import com.skegworks.mobilepos.invoice.InvoiceDao
+import com.skegworks.mobilepos.invoice.InvoiceItemDao
+import com.skegworks.mobilepos.invoice.InvoiceRepository
+import com.skegworks.mobilepos.invoice.InvoiceRepositoryImpl
 import com.skegworks.mobilepos.product.ProductDao
 import com.skegworks.mobilepos.product.ProductRepository
 import com.skegworks.mobilepos.product.ProductRepositoryImpl
@@ -58,4 +62,15 @@ class AppModule {
     ): CustomerRepository {
         return CustomerRepositoryImpl(customerDao, syncData)
     }
+
+    @Provides
+    @Singleton
+    fun providesInvoiceRepository(
+        invoiceDao: InvoiceDao,
+        invoiceItemDao: InvoiceItemDao,
+        syncData: SyncData
+    ): InvoiceRepository {
+        return InvoiceRepositoryImpl(invoiceDao, invoiceItemDao, syncData)
+    }
+
 }

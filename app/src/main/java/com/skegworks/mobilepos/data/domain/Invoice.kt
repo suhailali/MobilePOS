@@ -1,6 +1,7 @@
 package com.skegworks.mobilepos.data.domain
 
 data class Invoice(
+    val id: String,
     val invoiceNumber: String,
     val invoiceDate: String,
     val totalPrice: Double,
@@ -9,4 +10,5 @@ data class Invoice(
     val finalPrice: Double,
     val customer: Customer,
     val business: Business,
+    var isSynced: Boolean,
 )

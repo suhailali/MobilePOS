@@ -5,6 +5,8 @@ import androidx.room.Room
 import com.skegworks.mobilepos.category.CategoryDao
 import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.databse.AppDatabase
+import com.skegworks.mobilepos.invoice.InvoiceDao
+import com.skegworks.mobilepos.invoice.InvoiceItemDao
 import com.skegworks.mobilepos.product.ProductDao
 import com.skegworks.mobilepos.vendors.VendorDao
 import dagger.Module
@@ -47,5 +49,15 @@ class DatabaseModule {
     @Provides
     fun provideCustomerDao(db: AppDatabase): CustomerDao {
         return db.customerDao()
+    }
+
+    @Provides
+    fun provideInvoiceDao(db: AppDatabase): InvoiceDao {
+        return db.invoiceDao()
+    }
+
+    @Provides
+    fun provideInvoiceItemDao(db: AppDatabase): InvoiceItemDao {
+        return db.invoiceItemDao()
     }
 }

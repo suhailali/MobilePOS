@@ -2,6 +2,9 @@ package com.skegworks.mobilepos.di
 
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCaseImpl
+import com.skegworks.mobilepos.invoice.InvoiceRepository
+import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
+import com.skegworks.mobilepos.invoice.SyncInvoiceUseCaseImpl
 import com.skegworks.mobilepos.pos.GetProductFromBarCodeUseCaseImpl
 import com.skegworks.mobilepos.pos.GetProductFromBarcodeUseCase
 import com.skegworks.mobilepos.product.ProductRepository
@@ -21,5 +24,10 @@ class UseCaseModule {
     @Provides
     fun provideGenerateInvoicePdfUseCase(): GenerateInvoicePdfUseCase {
         return GenerateInvoicePdfUseCaseImpl()
+    }
+
+    @Provides
+    fun provideSyncInvoiceUseCase(repository: InvoiceRepository): SyncInvoiceUseCase {
+        return SyncInvoiceUseCaseImpl(repository)
     }
 }
