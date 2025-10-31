@@ -73,7 +73,7 @@ class POSViewModel @Inject constructor(
                 var discounts = 0.0
                 _state.value.invoiceItems.forEach{ item ->
                     totalPrice = totalPrice + item.finalRoundedOffPrice
-                    discounts = discounts + item.discountedAmount
+                    discounts = discounts + item.discountAmount
                 }
 
                 val finalPriceToPay = totalPrice - discounts
@@ -108,11 +108,11 @@ class POSViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val customer = customerRepository.getAllCustomers().first()
             val business = Business(
-                name = "Nadhika",
-                mobile = "9995 54 9898",
-                email = "nadhikaattire@gmail.com",
+                name = "Jyothika",
+                mobile = "9995 42 9878",
+                email = "nadhik@gmail.com",
                 gstNumber = "32Ox44hsjjsoosjsjj",
-                address = "Cholayil Tower, First floor, Ring Road, Tirur, Kerala, 676307"
+                address = "AbcdEfghihs, jjs, sjks, djhjdk, 676567"
             )
             val invoice = Invoice(
                 business = business,
@@ -120,9 +120,9 @@ class POSViewModel @Inject constructor(
                 invoiceNumber = "123456789",
                 invoiceDate = "12-12-2023",
                 items = _state.value.invoiceItems,
-                totalPrice = 1000.0,
-                totalDiscount = 0.0,
-                finalPrice = 1000.0
+                totalPrice = _state.value.totalPrice,
+                totalDiscount = _state.value.totalDiscount,
+                finalPrice = _state.value.finalPriceToPay
             )
             val pdf = generateInvoicePdfUseCase.generatePdf(invoice)
             _state.update {

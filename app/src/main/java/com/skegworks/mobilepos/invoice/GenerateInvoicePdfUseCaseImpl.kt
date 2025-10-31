@@ -97,7 +97,7 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
                 drawMultilineText(canvas, itemName, startX + colSnoW + 4, rowY + 12, small, pageWidthPt/4  )
                 canvas.drawText(item.hsnCode, startX + colSnoW + colItemW + 4, rowY + 12, small)
                 canvas.drawText(formatAmount(item.finalRoundedOffPrice), startX + colSnoW + colItemW + colHsnW + 4, rowY + 12, small)
-                canvas.drawText(formatAmount(item.discountedAmount), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW +4, rowY + 12, small)
+                canvas.drawText(formatAmount(item.discountAmount), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW +4, rowY + 12, small)
                 canvas.drawText(formatAmount(item.outputGstPercentage), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW +4, rowY + 12, small)
                 canvas.drawText(item.quantity.toString(), startX + colSnoW + colItemW + colHsnW + colRateW + 4, rowY + 12, small)
                 canvas.drawText(formatAmount(item.quantity * item.priceAfterDiscount), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + colGstW + 4, rowY + 12, small)
@@ -111,9 +111,9 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
             y += 10f
 
 // Totals
-            val total = invoice.items.sumOf { it.quantity * it.finalRoundedOffPrice }
-            val totalDiscount = invoice.items.sumOf { it.discountedAmount }
-            val finalPrice = total
+            val total = invoice.totalPrice
+            val totalDiscount = invoice.totalDiscount
+            val finalPrice = invoice.finalPrice
 
             val rightX = pageWidthPt - 10f
             val labelX = rightX - 140f

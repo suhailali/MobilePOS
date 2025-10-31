@@ -31,14 +31,14 @@ data class InvoiceItem(
     var isSynced: Boolean,
     val createdAt: Long,
     val updatedAt: Long,
+    val createdBy: String,
+    val updatedBy: String,
     val discountPercentage: Double,
-
-    val discountAppliedInPercentage: Double,
-    val discountedAmount: Double,
-    val priceAfterDiscount: Double,
+    val discountAmount: Double,
+    var priceAfterDiscount: Double,
 
     val productId: String,
-    val invoiceId: String,
-    val invoiceNumber: String,
-    val invoiceDate: Long,
+    var invoiceId: String,
+    var invoiceNumber: String,
+    var invoiceDate: Long,
 )

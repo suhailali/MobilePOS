@@ -191,9 +191,7 @@ fun Product.toInvoiceItem(): InvoiceItem {
         discountPercentage = discountPercentage,
         discountAmount = discountAmount,
 
-        discountAppliedInPercentage = 0.0,
-        discountedAmount = 0.0,
-        priceAfterDiscount = 0.0,
+        priceAfterDiscount = finalRoundedOffPrice - discountAmount,
 
 
         productId = id,
