@@ -3,13 +3,19 @@ package com.skegworks.mobilepos.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.skegworks.mobilepos.data.domain.UserRole
+import com.skegworks.mobilepos.data.remote.firestore.FirestoreHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
 
-class LoginViewModel : ViewModel() {
+
+@HiltViewModel
+class LoginViewModel @Inject constructor(private val firestoreHelper: FirestoreHelper) :
+    ViewModel() {
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state.asStateFlow()
 
@@ -29,7 +35,7 @@ class LoginViewModel : ViewModel() {
 
             is LoginIntent.SubmitLogin -> {
                 // Handle login submission logic here
-                if(intent.isCreateUser) {
+                if (intent.isCreateUser) {
                     createUser(
                         _state.value.textStateEmail,
                         _state.value.textStatePassword
@@ -47,7 +53,7 @@ class LoginViewModel : ViewModel() {
     private fun login(email: String, password: String) {
         // Implement login logic here
         _state.update {
-            it.copy(isLoading = true)
+            it.copy(isLoading = true, errorMessage = null)
         }
         val auth = FirebaseAuth.getInstance()
         auth.signInWithEmailAndPassword(email, password)
@@ -56,10 +62,17 @@ class LoginViewModel : ViewModel() {
                     val user = auth.currentUser
                     val uid = user?.uid
                     Log.d("Auth", "User UID: $uid")
-                    _state.update {
-                        it.copy(success = true, isLoading = false)
+                    uid?.let {
+                        getUserRole(uid)
                     }
                 } else {
+                    _state.update {
+                        it.copy(
+                            success = false,
+                            isLoading = false,
+                            errorMessage = "Failed to Login"
+                        )
+                    }
                     Log.e("Auth", "Sign-in failed: ${task.exception?.message}")
                 }
             }
@@ -68,7 +81,7 @@ class LoginViewModel : ViewModel() {
     private fun createUser(email: String, password: String) {
         // Implement login logic here
         _state.update {
-            it.copy(isLoading = true)
+            it.copy(isLoading = true, errorMessage = null)
         }
         val auth = FirebaseAuth.getInstance()
         auth.createUserWithEmailAndPassword(email, password)
@@ -84,5 +97,30 @@ class LoginViewModel : ViewModel() {
                     Log.e("Auth", "Create user failed: ${task.exception?.message}")
                 }
             }
+    }
+
+    private fun getUserRole(id: String) {
+        firestoreHelper.getDocument("users", id, onSuccess = { document ->
+            val role = document.getString("role")
+            role?.let {
+                _state.update {
+                    it.copy(
+                        userRole = UserRole.fromRole(role),
+                        success = true,
+                        isLoading = false,
+                        errorMessage = null
+                    )
+                }
+            }
+        }) {
+            _state.update { state ->
+                state.copy(
+                    success = false,
+                    isLoading = false,
+                    errorMessage = "Failed to Login"
+                )
+            }
+            Log.e("Auth", "Get user role failed: ${it.message}")
+        }
     }
 }

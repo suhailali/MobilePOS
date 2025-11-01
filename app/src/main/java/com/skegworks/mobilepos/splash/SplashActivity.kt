@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.skegworks.mobilepos.MainActivity
 import com.skegworks.mobilepos.customer.CustomerActivity
+import com.skegworks.mobilepos.login.LoginActivity
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,7 +39,10 @@ class SplashActivity: ComponentActivity() {
                 val context = LocalContext.current
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     SplashScreen(modifier = Modifier.padding(innerPadding), viewModel) {
-                        val intent = Intent(context, MainActivity::class.java)
+                        val intent = Intent(context, LoginActivity::class.java)
+                        val bundle = bundleOf()
+                        bundle.putBoolean("isCreateUser", false)
+                        intent.putExtras(bundle)
                         context.startActivity(intent)
                     }
                 }

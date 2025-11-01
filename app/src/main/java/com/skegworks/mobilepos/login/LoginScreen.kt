@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.skegworks.mobilepos.data.domain.UserRole
 import com.skegworks.mobilepos.ui.component.SimpleTextField
 import com.skegworks.mobilepos.utils.Dimens
 
@@ -20,7 +21,7 @@ fun LoginScreen(
     modifier: Modifier,
     viewModel: LoginViewModel,
     isCreateUser: Boolean,
-    loginSuccess: () -> Unit
+    loginSuccess: (String, UserRole?) -> Unit
 ) {
     val state = viewModel.state.collectAsState()
     Column(
@@ -47,7 +48,7 @@ fun LoginScreen(
         }
 
         if (state.value.success) {
-            loginSuccess()
+            loginSuccess(state.value.textStateEmail, state.value.userRole)
         }
     }
 

@@ -11,7 +11,7 @@ activityCompose = "1.11.0"
 composeBom = "2025.10.01"
 appcompat = "1.7.1"
 room = "2.8.3"
-firebase-bom = "34.4.0"
+firebase-bom = "34.5.0"
 google-services = "4.4.4"
 ktor = "3.3.1"
 serialization-plugin = "2.2.21"
@@ -23,6 +23,8 @@ ksp = "2.2.20-2.0.4"
 hilt = "2.57.2"
 navigationCompose = "2.9.5"
 camera = "1.5.1"
+security-crypto = "1.1.0"
+datastore-preferences = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -55,6 +57,8 @@ ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "security-crypto" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore-preferences" }
 
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }

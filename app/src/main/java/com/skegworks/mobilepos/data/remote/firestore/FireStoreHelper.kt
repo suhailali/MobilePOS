@@ -1,8 +1,10 @@
 package com.skegworks.mobilepos.data.remote.firestore
 
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.model.Document
 import kotlinx.coroutines.tasks.await
 
 class FirestoreHelper(val db: FirebaseFirestore = FirebaseFirestore.getInstance()) {
@@ -22,6 +24,20 @@ class FirestoreHelper(val db: FirebaseFirestore = FirebaseFirestore.getInstance(
 
         userRef.set(data as Any, SetOptions.merge())
             .addOnSuccessListener { onSuccess(id) }
+            .addOnFailureListener { e -> onFailure(e) }
+    }
+
+    /** Get all documents from a collection **/
+    fun getDocument(
+        collection: String,
+        documentId: String,
+        onSuccess: (DocumentSnapshot) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        db.collection(collection)
+            .document(documentId)
+            .get()
+            .addOnSuccessListener { document -> onSuccess(document) }
             .addOnFailureListener { e -> onFailure(e) }
     }
 
