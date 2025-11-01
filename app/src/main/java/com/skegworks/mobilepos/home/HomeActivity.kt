@@ -1,10 +1,11 @@
-package com.skegworks.mobilepos
+package com.skegworks.mobilepos.home
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -19,45 +20,33 @@ import com.skegworks.mobilepos.barcode.ZxingBarcodeGenerator
 import com.skegworks.mobilepos.category.CategoryActivity
 import com.skegworks.mobilepos.customer.CustomerActivity
 import com.skegworks.mobilepos.utils.files.FileHandlerImpl
-import com.skegworks.mobilepos.home.LandingScreen
 import com.skegworks.mobilepos.login.LoginActivity
 import com.skegworks.mobilepos.pdf.PdfGeneratorImpl
 import com.skegworks.mobilepos.pos.POSActivity
 import com.skegworks.mobilepos.product.GenerateBarCodeUseCase
 import com.skegworks.mobilepos.product.ProductActivity
+import com.skegworks.mobilepos.splash.SplashViewModel
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import com.skegworks.mobilepos.vendors.VendorActivity
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.runBlocking
+import kotlin.getValue
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val viewModel: HomeViewModel by viewModels<HomeViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        viewModel.getUserRole()
         setContent {
             MobilePOSTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val list = listOf(
-                        "Sale",
-                        "Purchase",
-                        "POS",
-                        "Dashboard",
-                        "Report",
-                        "Ledger",
-                        "Customers",
-                        "Vendors",
-                        "Expenses",
-                        "Coupons",
-                        "Product",
-                        "Orders",
-                        "Settings",
-                        "Category",
-                        "Login",
-                        "CreateUser"
-                    )
+
                     val context = LocalContext.current
                     LandingScreen(
                         modifier = Modifier.padding(innerPadding),
-                        list
+                        viewModel
                     ) { item ->
                         when (item) {
                             "Vendors" -> {

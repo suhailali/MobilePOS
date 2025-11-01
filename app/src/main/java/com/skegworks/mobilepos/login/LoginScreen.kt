@@ -21,7 +21,7 @@ fun LoginScreen(
     modifier: Modifier,
     viewModel: LoginViewModel,
     isCreateUser: Boolean,
-    loginSuccess: (String, UserRole?) -> Unit
+    loginSuccess: () -> Unit
 ) {
     val state = viewModel.state.collectAsState()
     Column(
@@ -48,7 +48,7 @@ fun LoginScreen(
         }
 
         if (state.value.success) {
-            loginSuccess(state.value.textStateEmail, state.value.userRole)
+            loginSuccess()
         }
     }
 

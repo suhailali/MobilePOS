@@ -2,19 +2,25 @@ package com.skegworks.mobilepos.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.skegworks.mobilepos.data.domain.UserRole
 import com.skegworks.mobilepos.data.remote.firestore.FirestoreHelper
+import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val firestoreHelper: FirestoreHelper) :
+class LoginViewModel @Inject constructor(
+    private val firestoreHelper: FirestoreHelper,
+    private val userPreferenceHandler: UserPreferenceHandler
+) :
     ViewModel() {
     private val _state = MutableStateFlow(LoginState())
     val state: StateFlow<LoginState> = _state.asStateFlow()
@@ -103,13 +109,16 @@ class LoginViewModel @Inject constructor(private val firestoreHelper: FirestoreH
         firestoreHelper.getDocument("users", id, onSuccess = { document ->
             val role = document.getString("role")
             role?.let {
-                _state.update {
-                    it.copy(
-                        userRole = UserRole.fromRole(role),
-                        success = true,
-                        isLoading = false,
-                        errorMessage = null
-                    )
+                UserRole.fromRole(role)?.let { userRole ->
+                    saveUser(id, userRole)
+                    _state.update {
+                        it.copy(
+                            userRole = userRole,
+                            success = true,
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
                 }
             }
         }) {
@@ -121,6 +130,12 @@ class LoginViewModel @Inject constructor(private val firestoreHelper: FirestoreH
                 )
             }
             Log.e("Auth", "Get user role failed: ${it.message}")
+        }
+    }
+
+    private fun saveUser(email: String, role: UserRole) {
+        viewModelScope.launch {
+            userPreferenceHandler.saveUser(_state.value.textStateEmail, role)
         }
     }
 }

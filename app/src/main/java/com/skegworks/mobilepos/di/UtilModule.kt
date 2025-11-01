@@ -12,6 +12,8 @@ import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.UUIDGeneratorImpl
 import com.skegworks.mobilepos.utils.files.FileHandler
 import com.skegworks.mobilepos.utils.files.FileHandlerImpl
+import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
+import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandlerImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,5 +55,11 @@ class UtilModule {
     @Provides
     fun providesFileHandler(@ApplicationContext context: Context): FileHandler {
         return FileHandlerImpl(context)
+    }
+
+    @Singleton
+    @Provides
+    fun providesUserPreferenceHandler(@ApplicationContext context: Context): UserPreferenceHandler {
+        return UserPreferenceHandlerImpl(context)
     }
 }

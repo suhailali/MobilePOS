@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -18,16 +19,17 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LandingScreen(
     modifier: Modifier,
-    content: List<String>,
+    viewModel: HomeViewModel,
     onClick: (String) -> Unit,
 ) {
+    val state = viewModel.state.collectAsState()
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Fixed(3),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        items(content) { item ->
+        items(state.value.features) { item ->
             Box(
                 modifier = Modifier
                     .padding(12.dp)

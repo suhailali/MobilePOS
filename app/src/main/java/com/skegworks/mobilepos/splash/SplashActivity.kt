@@ -14,8 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.os.bundleOf
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.skegworks.mobilepos.MainActivity
-import com.skegworks.mobilepos.customer.CustomerActivity
 import com.skegworks.mobilepos.login.LoginActivity
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import dagger.hilt.android.AndroidEntryPoint
