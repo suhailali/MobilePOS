@@ -15,8 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.os.bundleOf
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import coil3.Bitmap
 import com.skegworks.mobilepos.barcode.ZxingBarcodeGenerator
+import com.skegworks.mobilepos.cashcounter.CashCounterActivity
 import com.skegworks.mobilepos.category.CategoryActivity
 import com.skegworks.mobilepos.customer.CustomerActivity
 import com.skegworks.mobilepos.utils.files.FileHandlerImpl
@@ -25,20 +29,40 @@ import com.skegworks.mobilepos.pdf.PdfGeneratorImpl
 import com.skegworks.mobilepos.pos.POSActivity
 import com.skegworks.mobilepos.product.GenerateBarCodeUseCase
 import com.skegworks.mobilepos.product.ProductActivity
-import com.skegworks.mobilepos.splash.SplashViewModel
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import com.skegworks.mobilepos.vendors.VendorActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlin.getValue
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class HomeActivity : ComponentActivity() {
     private val viewModel: HomeViewModel by viewModels<HomeViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         viewModel.getUserRole()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.events.collect { events ->
+                    when(events) {
+                        HomeEvents.NAVIGATE_TO_CUSTOMER -> {
+                            val intent = Intent(this@HomeActivity, CustomerActivity::class.java)
+                            this@HomeActivity.startActivity(intent)
+                        }
+                        HomeEvents.NAVIGATE_TO_POS -> {
+                            val intent = Intent(this@HomeActivity, POSActivity::class.java)
+                            this@HomeActivity.startActivity(intent)
+                        }
+                        HomeEvents.NAVIGATE_TO_CASH_COUNTER -> {
+                            val intent = Intent(this@HomeActivity, CashCounterActivity::class.java)
+                            this@HomeActivity.startActivity(intent)
+                        }
+                    }
+                }
+            }
+        }
         setContent {
             MobilePOSTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -107,8 +131,7 @@ class MainActivity : ComponentActivity() {
                             }
 
                             "POS" -> {
-                                val intent = Intent(context, POSActivity::class.java)
-                                context.startActivity(intent)
+                                viewModel.openCashCounter()
                             }
                         }
                     }

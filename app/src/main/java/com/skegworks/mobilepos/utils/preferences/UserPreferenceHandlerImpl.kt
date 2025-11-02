@@ -18,8 +18,16 @@ class UserPreferenceHandlerImpl(private val context: Context): UserPreferenceHan
         return userPreferencesStore.data.first().role
     }
 
+    suspend fun Context.fetchUserEmail(): String? {
+        return userPreferencesStore.data.first().email
+    }
+
     override suspend fun getUserRole(): UserRole? {
         return context.fetchUserRole()
+    }
+
+    override suspend fun getUserEmail(): String? {
+        return context.fetchUserEmail()
     }
 
     override suspend fun saveUser(

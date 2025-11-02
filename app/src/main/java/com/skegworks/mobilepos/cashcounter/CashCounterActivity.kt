@@ -1,4 +1,4 @@
-package com.skegworks.mobilepos.login
+package com.skegworks.mobilepos.cashcounter
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,33 +11,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.skegworks.mobilepos.home.HomeActivity
+import com.skegworks.mobilepos.pos.POSActivity
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class LoginActivity : ComponentActivity() {
-
+class CashCounterActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val bundle = intent.extras
-        val isCreateUser = bundle?.getBoolean("isCreateUser") ?: false
         enableEdgeToEdge()
         setContent {
             MobilePOSTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val viewModel: LoginViewModel by viewModels<LoginViewModel>()
                     val context = LocalContext.current
-                    LoginScreen(
+                    val viewModel: CashCounterViewModel by viewModels<CashCounterViewModel>()
+                    CashCounterScreen(
                         modifier = Modifier.padding(innerPadding),
-                        viewModel,
-                        isCreateUser
+                        viewModel
                     ) {
-                        val intent = Intent(context, HomeActivity::class.java)
+                        val intent = Intent(context, POSActivity::class.java)
                         context.startActivity(intent)
                         finish()
                     }
-
                 }
             }
         }

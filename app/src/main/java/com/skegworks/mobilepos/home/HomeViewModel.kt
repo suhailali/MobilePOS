@@ -2,22 +2,30 @@ package com.skegworks.mobilepos.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.cashcounter.CashCounterRepository
+import com.skegworks.mobilepos.data.domain.CashCounterStatus
 import com.skegworks.mobilepos.data.domain.UserRole
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val userPreferenceHandler: UserPreferenceHandler) :
+class HomeViewModel @Inject constructor(private val userPreferenceHandler: UserPreferenceHandler,
+    private val cashCounterRepository: CashCounterRepository) :
     ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state.asStateFlow()
+
+    private val _events = MutableSharedFlow<HomeEvents>()
+    val events = _events.asSharedFlow()
 
     fun getUserRole() {
         viewModelScope.launch {
@@ -78,4 +86,26 @@ class HomeViewModel @Inject constructor(private val userPreferenceHandler: UserP
             null -> return listOf()
         }
     }
+
+    fun openCashCounter() {
+        viewModelScope.launch {
+            val cashCounter = cashCounterRepository.getLatestCashCounter()
+            if (cashCounter == null) {
+                _events.emit(HomeEvents.NAVIGATE_TO_CASH_COUNTER)
+            } else {
+                if (cashCounter.status == CashCounterStatus.CLOSED) {
+                    _events.emit(HomeEvents.NAVIGATE_TO_CASH_COUNTER)
+                } else {
+                    //TODO check if date is today else close the counter first
+                    _events.emit(HomeEvents.NAVIGATE_TO_CUSTOMER)
+                }
+            }
+        }
+    }
+}
+
+enum class HomeEvents {
+    NAVIGATE_TO_CASH_COUNTER,
+    NAVIGATE_TO_POS,
+    NAVIGATE_TO_CUSTOMER
 }

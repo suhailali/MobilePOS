@@ -6,4 +6,6 @@ interface UserPreferenceHandler {
     suspend fun getUserRole(): UserRole?
 
     suspend fun saveUser(email: String, role: UserRole)
+
+    suspend fun getUserEmail(): String?
 }

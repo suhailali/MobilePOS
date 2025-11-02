@@ -1,5 +1,8 @@
 package com.skegworks.mobilepos.di
 
+import com.skegworks.mobilepos.cashcounter.CashCounterDao
+import com.skegworks.mobilepos.cashcounter.CashCounterRepository
+import com.skegworks.mobilepos.cashcounter.CashCounterRepositoryImpl
 import com.skegworks.mobilepos.category.CategoryDao
 import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.category.CategoryRepositoryImpl
@@ -71,6 +74,14 @@ class AppModule {
         syncData: SyncData
     ): InvoiceRepository {
         return InvoiceRepositoryImpl(invoiceDao, invoiceItemDao, syncData)
+    }
+
+    @Provides
+    @Singleton
+    fun providesCashCounterRepository(
+        cashCounterDao: CashCounterDao,
+    ): CashCounterRepository {
+        return CashCounterRepositoryImpl(cashCounterDao)
     }
 
 }

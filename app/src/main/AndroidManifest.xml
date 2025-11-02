@@ -37,10 +37,13 @@
             android:name=".login.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".home.MainActivity"
+            android:name=".home.HomeActivity"
             android:exported="false" />
         <activity
             android:name=".pos.POSActivity"
+            android:exported="false" />
+        <activity
+            android:name=".cashcounter.CashCounterActivity"
             android:exported="false" />
         <activity
             android:name=".splash.SplashActivity"
