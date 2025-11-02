@@ -314,11 +314,11 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         SimpleBottomSheet(
             list = state.value.color,
             onItemSelected = {
-                viewModel.handleIntent(AddProductIntent.UpdateColor(it.toString()))
+                viewModel.handleIntent(AddProductIntent.UpdateColor(it))
                 isColorSheetOpen = false
             },
             labelSelector = {
-                it.toString()
+                it
             }
         ) {
             isColorSheetOpen = false
@@ -332,7 +332,7 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
                 isSizeSheetOpen = false
             },
             labelSelector = {
-                it.toString()
+                it
             }
         ) {
             isSizeSheetOpen = false
