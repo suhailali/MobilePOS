@@ -50,8 +50,8 @@ data class AddProductState(
     val saleMargins: List<Int> = listOf(0, 5, 10, 15, 20, 25, 30, 35, 40, 43, 45, 48, 50, 53, 55, 58, 60, 65, 70, 75, 80, 85, 90, 95, 100),
     val isLoading: Boolean = false,
     val barcodeBitmap: Bitmap? = null,
-    val color: List<Color> = listOf(Color.Red, Color.Blue, Color.Green, Color.Yellow, Color.Magenta,
-        Color.Cyan, Color.Gray, Color.Black, Color.White, Color.LightGray, Color.DarkGray, Color.Transparent, Color.Unspecified),
+    val color: List<String> = listOf("Red","Blue", "Green", "Yellow", "Magenta",
+        "Cyan", "Gray", "Black", "White", "LightGray", "DarkGray", "Transparent", "Unspecified"),
     val size: List<String> = listOf("S", "M", "L", "XL", "XXL", "XXXL", "Free", "NONE"),
     val quantity: List<Int> = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50),
 
