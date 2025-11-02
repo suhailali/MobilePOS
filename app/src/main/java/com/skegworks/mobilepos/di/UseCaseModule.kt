@@ -1,5 +1,8 @@
 package com.skegworks.mobilepos.di
 
+import com.skegworks.mobilepos.customer.CustomerRepository
+import com.skegworks.mobilepos.customer.FetchCustomerUseCase
+import com.skegworks.mobilepos.customer.FetchCustomerUseCaseImpl
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCaseImpl
 import com.skegworks.mobilepos.invoice.InvoiceRepository
@@ -29,5 +32,10 @@ class UseCaseModule {
     @Provides
     fun provideSyncInvoiceUseCase(repository: InvoiceRepository): SyncInvoiceUseCase {
         return SyncInvoiceUseCaseImpl(repository)
+    }
+
+    @Provides
+    fun providesFetchCustomerUseCase(repository: CustomerRepository): FetchCustomerUseCase {
+        return FetchCustomerUseCaseImpl(repository)
     }
 }

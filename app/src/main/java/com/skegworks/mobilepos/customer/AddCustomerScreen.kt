@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import com.skegworks.mobilepos.ui.component.SimpleTextField
 
 @Composable
-fun AddCustomerScreen(modifier: Modifier, viewModel: CustomerViewModel) {
+fun AddCustomerScreen(modifier: Modifier, viewModel: CustomerViewModel, onSuccess: () -> Unit) {
     val state = viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
 
@@ -44,6 +44,7 @@ fun AddCustomerScreen(modifier: Modifier, viewModel: CustomerViewModel) {
 
         if (state.value.isSaved) {
             Text("Value Saved Successfully")
+            onSuccess()
         }
 
         state.value.error?.let {

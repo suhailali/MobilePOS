@@ -27,6 +27,9 @@ object ApplyDiscount
 @Serializable
 object POSScreen
 
+@Serializable
+object AddCustomer
+
 @OptIn(ExperimentalGetImage::class)
 @Composable
 fun POSScreenNavigation(
@@ -44,7 +47,9 @@ fun POSScreenNavigation(
             POSScreen(modifier = modifier, viewModel = viewmodel, posNavigator)
         }
 
-        composable<SearchProduct> {  }
+        composable<SearchProduct> {
+
+        }
 
         composable<AddItem> {
             BarcodeScannerScreen(modifier = modifier, viewModel = viewmodel) {
@@ -58,4 +63,5 @@ fun POSScreenNavigation(
 class POSNavigator(private val navController: NavController) {
     fun navigateToAddItem() = navController.navigate(AddItem)
     fun navigateToPOSScreen() = navController.navigate(POSScreen)
+    fun navigateToCustomerScreen() = navController.navigate(AddCustomer)
 }

@@ -112,6 +112,13 @@ class POSViewModel @Inject constructor(
                     }
                 }
             }
+            is POSIntent.AddCustomer -> {
+                _state.update {
+                    it.copy(
+                        customer = intent.customer
+                    )
+                }
+            }
         }
     }
 

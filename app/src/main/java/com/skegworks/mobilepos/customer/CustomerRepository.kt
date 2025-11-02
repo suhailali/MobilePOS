@@ -9,6 +9,8 @@ interface CustomerRepository {
 
     suspend fun getAllCustomers(): List<Customer>
 
+    suspend fun getCustomersByPhone(phone: String): List<Customer>?
+
     suspend fun updateCustomer(customer: Customer)
 
     suspend fun deleteCustomer(customer: Customer)

@@ -7,22 +7,57 @@ import com.skegworks.mobilepos.utils.UUIDGenerator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class CustomerViewModel @Inject constructor(
     private val syncCustomerUseCase: SyncCustomerUseCase,
+    private val fetchCustomerUseCase: FetchCustomerUseCase,
     private val uuidGenerator: UUIDGenerator
 ) :
     ViewModel() {
 
     private val _state = MutableStateFlow(AddCustomerState())
     val state: StateFlow<AddCustomerState> = _state.asStateFlow()
+
+    private val _stateSearch = MutableStateFlow(SearchCustomerState())
+    val stateSearch: StateFlow<SearchCustomerState> = _stateSearch.asStateFlow()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            stateSearch.map {
+                it.textStatePhone
+            }.debounce(400)
+                .distinctUntilChanged()
+                .collectLatest { phone ->
+                    fetchCustomers(phone)
+                }
+        }
+    }
+
+    @OptIn(FlowPreview::class)
+    fun handleSearchIntent(intent: SearchCustomerIntent) {
+        when (intent) {
+            is SearchCustomerIntent.SearchPhone -> {
+                _stateSearch.update {
+                    it.copy(
+                        textStatePhone = intent.phone
+                    )
+                }
+            }
+        }
+    }
+
 
     fun handleIntent(intent: AddCustomerIntent) {
         when (intent) {
@@ -121,5 +156,24 @@ class CustomerViewModel @Inject constructor(
     private fun isCustomerPhoneValid(): Boolean {
         //TODO phone number length should be configurable and based on country
         return state.value.textStatePhone.isNotEmpty() && state.value.textStatePhone.length == 10
+    }
+
+    fun fetchCustomers(phone: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val list = fetchCustomerUseCase.invoke(phone)
+            if (list == null) {
+                _stateSearch.update {
+                    it.copy(
+                        error = "No Data Found"
+                    )
+                }
+            } else {
+                _stateSearch.update {
+                    it.copy(
+                        customers = list
+                    )
+                }
+            }
+        }
     }
 }

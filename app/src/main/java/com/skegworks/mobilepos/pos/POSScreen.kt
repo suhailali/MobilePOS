@@ -39,8 +39,12 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier.height(3.dp))
         Column(modifier = Modifier.fillMaxWidth()) {
-            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text("POS")
                 Button(onClick = {
                     viewModel.handleIntent(POSIntent.AddProduct)
@@ -49,18 +53,36 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     Text("BarCode")
                 }
 
-                Button(onClick = { viewModel.handleIntent(POSIntent.Payment)}) {
+                Button(onClick = { viewModel.handleIntent(POSIntent.Payment) }) {
                     Text("Pay")
                 }
             }
-            Row(modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Text("Invoice No. : 12362782")
                 Text("Date : 12-12-2023")
             }
-            Row {
-                Text("Customer: 12362782")
+
+            if (state.value.customer != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    state.value.customer?.let {
+                        Text("Customer Name: ${it.name}")
+                        Text("Customer Phone: ${it.phone}")
+                    }
+                }
+            } else {
+                Button(onClick = {
+                    navigator.navigateToCustomerScreen()
+                }) {
+                    Text("Add Customer")
+                }
             }
+
 //            Row {
 //                SimpleTextField(textState = state.value.invoiceNumber, "Category") { }
 //            }
@@ -73,8 +95,13 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
             }
 
         }
-        Text("Total Amount ${state.value.totalPrice}")
-        Text("Discount ${state.value.totalDiscount}")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Total Amount ${state.value.totalPrice}")
+            Text("Discount ${state.value.totalDiscount}")
+        }
         Text("To Pay ${state.value.finalPriceToPay}")
 
         Button(onClick = {

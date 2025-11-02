@@ -24,6 +24,12 @@ class CustomerRepositoryImpl(
         }
     }
 
+    override suspend fun getCustomersByPhone(phone: String): List<Customer>? {
+        return customerDao.getCustomersByPhone(phone)?.map {
+            it.toDomain()
+        }
+    }
+
     override suspend fun updateCustomer(customer: Customer) {
         customerDao.updateCustomer(customer.toEntity())
     }

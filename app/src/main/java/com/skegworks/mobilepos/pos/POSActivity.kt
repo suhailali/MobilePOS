@@ -16,9 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
+import com.skegworks.mobilepos.data.domain.Customer
 import com.skegworks.mobilepos.print.SeznikPrinterManager
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.json.Json
 
 @AndroidEntryPoint
 class POSActivity : ComponentActivity() {
@@ -36,13 +38,20 @@ class POSActivity : ComponentActivity() {
 //        printerManager = SeznikPrinterManager(this)
 
         //zprinterManager.fetchUUID()
-
+        val json = intent.getStringExtra("customer")
+        val customer = json?.let { Json.decodeFromString<Customer>(it) }
         setContent {
             MobilePOSTheme {
                 val viewModel: POSViewModel by viewModels<POSViewModel>()
+                customer?.let {
+                    viewModel.handleIntent(POSIntent.AddCustomer(it))
+                }
 //                viewModel.printLabel()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    POSScreenNavigation(modifier = Modifier.padding(innerPadding), viewmodel = viewModel)
+                    POSScreenNavigation(
+                        modifier = Modifier.padding(innerPadding),
+                        viewmodel = viewModel
+                    )
                 }
             }
         }
