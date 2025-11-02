@@ -10,6 +10,7 @@ data class AddCustomerState(
     val textStateCreatedAt: Long = System.currentTimeMillis(),
     val textStateUpdatedAt: Long = System.currentTimeMillis(),
     val isSaved: Boolean = false,
+    val error: String? = null
 ) {
     fun clearState(): AddCustomerState {
         return AddCustomerState()

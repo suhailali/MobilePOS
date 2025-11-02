@@ -10,8 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.skegworks.mobilepos.category.AddCategoryIntent
-import com.skegworks.mobilepos.category.CategoryViewModel
+import androidx.compose.ui.graphics.Color
 import com.skegworks.mobilepos.ui.component.SimpleTextField
 
 @Composable
@@ -20,7 +19,9 @@ fun AddCustomerScreen(modifier: Modifier, viewModel: CustomerViewModel) {
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = modifier.verticalScroll(scrollState).fillMaxWidth(),
+        modifier = modifier
+            .verticalScroll(scrollState)
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         SimpleTextField(textState = state.value.textStateName, "Name") {
@@ -43,6 +44,10 @@ fun AddCustomerScreen(modifier: Modifier, viewModel: CustomerViewModel) {
 
         if (state.value.isSaved) {
             Text("Value Saved Successfully")
+        }
+
+        state.value.error?.let {
+            Text(it, color = Color.Red)
         }
     }
 }

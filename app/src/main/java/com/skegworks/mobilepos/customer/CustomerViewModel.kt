@@ -69,6 +69,23 @@ class CustomerViewModel @Inject constructor(
             }
 
             is AddCustomerIntent.Save -> {
+                if (isCustomerNameValid().not()) {
+                    _state.update {
+                        it.copy(
+                            error = "Enter Valid Name!"
+                        )
+                    }
+                    return
+                }
+
+                if (isCustomerPhoneValid().not()) {
+                    _state.update {
+                        it.copy(
+                            error = "Enter Valid Phone  Number!"
+                        )
+                    }
+                    return
+                }
                 val customer = Customer(
                     name = _state.value.textStateName,
                     email = _state.value.textStateEmail,
@@ -95,5 +112,14 @@ class CustomerViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun isCustomerNameValid(): Boolean {
+        return state.value.textStateName.isNotEmpty() && state.value.textStateName.length > 2
+    }
+
+    private fun isCustomerPhoneValid(): Boolean {
+        //TODO phone number length should be configurable and based on country
+        return state.value.textStatePhone.isNotEmpty() && state.value.textStatePhone.length == 10
     }
 }
