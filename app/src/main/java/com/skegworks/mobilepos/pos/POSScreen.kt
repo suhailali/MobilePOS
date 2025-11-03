@@ -87,10 +87,6 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     Text("Add Customer")
                 }
             }
-
-//            Row {
-//                SimpleTextField(textState = state.value.invoiceNumber, "Category") { }
-//            }
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -116,19 +112,6 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
             }
 
         }
-    }
-}
-
-@Composable
-fun POSListHeader() {
-    Row(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text("Name", modifier = Modifier.weight(1.5f))
-        Text("Item Price", modifier = Modifier.weight(1f))
-        Text("SKU", modifier = Modifier.weight(1f))
-        Text("Quantity", modifier = Modifier.weight(1f))
-        Text("Sale Price", modifier = Modifier.weight(1f))
     }
 }
 

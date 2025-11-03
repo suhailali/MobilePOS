@@ -17,6 +17,8 @@ import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.domain.Business
 import com.skegworks.mobilepos.data.domain.Invoice
+import com.skegworks.mobilepos.data.domain.InvoiceItem
+import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.mapper.toInvoiceItem
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
@@ -62,32 +64,54 @@ class POSViewModel @Inject constructor(
         println("get Product for barcode $barcode")
         viewModelScope.launch(Dispatchers.IO) {
             val product = getProductFromBarcodeUseCase.invoke(barcode)
-            if (product != null) {
+            product?.let {
                 println("Product found for barcode $barcode")
-                _state.update {
-                    it.copy(
-                        searchingProduct = false,
-                        productFound = true,
-                        product = product,
-                        invoiceItems = it.invoiceItems + product.toInvoiceItem(uuidGenerator.generateUUID()),
-                    )
-                }
-
-                var totalPrice = 0
-                var discounts = 0.0
-                _state.value.invoiceItems.forEach{ item ->
-                    totalPrice = totalPrice + item.finalRoundedOffPrice
-                    discounts = discounts + item.discountAmount
-                }
-
-                _state.update {
-                    it.copy(
-                        totalPrice = totalPrice.toDouble(),
-                        totalDiscount = discounts,
-                        finalPriceToPay = totalPrice.toDouble()
-                    )
-                }
+                addOrUpdateItem(it)
+                calculateTotalPrice()
             }
+        }
+    }
+
+    private fun addOrUpdateItem(product: Product) {
+        val existingItems = state.value.invoiceItems.toMutableList()
+        val newItem = product.toInvoiceItem(uuidGenerator.generateUUID())
+
+        val existingIndex = existingItems.indexOfFirst { it.sku == newItem.sku }
+
+        if (existingIndex != -1) {
+            // Item exists → update quantity
+            val updatedItem = existingItems[existingIndex].copy(
+                quantity = existingItems[existingIndex].quantity + newItem.quantity
+            )
+            existingItems[existingIndex] = updatedItem
+        } else {
+            // Item not found → add new one
+            existingItems.add(newItem)
+        }
+        _state.update {
+            it.copy(
+                searchingProduct = false,
+                productFound = true,
+                product = product,
+                invoiceItems = existingItems,
+            )
+        }
+    }
+
+    private fun calculateTotalPrice() {
+        var totalPrice = 0
+        var discounts = 0.0
+        _state.value.invoiceItems.forEach { item ->
+            totalPrice = totalPrice + (item.finalRoundedOffPrice * item.quantity)
+            discounts = discounts + (item.discountAmount * item.quantity)
+        }
+
+        _state.update {
+            it.copy(
+                totalPrice = totalPrice.toDouble(),
+                totalDiscount = discounts,
+                finalPriceToPay = totalPrice.toDouble()
+            )
         }
     }
 
@@ -98,19 +122,24 @@ class POSViewModel @Inject constructor(
                 getProductForBarcode("UNSTHEUNSBLUNO000001")
                 getProductForBarcode("UNSTHEUNSPURNO000001")
             }
+
             is POSIntent.UpdateScanState -> {
                 _state.update { it.copy(productFound = false) }
             }
+
             is POSIntent.PrintInvoice -> {
                 createInvoice()
             }
+
             is POSIntent.Payment -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    _state.value.invoice?.let {
-                        syncInvoiceUseCase.invoke(it)
-                    }
-                }
+//                viewModelScope.launch(Dispatchers.IO) {
+//                    _state.value.invoice?.let {
+//                        syncInvoiceUseCase.invoke(it)
+//                    }
+//                }
+                getProductForBarcode("UNSTHEUNSBLUNO000001")
             }
+
             is POSIntent.AddCustomer -> {
                 _state.update {
                     it.copy(
@@ -118,13 +147,33 @@ class POSViewModel @Inject constructor(
                     )
                 }
             }
+
             is POSIntent.RemoveItem -> {
-                _state.update {
-                    it.copy(
-                        invoiceItems = it.invoiceItems - intent.invoiceItem,
-                    )
-                }
+                removeOrUpdateItem(intent.invoiceItem)
+                calculateTotalPrice()
             }
+        }
+    }
+
+    private fun removeOrUpdateItem(invoiceItem: InvoiceItem) {
+        val existingItems = state.value.invoiceItems.toMutableList()
+
+        val existingIndex = existingItems.indexOfFirst { it.sku == invoiceItem.sku }
+
+        if (existingIndex != -1 && existingItems[existingIndex].quantity > 1) {
+            // Item exists → update quantity
+            val updatedItem = existingItems[existingIndex].copy(
+                quantity = existingItems[existingIndex].quantity - 1
+            )
+            existingItems[existingIndex] = updatedItem
+        } else {
+            // Item not found → add new one
+            existingItems.remove(invoiceItem)
+        }
+        _state.update {
+            it.copy(
+                invoiceItems = existingItems
+            )
         }
     }
 

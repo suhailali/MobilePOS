@@ -201,7 +201,7 @@ fun Product.toInvoiceItem(id: String): InvoiceItem {
         createdBy = "",
         updatedBy = "",
         //TODO - this quantity is not same as Product
-        quantity = 0,
+        quantity = 1,
 
     )
 }
