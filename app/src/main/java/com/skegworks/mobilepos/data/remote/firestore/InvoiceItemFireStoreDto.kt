@@ -21,6 +21,7 @@ data class InvoiceItemFireStoreDto(
     val cost: Double = 0.0,
     val salePriceWithoutGst: Double = 0.0,
     val salePrice: Double = 0.0,
+    val salePriceWithoutDiscount: Int = 0,
     val finalRoundedOffPrice: Int = 0,
 
     val quantity: Int = 0,
@@ -35,7 +36,6 @@ data class InvoiceItemFireStoreDto(
     val updatedBy: String = "",
     val discountPercentage: Double = 0.0,
     val discountAmount: Double = 0.0,
-    var priceAfterDiscount: Double = 0.0,
 
     val productId: String = "",
     var invoiceId: String = "",

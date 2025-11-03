@@ -80,12 +80,11 @@ class POSViewModel @Inject constructor(
                     discounts = discounts + item.discountAmount
                 }
 
-                val finalPriceToPay = totalPrice - discounts
                 _state.update {
                     it.copy(
                         totalPrice = totalPrice.toDouble(),
                         totalDiscount = discounts,
-                        finalPriceToPay = finalPriceToPay
+                        finalPriceToPay = totalPrice.toDouble()
                     )
                 }
             }

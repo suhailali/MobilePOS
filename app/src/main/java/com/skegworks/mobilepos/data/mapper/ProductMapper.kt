@@ -28,6 +28,7 @@ fun ProductFireStoreDto.toDomain(): Product {
         cost = cost,
         salePriceWithoutGst = salePriceWithoutGst,
         salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
         finalRoundedOffPrice = finalRoundedOffPrice,
         quantity = quantity,
         alertQuantity = alertQuantity,
@@ -66,6 +67,7 @@ fun Product.toFirestoreDto(): ProductFireStoreDto {
         cost = cost,
         salePriceWithoutGst = salePriceWithoutGst,
         salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
         finalRoundedOffPrice = finalRoundedOffPrice,
         quantity = quantity,
         alertQuantity = alertQuantity,
@@ -104,6 +106,7 @@ fun ProductEntity.toDomain(): Product {
         cost = cost,
         salePriceWithoutGst = salePriceWithoutGst,
         salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
         finalRoundedOffPrice = finalRoundedOffPrice,
         quantity = quantity,
         alertQuantity = alertQuantity,
@@ -142,6 +145,7 @@ fun Product.toEntity(): ProductEntity {
         cost = cost,
         salePriceWithoutGst = salePriceWithoutGst,
         salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
         finalRoundedOffPrice = finalRoundedOffPrice,
         quantity = quantity,
         alertQuantity = alertQuantity,
@@ -187,7 +191,7 @@ fun Product.toInvoiceItem(id: String): InvoiceItem {
         discountPercentage = discountPercentage,
         discountAmount = discountAmount,
 
-        priceAfterDiscount = finalRoundedOffPrice - discountAmount,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
 
 
         productId = id,

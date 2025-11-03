@@ -183,6 +183,12 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
 
         }
         ReadOnlyTextField(
+            textState = state.value.textStateSalePriceWithoutDiscount.toString(),
+            "Sale Price Without Discount"
+        ) {
+
+        }
+        ReadOnlyTextField(
             textState = state.value.textStateFinalRoundedOffPrice.toString(),
             "Final Round Off Price"
         ) {

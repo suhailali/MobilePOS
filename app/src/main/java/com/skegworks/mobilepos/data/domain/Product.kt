@@ -22,6 +22,7 @@ data class Product(
     val salePriceWithoutGst: Double,
     val salePrice: Double,
     val finalRoundedOffPrice: Int,
+    val salePriceWithoutDiscount: Int,
 
     val quantity: Int,
     val alertQuantity: Int,

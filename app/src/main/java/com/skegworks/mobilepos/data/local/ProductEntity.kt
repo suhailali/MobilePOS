@@ -3,7 +3,6 @@ package com.skegworks.mobilepos.data.local
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ColumnInfo
-import java.util.UUID
 
 @Entity(tableName = "products")
 data class ProductEntity(
@@ -27,6 +26,7 @@ data class ProductEntity(
     @ColumnInfo(name = "cost") val cost: Double,
     @ColumnInfo(name = "sale_price_without_gst") val salePriceWithoutGst: Double,
     @ColumnInfo(name = "sale_price") val salePrice: Double,
+    @ColumnInfo(name = "sale_price_without_discount") val salePriceWithoutDiscount: Int,
     @ColumnInfo(name = "final_rounded_off_price") val finalRoundedOffPrice: Int,
 
     @ColumnInfo(name = "quantity") val quantity: Int,

@@ -21,6 +21,7 @@ data class InvoiceItem(
     val cost: Double,
     val salePriceWithoutGst: Double,
     val salePrice: Double,
+    val salePriceWithoutDiscount: Int,
     val finalRoundedOffPrice: Int,
 
     val quantity: Int,
@@ -32,7 +33,6 @@ data class InvoiceItem(
     val updatedBy: String,
     val discountPercentage: Double,
     val discountAmount: Double,
-    var priceAfterDiscount: Double,
 
     val productId: String,
     var invoiceId: String,

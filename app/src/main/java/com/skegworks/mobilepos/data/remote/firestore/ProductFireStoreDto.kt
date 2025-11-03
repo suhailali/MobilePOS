@@ -21,6 +21,7 @@ data class ProductFireStoreDto(
     val cost: Double = 0.0,
     val salePriceWithoutGst: Double = 0.0,
     val salePrice: Double = 0.0,
+    val salePriceWithoutDiscount: Int = 0,
     val finalRoundedOffPrice: Int = 0,
 
     val quantity: Int = 0,

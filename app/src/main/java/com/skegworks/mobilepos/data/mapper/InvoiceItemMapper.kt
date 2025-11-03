@@ -26,6 +26,7 @@ fun InvoiceItemFireStoreDto.toDomain(): InvoiceItem {
         cost = cost,
         salePriceWithoutGst = salePriceWithoutGst,
         salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
         finalRoundedOffPrice = finalRoundedOffPrice,
         quantity = quantity,
         isActive = isActive,
@@ -39,8 +40,7 @@ fun InvoiceItemFireStoreDto.toDomain(): InvoiceItem {
         productId = productId,
         invoiceId = invoiceId,
         invoiceNumber = invoiceNumber,
-        invoiceDate = invoiceDate,
-        priceAfterDiscount = priceAfterDiscount
+        invoiceDate = invoiceDate
     )
 }
 
@@ -66,6 +66,7 @@ fun InvoiceItem.toFirestoreDto(): InvoiceItemFireStoreDto {
         cost = cost,
         salePriceWithoutGst = salePriceWithoutGst,
         salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
         finalRoundedOffPrice = finalRoundedOffPrice,
         quantity = quantity,
         isActive = isActive,
@@ -79,8 +80,7 @@ fun InvoiceItem.toFirestoreDto(): InvoiceItemFireStoreDto {
         productId = productId,
         invoiceId = invoiceId,
         invoiceNumber = invoiceNumber,
-        invoiceDate = invoiceDate,
-        priceAfterDiscount = priceAfterDiscount
+        invoiceDate = invoiceDate
     )
 }
 
@@ -106,6 +106,7 @@ fun InvoiceItemEntity.toDomain(): InvoiceItem {
         cost = cost,
         salePriceWithoutGst = salePriceWithoutGst,
         salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
         finalRoundedOffPrice = finalRoundedOffPrice,
         quantity = quantity,
         isActive = isActive,
@@ -119,8 +120,7 @@ fun InvoiceItemEntity.toDomain(): InvoiceItem {
         productId = productId,
         invoiceId = invoiceId,
         invoiceNumber = invoiceNumber,
-        invoiceDate = invoiceDate,
-        priceAfterDiscount = priceAfterDiscount
+        invoiceDate = invoiceDate
     )
 }
 
@@ -146,6 +146,7 @@ fun InvoiceItem.toEntity(): InvoiceItemEntity {
         cost = cost,
         salePriceWithoutGst = salePriceWithoutGst,
         salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
         finalRoundedOffPrice = finalRoundedOffPrice,
         quantity = quantity,
         isActive = isActive,
@@ -159,8 +160,7 @@ fun InvoiceItem.toEntity(): InvoiceItemEntity {
         productId = productId,
         invoiceId = invoiceId,
         invoiceNumber = invoiceNumber,
-        invoiceDate = invoiceDate,
-        priceAfterDiscount = priceAfterDiscount
+        invoiceDate = invoiceDate
     )
 }
 

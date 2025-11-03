@@ -32,7 +32,7 @@ import com.skegworks.mobilepos.vendors.VendorDao
         InvoiceEntity::class,
         InvoiceItemEntity::class,
         CashCounterEntity::class
-    ], version = 14
+    ], version = 15
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao

@@ -29,6 +29,7 @@ data class InvoiceItemEntity(
     @ColumnInfo(name = "cost") val cost: Double,
     @ColumnInfo(name = "sale_price_without_gst") val salePriceWithoutGst: Double,
     @ColumnInfo(name = "sale_price") val salePrice: Double,
+    @ColumnInfo(name = "sale_price_without_discount") val salePriceWithoutDiscount: Int,
     @ColumnInfo(name = "final_rounded_off_price") val finalRoundedOffPrice: Int,
 
     @ColumnInfo(name = "quantity") val quantity: Int,
@@ -38,7 +39,6 @@ data class InvoiceItemEntity(
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
     @ColumnInfo(name = "discount_percentage") val discountPercentage: Double,
     @ColumnInfo(name = "discount_amount") val discountAmount: Double,
-    @ColumnInfo(name = "price_after_discount") val priceAfterDiscount: Double,
     @ColumnInfo(name = "created_by") val createdBy: String,
     @ColumnInfo(name = "updated_by") val updatedBy: String,
     @ColumnInfo(name = "invoice_id") val invoiceId: String,
