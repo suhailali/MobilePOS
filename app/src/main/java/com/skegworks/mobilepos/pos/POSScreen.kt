@@ -141,7 +141,6 @@ fun POSListRow(index: Int, invoiceItem: InvoiceItem) {
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(invoiceItem.title, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-            Ico
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("Rate: ${invoiceItem.salePriceWithoutDiscount}", modifier = Modifier.weight(1f))
