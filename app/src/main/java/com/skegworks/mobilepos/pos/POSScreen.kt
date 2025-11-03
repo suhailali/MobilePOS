@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
@@ -24,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skegworks.mobilepos.data.domain.InvoiceItem
-import com.skegworks.mobilepos.product.ProductListRow
+import com.skegworks.mobilepos.ui.component.DeleteButton
 import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
@@ -110,7 +109,9 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
         Column {
             LazyColumn {
                 itemsIndexed(state.value.invoiceItems) { index, invoiceItem ->
-                    POSListRow(index, invoiceItem)
+                    POSListRow(index, invoiceItem) {
+                        viewModel.handleIntent(POSIntent.RemoveItem(invoiceItem))
+                    }
                 }
             }
 
@@ -132,7 +133,7 @@ fun POSListHeader() {
 }
 
 @Composable
-fun POSListRow(index: Int, invoiceItem: InvoiceItem) {
+fun POSListRow(index: Int, invoiceItem: InvoiceItem, onDelete: ()-> Unit) {
     val backgroundColor = if (index % 2 == 0) Color.White else Color.LightGray
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -141,6 +142,9 @@ fun POSListRow(index: Int, invoiceItem: InvoiceItem) {
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(invoiceItem.title, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            DeleteButton {
+               onDelete()
+            }
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("Rate: ${invoiceItem.salePriceWithoutDiscount}", modifier = Modifier.weight(1f))

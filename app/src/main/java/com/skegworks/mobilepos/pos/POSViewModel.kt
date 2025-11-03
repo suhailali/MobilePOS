@@ -118,6 +118,13 @@ class POSViewModel @Inject constructor(
                     )
                 }
             }
+            is POSIntent.RemoveItem -> {
+                _state.update {
+                    it.copy(
+                        invoiceItems = it.invoiceItems - intent.invoiceItem,
+                    )
+                }
+            }
         }
     }
 
