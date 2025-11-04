@@ -2,6 +2,7 @@ package com.skegworks.mobilepos.di
 
 import android.content.Context
 import androidx.room.Room
+import com.skegworks.mobilepos.appsettings.AppSettingsDao
 import com.skegworks.mobilepos.cashcounter.CashCounterDao
 import com.skegworks.mobilepos.category.CategoryDao
 import com.skegworks.mobilepos.customer.CustomerDao
@@ -65,5 +66,10 @@ class DatabaseModule {
     @Provides
     fun provideCashCounterDao(db: AppDatabase): CashCounterDao {
         return db.cashCounterDao()
+    }
+
+    @Provides
+    fun provideAppSettingsDao(db: AppDatabase): AppSettingsDao {
+        return db.appSettingsDao()
     }
 }

@@ -22,5 +22,6 @@ data class POSState @OptIn(ExperimentalTime::class) constructor(
     val invoicePDF: PdfDocument? = null,
     val pdfGenerated: Boolean = false,
     val invoice: Invoice? = null,
-    val customer: Customer? = null
+    val customer: Customer? = null,
+    val cashDiscount: Double = 0.0
 )

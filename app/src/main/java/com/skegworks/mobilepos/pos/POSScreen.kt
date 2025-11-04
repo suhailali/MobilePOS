@@ -58,6 +58,12 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     Text("BarCode")
                 }
 
+                Button(onClick = {
+                    viewModel.handleIntent(POSIntent.PrintInvoice)
+                }) {
+                    Text("Print")
+                }
+
                 Button(onClick = { viewModel.handleIntent(POSIntent.Payment) }) {
                     Text("Pay")
                 }
@@ -97,11 +103,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
         }
         Text("To Pay ${state.value.finalPriceToPay}")
 
-        Button(onClick = {
-            viewModel.handleIntent(POSIntent.PrintInvoice)
-        }) {
-            Text("Print")
-        }
+
         Column {
             LazyColumn {
                 itemsIndexed(state.value.invoiceItems) { index, invoiceItem ->

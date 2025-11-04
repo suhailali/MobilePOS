@@ -1,5 +1,8 @@
 package com.skegworks.mobilepos.di
 
+import com.skegworks.mobilepos.appsettings.AppSettingsDao
+import com.skegworks.mobilepos.appsettings.AppSettingsRepository
+import com.skegworks.mobilepos.appsettings.AppSettingsRepositoryImpl
 import com.skegworks.mobilepos.cashcounter.CashCounterDao
 import com.skegworks.mobilepos.cashcounter.CashCounterRepository
 import com.skegworks.mobilepos.cashcounter.CashCounterRepositoryImpl
@@ -82,6 +85,14 @@ class AppModule {
         cashCounterDao: CashCounterDao,
     ): CashCounterRepository {
         return CashCounterRepositoryImpl(cashCounterDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providesAppSettingsRepository(
+        appSettingsDao: AppSettingsDao,
+    ): AppSettingsRepository {
+        return AppSettingsRepositoryImpl(appSettingsDao)
     }
 
 }
