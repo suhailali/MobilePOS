@@ -121,17 +121,18 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
 }
 
 @Composable
-fun POSListRow(index: Int, invoiceItem: InvoiceItem, onDelete: ()-> Unit) {
+fun POSListRow(index: Int, invoiceItem: InvoiceItem, onDelete: () -> Unit) {
     val backgroundColor = if (index % 2 == 0) Color.White else Color.LightGray
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .background(backgroundColor)
             .padding(Dimens.MEDIUM_PADDING.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(invoiceItem.title, fontSize = 16.sp, fontWeight = FontWeight.Bold)
             DeleteButton {
-               onDelete()
+                onDelete()
             }
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -145,11 +146,14 @@ fun POSListRow(index: Int, invoiceItem: InvoiceItem, onDelete: ()-> Unit) {
         }
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("Discount %: ${invoiceItem.discountPercentage}", modifier = Modifier.weight(1f))
-            Text("Disc. Amount: ${invoiceItem.discountAmount}", modifier = Modifier.weight(1f))
-        }
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("Final Price: ${invoiceItem.finalRoundedOffPrice}", modifier = Modifier.weight(1f))
         }
-        Text("Net Amount: ${invoiceItem.finalRoundedOffPrice * invoiceItem.quantity}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(
+                "Net Amount: ${invoiceItem.finalRoundedOffPrice * invoiceItem.quantity}",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }

@@ -1,8 +1,8 @@
 package com.skegworks.mobilepos.di
 
 import com.skegworks.mobilepos.appsettings.AppSettingsRepository
-import com.skegworks.mobilepos.appsettings.GenerateNewInvoiceNumberUseCase
-import com.skegworks.mobilepos.appsettings.GenerateNewInvoiceNumberUseCaseImpl
+import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
+import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCaseImpl
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.FetchCustomerUseCase
 import com.skegworks.mobilepos.customer.FetchCustomerUseCaseImpl

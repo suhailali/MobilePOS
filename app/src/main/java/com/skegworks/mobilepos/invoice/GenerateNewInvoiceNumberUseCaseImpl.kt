@@ -1,5 +1,6 @@
-package com.skegworks.mobilepos.appsettings
+package com.skegworks.mobilepos.invoice
 
+import com.skegworks.mobilepos.appsettings.AppSettingsRepository
 import com.skegworks.mobilepos.utils.DateUtility
 import javax.inject.Inject
 

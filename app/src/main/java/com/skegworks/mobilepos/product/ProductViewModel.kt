@@ -257,7 +257,7 @@ class ProductViewModel @Inject constructor(
                         createdBy = "",
                         updatedBy = "",
                     )
-                    // syncProductUseCase(product)
+                    syncProductUseCase(product)
                     _state.update {
                         it.copy(
                             isSaved = true

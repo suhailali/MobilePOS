@@ -14,7 +14,7 @@ import android.print.PrintManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
-import com.skegworks.mobilepos.appsettings.GenerateNewInvoiceNumberUseCase
+import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.domain.Business
 import com.skegworks.mobilepos.data.domain.Invoice
@@ -121,7 +121,7 @@ class POSViewModel @Inject constructor(
     fun handleIntent(intent: POSIntent) {
         when (intent) {
             is POSIntent.AddProduct -> {
-                getProductForBarcode("ONEHITPROREDXL000001")
+                getProductForBarcode("UNSTUNST000003")
                 getProductForBarcode("UNSTHEUNSBLUNO000001")
                 getProductForBarcode("UNSTHEUNSPURNO000001")
             }
@@ -141,6 +141,7 @@ class POSViewModel @Inject constructor(
 //                    }
 //                }
                 getProductForBarcode("UNSTHEUNSBLUNO000001")
+                //update invoice counter and date
             }
 
             is POSIntent.AddCustomer -> {
@@ -195,12 +196,12 @@ class POSViewModel @Inject constructor(
                 id = uuidGenerator.generateUUID(),
                 business = business,
                 customer = customer,
-                invoiceNumber = "123456789",
-                invoiceDate = "12-12-2023",
-                items = _state.value.invoiceItems,
-                totalPrice = _state.value.totalPrice,
-                totalDiscount = _state.value.totalDiscount,
-                finalPrice = _state.value.finalPriceToPay,
+                invoiceNumber = state.value.invoiceNumber,
+                invoiceDate = state.value.invoiceDate,
+                items = state.value.invoiceItems,
+                totalPrice = state.value.totalPrice,
+                totalDiscount = state.value.totalDiscount,
+                finalPrice = state.value.finalPriceToPay,
                 isSynced = false
             )
             val pdf = generateInvoicePdfUseCase.generatePdf(invoice)
