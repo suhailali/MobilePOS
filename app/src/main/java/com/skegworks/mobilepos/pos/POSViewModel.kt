@@ -103,16 +103,18 @@ class POSViewModel @Inject constructor(
 
     private fun calculateTotalPrice() {
         var totalPrice = 0
-        var discounts = 0.0
+        var totalPriceBeforeDiscount = 0.0
         _state.value.invoiceItems.forEach { item ->
             totalPrice = totalPrice + (item.finalRoundedOffPrice * item.quantity)
-            discounts = discounts + (item.discountAmount * item.quantity)
+            totalPriceBeforeDiscount = totalPriceBeforeDiscount + (item.salePriceWithoutDiscount * item.quantity)
         }
+
+        val discount = totalPriceBeforeDiscount - totalPrice
 
         _state.update {
             it.copy(
                 totalPrice = totalPrice.toDouble(),
-                totalDiscount = discounts,
+                totalDiscount = discount,
                 finalPriceToPay = totalPrice.toDouble(),
             )
         }
@@ -221,6 +223,7 @@ class POSViewModel @Inject constructor(
     fun printPdf(context: Context, pdfDocument: PdfDocument, jobName: String) {
         _state.update {
             it.copy()
+            //Todo change state to print again
         }
         // Convert PdfDocument to ByteArray
         val outStream = java.io.ByteArrayOutputStream()
