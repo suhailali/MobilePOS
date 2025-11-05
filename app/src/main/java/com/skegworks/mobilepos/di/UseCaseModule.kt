@@ -1,5 +1,8 @@
 package com.skegworks.mobilepos.di
 
+import com.skegworks.mobilepos.appsettings.AppSettingsRepository
+import com.skegworks.mobilepos.appsettings.GenerateNewInvoiceNumberUseCase
+import com.skegworks.mobilepos.appsettings.GenerateNewInvoiceNumberUseCaseImpl
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.FetchCustomerUseCase
 import com.skegworks.mobilepos.customer.FetchCustomerUseCaseImpl
@@ -11,6 +14,7 @@ import com.skegworks.mobilepos.invoice.SyncInvoiceUseCaseImpl
 import com.skegworks.mobilepos.pos.GetProductFromBarCodeUseCaseImpl
 import com.skegworks.mobilepos.pos.GetProductFromBarcodeUseCase
 import com.skegworks.mobilepos.product.ProductRepository
+import com.skegworks.mobilepos.utils.DateUtility
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,5 +41,13 @@ class UseCaseModule {
     @Provides
     fun providesFetchCustomerUseCase(repository: CustomerRepository): FetchCustomerUseCase {
         return FetchCustomerUseCaseImpl(repository)
+    }
+
+    @Provides
+    fun providesGenerateNewInvoiceNumberUseCase(
+        appSettingsRepository: AppSettingsRepository,
+        dateUtility: DateUtility
+    ): GenerateNewInvoiceNumberUseCase {
+        return GenerateNewInvoiceNumberUseCaseImpl(appSettingsRepository, dateUtility)
     }
 }
