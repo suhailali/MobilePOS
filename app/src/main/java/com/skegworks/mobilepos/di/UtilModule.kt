@@ -8,6 +8,8 @@ import com.skegworks.mobilepos.sku.SkuGenerator
 import com.skegworks.mobilepos.sku.SkuGeneratorImpl
 import com.skegworks.mobilepos.sync.SyncData
 import com.skegworks.mobilepos.sync.SyncDataWithFireStore
+import com.skegworks.mobilepos.utils.DateUtility
+import com.skegworks.mobilepos.utils.DateUtilityImpl
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.UUIDGeneratorImpl
 import com.skegworks.mobilepos.utils.files.FileHandler
@@ -61,5 +63,11 @@ class UtilModule {
     @Provides
     fun providesUserPreferenceHandler(@ApplicationContext context: Context): UserPreferenceHandler {
         return UserPreferenceHandlerImpl(context)
+    }
+
+    @Singleton
+    @Provides
+    fun providesDateUtility(): DateUtility {
+        return DateUtilityImpl()
     }
 }
