@@ -8,9 +8,9 @@ import com.skegworks.mobilepos.data.domain.Product
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-data class POSState @OptIn(ExperimentalTime::class) constructor(
+data class POSState(
     val invoiceNumber: String = "",
-    val invoiceDate: String = Clock.System.now().toString(),
+    val invoiceDate: String = "",
     val product: Product? = null,
     val invoiceItems: List<InvoiceItem> = emptyList(),
 

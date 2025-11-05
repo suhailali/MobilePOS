@@ -14,6 +14,7 @@ import android.print.PrintManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.appsettings.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.domain.Business
 import com.skegworks.mobilepos.data.domain.Invoice
@@ -23,6 +24,7 @@ import com.skegworks.mobilepos.data.mapper.toInvoiceItem
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.print.SeznikPrinterManager
+import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.files.FileHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +46,9 @@ class POSViewModel @Inject constructor(
     private val customerRepository: CustomerRepository,
     private val fileHandler: FileHandler,
     private val uuidGenerator: UUIDGenerator,
-    private val syncInvoiceUseCase: SyncInvoiceUseCase
+    private val syncInvoiceUseCase: SyncInvoiceUseCase,
+    private val generateNewInvoiceNumberUseCase: GenerateNewInvoiceNumberUseCase,
+    private val dateUtility: DateUtility
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(POSState())
@@ -90,10 +94,9 @@ class POSViewModel @Inject constructor(
         }
         _state.update {
             it.copy(
-                searchingProduct = false,
-                productFound = true,
                 product = product,
                 invoiceItems = existingItems,
+                productFound = true,
             )
         }
     }
@@ -110,7 +113,7 @@ class POSViewModel @Inject constructor(
             it.copy(
                 totalPrice = totalPrice.toDouble(),
                 totalDiscount = discounts,
-                finalPriceToPay = totalPrice.toDouble()
+                finalPriceToPay = totalPrice.toDouble(),
             )
         }
     }
@@ -124,7 +127,7 @@ class POSViewModel @Inject constructor(
             }
 
             is POSIntent.UpdateScanState -> {
-                _state.update { it.copy(productFound = false) }
+                _state.update { it.copy() }
             }
 
             is POSIntent.PrintInvoice -> {
@@ -143,7 +146,7 @@ class POSViewModel @Inject constructor(
             is POSIntent.AddCustomer -> {
                 _state.update {
                     it.copy(
-                        customer = intent.customer
+                        customer = intent.customer,
                     )
                 }
             }
@@ -172,7 +175,7 @@ class POSViewModel @Inject constructor(
         }
         _state.update {
             it.copy(
-                invoiceItems = existingItems
+                invoiceItems = existingItems,
             )
         }
     }
@@ -203,9 +206,9 @@ class POSViewModel @Inject constructor(
             val pdf = generateInvoicePdfUseCase.generatePdf(invoice)
             _state.update {
                 it.copy(
-                    invoice = invoice,
                     invoicePDF = pdf,
                     pdfGenerated = true,
+                    invoice = invoice
                 )
             }
             //printPdf(application, pdf, "Invoice")
@@ -216,9 +219,7 @@ class POSViewModel @Inject constructor(
     // Print helper
     fun printPdf(context: Context, pdfDocument: PdfDocument, jobName: String) {
         _state.update {
-            it.copy(
-                pdfGenerated = false,
-            )
+            it.copy()
         }
         // Convert PdfDocument to ByteArray
         val outStream = java.io.ByteArrayOutputStream()
@@ -275,5 +276,17 @@ class POSViewModel @Inject constructor(
         }
 
         printManager.print(jobName, adapter, printAttributes)
+    }
+
+    fun getInvoiceNumber() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val invoiceNumber = generateNewInvoiceNumberUseCase.invoke()
+            _state.update {
+                it.copy(
+                    invoiceNumber = invoiceNumber,
+                    invoiceDate = dateUtility.getDate()
+                )
+            }
+        }
     }
 }

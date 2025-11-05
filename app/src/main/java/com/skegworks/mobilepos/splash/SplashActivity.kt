@@ -42,6 +42,7 @@ class SplashActivity: ComponentActivity() {
                         bundle.putBoolean("isCreateUser", false)
                         intent.putExtras(bundle)
                         context.startActivity(intent)
+                        finish()
                     }
                 }
             }

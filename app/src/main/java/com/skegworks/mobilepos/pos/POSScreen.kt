@@ -32,6 +32,9 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
 
     val context = LocalContext.current
 
+    LaunchedEffect(Unit) {
+        viewModel.getInvoiceNumber()
+    }
     LaunchedEffect(state.value.pdfGenerated) {
         if (state.value.pdfGenerated) {
             state.value.invoicePDF?.let {
@@ -72,8 +75,8 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Invoice No. : 12362782")
-                Text("Date : 12-12-2023")
+                Text("Invoice No. ${state.value.invoiceNumber}")
+                Text("Date: ${state.value.invoiceDate}")
             }
 
             if (state.value.customer != null) {
