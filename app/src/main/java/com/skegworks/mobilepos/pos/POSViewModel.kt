@@ -24,6 +24,7 @@ import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.mapper.toInvoiceItem
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
+import com.skegworks.mobilepos.invoice.UpdateInvoiceNumberUseCase
 import com.skegworks.mobilepos.print.SeznikPrinterManager
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
@@ -50,6 +51,7 @@ class POSViewModel @Inject constructor(
     private val uuidGenerator: UUIDGenerator,
     private val syncInvoiceUseCase: SyncInvoiceUseCase,
     private val generateNewInvoiceNumberUseCase: GenerateNewInvoiceNumberUseCase,
+    private val updateInvoiceNumberUseCase: UpdateInvoiceNumberUseCase,
     private val dateUtility: DateUtility
 ) : AndroidViewModel(application) {
 
@@ -190,8 +192,10 @@ class POSViewModel @Inject constructor(
 //                        syncInvoiceUseCase.invoke(it)
 //                    }
 //                }
-                getProductForBarcode("UNSTHEUNSBLUNO000001")
                 //update invoice counter and date
+                viewModelScope.launch(Dispatchers.IO) {
+                    updateInvoiceNumberUseCase.invoke()
+                }
             }
 
             is POSIntent.AddCustomer -> {
