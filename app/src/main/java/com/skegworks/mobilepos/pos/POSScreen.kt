@@ -55,8 +55,8 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
             ) {
                 Text("POS")
                 Button(onClick = {
-                    viewModel.handleIntent(POSIntent.AddProduct)
-                    //navigator.navigateToAddItem()
+                    //viewModel.handleIntent(POSIntent.AddProduct)
+                    navigator.navigateToAddItem()
                 }) {
                     Text("BarCode")
                 }
@@ -71,6 +71,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     Text("Pay")
                 }
             }
+            Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -78,7 +79,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 Text("Invoice No. ${state.value.invoiceNumber}")
                 Text("Date: ${state.value.invoiceDate}")
             }
-
+            Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
             if (state.value.customer != null) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -96,6 +97,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     Text("Add Customer")
                 }
             }
+            Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -104,8 +106,17 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
             Text("Total Amount ${state.value.totalPrice}")
             Text("Discount ${state.value.totalDiscount}")
         }
-        Text("To Pay ${state.value.finalPriceToPay}")
-
+        Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("To Pay ${state.value.finalPriceToPay}")
+            Button(onClick = { viewModel.handleIntent(POSIntent.Payment) }) {
+                Text("Add Coupon")
+            }
+        }
+        Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
 
         Column {
             LazyColumn {

@@ -17,6 +17,7 @@ import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.domain.Business
+import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.data.domain.Product
@@ -42,6 +43,7 @@ import javax.inject.Inject
 class POSViewModel @Inject constructor(
     application: Application,
     private val getProductFromBarcodeUseCase: GetProductFromBarcodeUseCase,
+    private val getCouponFromBarcodeUseCase: GetCouponFromBarcodeUseCase,
     private val generateInvoicePdfUseCase: GenerateInvoicePdfUseCase,
     private val customerRepository: CustomerRepository,
     private val fileHandler: FileHandler,
@@ -67,16 +69,33 @@ class POSViewModel @Inject constructor(
     fun getProductForBarcode(barcode: String) {
         println("get Product for barcode $barcode")
         viewModelScope.launch(Dispatchers.IO) {
-            val product = getProductFromBarcodeUseCase.invoke(barcode)
-            product?.let {
+            val productsFound = getProductFromBarcodeUseCase.invoke(barcode)
+            productsFound?.let { products ->
                 println("Product found for barcode $barcode")
-                addOrUpdateItem(it)
-                calculateTotalPrice()
+                _state.update {
+                    it.copy(
+                        searchResultProduct = products
+                    )
+                }
             }
         }
     }
 
-    private fun addOrUpdateItem(product: Product) {
+    fun getCouponForBarcode(barcode: String) {
+        println("get Coupon for barcode $barcode")
+        viewModelScope.launch(Dispatchers.IO) {
+            val couponsFound = getCouponFromBarcodeUseCase.invoke(barcode)
+            couponsFound?.let { coupons ->
+                _state.update {
+                    it.copy(
+                        searchResultCoupon = coupons
+                    )
+                }
+            }
+        }
+    }
+
+    private fun addOrUpdateProduct(product: Product) {
         val existingItems = state.value.invoiceItems.toMutableList()
         val newItem = product.toInvoiceItem(uuidGenerator.generateUUID())
 
@@ -101,12 +120,38 @@ class POSViewModel @Inject constructor(
         }
     }
 
+    private fun addOrUpdateCoupon(coupon: Coupon) {
+        val existingItems = state.value.invoiceItems.toMutableList()
+//        val newItem = coupon.toInvoiceItem(uuidGenerator.generateUUID())
+//
+//        val existingIndex = existingItems.indexOfFirst { it.sku == newItem.sku }
+//
+//        if (existingIndex != -1) {
+//            // Item exists → update quantity
+//            val updatedItem = existingItems[existingIndex].copy(
+//                quantity = existingItems[existingIndex].quantity + newItem.quantity
+//            )
+//            existingItems[existingIndex] = updatedItem
+//        } else {
+//            // Item not found → add new one
+//            existingItems.add(newItem)
+//        }
+//        _state.update {
+//            it.copy(
+//                product = product,
+//                invoiceItems = existingItems,
+//                productFound = true,
+//            )
+//        }
+    }
+
     private fun calculateTotalPrice() {
         var totalPrice = 0
         var totalPriceBeforeDiscount = 0.0
         _state.value.invoiceItems.forEach { item ->
             totalPrice = totalPrice + (item.finalRoundedOffPrice * item.quantity)
-            totalPriceBeforeDiscount = totalPriceBeforeDiscount + (item.salePriceWithoutDiscount * item.quantity)
+            totalPriceBeforeDiscount =
+                totalPriceBeforeDiscount + (item.salePriceWithoutDiscount * item.quantity)
         }
 
         val discount = totalPriceBeforeDiscount - totalPrice
@@ -123,13 +168,16 @@ class POSViewModel @Inject constructor(
     fun handleIntent(intent: POSIntent) {
         when (intent) {
             is POSIntent.AddProduct -> {
-                getProductForBarcode("UNSTUNST000003")
-                getProductForBarcode("UNSTHEUNSBLUNO000001")
-                getProductForBarcode("UNSTHEUNSPURNO000001")
+                addOrUpdateProduct(intent.product)
+                calculateTotalPrice()
             }
 
             is POSIntent.UpdateScanState -> {
-                _state.update { it.copy() }
+                _state.update {
+                    it.copy(
+                        productFound = false
+                    )
+                }
             }
 
             is POSIntent.PrintInvoice -> {
@@ -157,6 +205,24 @@ class POSViewModel @Inject constructor(
             is POSIntent.RemoveItem -> {
                 removeOrUpdateItem(intent.invoiceItem)
                 calculateTotalPrice()
+            }
+
+            is POSIntent.AddCoupon -> {
+                addOrUpdateCoupon(intent.coupon)
+                calculateTotalPrice()
+            }
+
+            is POSIntent.SearchItem -> {
+                getProductForBarcode(state.value.searchTerm)
+                getCouponForBarcode(state.value.searchTerm)
+            }
+
+            is POSIntent.UpdateSearchTerm -> {
+                _state.update {
+                    it.copy(
+                        searchTerm = intent.term
+                    )
+                }
             }
         }
     }

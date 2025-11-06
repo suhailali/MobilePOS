@@ -1,6 +1,7 @@
 package com.skegworks.mobilepos.di
 
 import com.skegworks.mobilepos.appsettings.AppSettingsRepository
+import com.skegworks.mobilepos.coupon.CouponRepository
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCaseImpl
 import com.skegworks.mobilepos.customer.CustomerRepository
@@ -11,6 +12,8 @@ import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCaseImpl
 import com.skegworks.mobilepos.invoice.InvoiceRepository
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCaseImpl
+import com.skegworks.mobilepos.pos.GetCouponFromBarCodeUseCaseImpl
+import com.skegworks.mobilepos.pos.GetCouponFromBarcodeUseCase
 import com.skegworks.mobilepos.pos.GetProductFromBarCodeUseCaseImpl
 import com.skegworks.mobilepos.pos.GetProductFromBarcodeUseCase
 import com.skegworks.mobilepos.product.ProductRepository
@@ -49,5 +52,10 @@ class UseCaseModule {
         dateUtility: DateUtility
     ): GenerateNewInvoiceNumberUseCase {
         return GenerateNewInvoiceNumberUseCaseImpl(appSettingsRepository, dateUtility)
+    }
+
+    @Provides
+    fun provideGetCouponFromBarcodeUseCase(couponRepository: CouponRepository): GetCouponFromBarcodeUseCase {
+        return GetCouponFromBarCodeUseCaseImpl(couponRepository)
     }
 }

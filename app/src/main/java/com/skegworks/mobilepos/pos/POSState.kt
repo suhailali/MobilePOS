@@ -1,12 +1,11 @@
 package com.skegworks.mobilepos.pos
 
 import android.graphics.pdf.PdfDocument
+import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Customer
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.data.domain.Product
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
 
 data class POSState(
     val invoiceNumber: String = "",
@@ -23,5 +22,8 @@ data class POSState(
     val pdfGenerated: Boolean = false,
     val invoice: Invoice? = null,
     val customer: Customer? = null,
-    val cashDiscount: Double = 0.0
+    val cashDiscount: Double = 0.0,
+    val searchTerm: String = "",
+    val searchResultProduct: List<Product> = emptyList(),
+    val searchResultCoupon: List<Coupon> = emptyList(),
 )

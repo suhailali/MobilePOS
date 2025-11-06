@@ -5,11 +5,13 @@ import androidx.room.RoomDatabase
 import com.skegworks.mobilepos.appsettings.AppSettingsDao
 import com.skegworks.mobilepos.cashcounter.CashCounterDao
 import com.skegworks.mobilepos.category.CategoryDao
+import com.skegworks.mobilepos.coupon.CouponDao
 import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.data.local.AppSettingsEntity
 import com.skegworks.mobilepos.data.local.BusinessEntity
 import com.skegworks.mobilepos.data.local.CashCounterEntity
 import com.skegworks.mobilepos.data.local.CategoryEntity
+import com.skegworks.mobilepos.data.local.CouponEntity
 import com.skegworks.mobilepos.data.local.CustomerEntity
 import com.skegworks.mobilepos.data.local.InvoiceEntity
 import com.skegworks.mobilepos.data.local.InvoiceItemEntity
@@ -30,8 +32,9 @@ import com.skegworks.mobilepos.vendors.VendorDao
         InvoiceEntity::class,
         InvoiceItemEntity::class,
         CashCounterEntity::class,
-        AppSettingsEntity::class
-    ], version = 16
+        AppSettingsEntity::class,
+        CouponEntity::class
+    ], version = 17
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
@@ -42,6 +45,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun invoiceItemDao(): InvoiceItemDao
     abstract fun cashCounterDao(): CashCounterDao
     abstract fun appSettingsDao(): AppSettingsDao
-
-
+    abstract fun couponDao(): CouponDao
 }

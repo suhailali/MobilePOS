@@ -14,12 +14,20 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,7 +39,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -39,7 +49,8 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import com.skegworks.mobilepos.data.domain.Product
+import com.skegworks.mobilepos.ui.component.SimpleTextField
+import com.skegworks.mobilepos.utils.Dimens
 import java.util.concurrent.Executors
 
 @ExperimentalGetImage
@@ -93,10 +104,11 @@ fun BarcodeScannerScreen(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Box(modifier = modifier
-            .width(400.dp)
-            .height(250.dp)) {
+        Box(
+            modifier = modifier
+                .width(400.dp)
+                .height(250.dp)
+        ) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { ctx ->
@@ -148,6 +160,7 @@ fun BarcodeScannerScreen(
                                             lastTime = now
                                             println("Barcode detected: $value")
                                             viewModel.getProductForBarcode(value)
+                                            viewModel.getCouponForBarcode(value)
                                         }
                                     }
                                 }
@@ -167,8 +180,49 @@ fun BarcodeScannerScreen(
                     previewView
                 }
             )
-
         }
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        Row {
+            SimpleTextField(state.value.searchTerm, "Search") {
+                viewModel.handleIntent(POSIntent.UpdateSearchTerm(it))
+            }
+            Button(onClick = {
+                viewModel.handleIntent(POSIntent.SearchItem)
+            }) {
+                Text("Search")
+            }
+        }
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text("Products", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
+            LazyColumn {
+                items(state.value.searchResultProduct) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().clickable{
+                            viewModel.handleIntent(POSIntent.AddProduct(it))
+                        },
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(it.title)
+                        Text(it.sku)
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+            Text("Coupons", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
+            LazyColumn {
+                items(state.value.searchResultCoupon) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().clickable{
+                            viewModel.handleIntent(POSIntent.AddCoupon(it))
+                        },
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(it.title)
+                        Text(it.discountCode)
+                    }
+                }
+            }
 
 //        IconButton(
 //            onClick = {
@@ -185,5 +239,6 @@ fun BarcodeScannerScreen(
 //                contentDescription = "Toggle Flash"
 //            )
 //        }
+        }
     }
 }

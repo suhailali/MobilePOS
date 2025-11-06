@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.skegworks.mobilepos.appsettings.AppSettingsDao
 import com.skegworks.mobilepos.cashcounter.CashCounterDao
 import com.skegworks.mobilepos.category.CategoryDao
+import com.skegworks.mobilepos.coupon.CouponDao
 import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.databse.AppDatabase
 import com.skegworks.mobilepos.invoice.InvoiceDao
@@ -71,5 +72,10 @@ class DatabaseModule {
     @Provides
     fun provideAppSettingsDao(db: AppDatabase): AppSettingsDao {
         return db.appSettingsDao()
+    }
+
+    @Provides
+    fun providesCouponDao(db: AppDatabase): CouponDao {
+        return db.couponDao()
     }
 }

@@ -7,7 +7,7 @@ interface ProductRepository {
     suspend fun updateProduct(product: Product)
     suspend fun deleteProduct(product: Product)
     suspend fun getProductById(id: String): Product?
-    suspend fun getProductForSku(sku: String): Product?
+    suspend fun getProductForSku(sku: String): List<Product>?
     suspend fun getAllProducts(): List<Product>
 
     suspend fun getMaxId(): Int?

@@ -9,6 +9,9 @@ import com.skegworks.mobilepos.cashcounter.CashCounterRepositoryImpl
 import com.skegworks.mobilepos.category.CategoryDao
 import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.category.CategoryRepositoryImpl
+import com.skegworks.mobilepos.coupon.CouponDao
+import com.skegworks.mobilepos.coupon.CouponRepository
+import com.skegworks.mobilepos.coupon.CouponRepositoryImpl
 import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.CustomerRepositoryImpl
@@ -93,6 +96,14 @@ class AppModule {
         appSettingsDao: AppSettingsDao,
     ): AppSettingsRepository {
         return AppSettingsRepositoryImpl(appSettingsDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providesCouponRepository(
+        couponDao: CouponDao,
+    ): CouponRepository {
+        return CouponRepositoryImpl(couponDao)
     }
 
 }
