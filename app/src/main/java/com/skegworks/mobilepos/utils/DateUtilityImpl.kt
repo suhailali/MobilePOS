@@ -15,4 +15,8 @@ class DateUtilityImpl: DateUtility {
         val year = calendar.get(Calendar.YEAR)
         return "${day.toString().padStart(2, '0')}/$month/$year"
     }
+
+    override fun getCurrentTimeStamp(): Long {
+       return System.currentTimeMillis()
+    }
 }

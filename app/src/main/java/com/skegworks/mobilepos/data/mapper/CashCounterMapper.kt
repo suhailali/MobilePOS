@@ -12,7 +12,7 @@ fun CashCounterFireStoreDto.toDomain(): CashCounter {
         id = id,
         date = date,
         balance = balance,
-        status = CashCounterStatus.fromRole(status) ?: CashCounterStatus.CLOSED,
+        status = CashCounterStatus.fromStatus(status) ?: CashCounterStatus.CLOSED,
         createdAt = createdAt,
         createdBy = createdBy,
         isSynced = isSynced
@@ -38,7 +38,7 @@ fun CashCounterEntity.toDomain(): CashCounter {
         id = id,
         date = date,
         balance = balance,
-        status = CashCounterStatus.fromRole(status) ?: CashCounterStatus.CLOSED,
+        status = CashCounterStatus.fromStatus(status) ?: CashCounterStatus.CLOSED,
         createdAt = createdAt,
         createdBy = createdBy,
         isSynced = isSynced

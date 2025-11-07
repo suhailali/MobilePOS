@@ -12,4 +12,8 @@ class AppSettingsRepositoryImpl(private val appSettingsDao: AppSettingsDao): App
     override suspend fun updateAppSettings(appSettings: AppSettings) {
         appSettingsDao.updateAppSettings(appSettings.toEntity())
     }
+
+    override suspend fun insertAppSettings(appSettings: AppSettings) {
+        appSettingsDao.insertAppSettings(appSettings.toEntity())
+    }
 }

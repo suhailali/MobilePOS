@@ -48,6 +48,7 @@ fun LoginScreen(
         }
 
         if (state.value.success) {
+            viewModel.initialiseAppSettings()
             loginSuccess()
         }
     }

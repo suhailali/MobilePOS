@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.skegworks.mobilepos.appsettings.InitialiseAppSettingsUseCase
 import com.skegworks.mobilepos.data.domain.UserRole
 import com.skegworks.mobilepos.data.remote.firestore.FirestoreHelper
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val firestoreHelper: FirestoreHelper,
-    private val userPreferenceHandler: UserPreferenceHandler
+    private val userPreferenceHandler: UserPreferenceHandler,
+    private val initialiseAppSettingsUseCase: InitialiseAppSettingsUseCase
 ) :
     ViewModel() {
     private val _state = MutableStateFlow(LoginState())
@@ -136,6 +139,12 @@ class LoginViewModel @Inject constructor(
     private fun saveUser(email: String, role: UserRole) {
         viewModelScope.launch {
             userPreferenceHandler.saveUser(_state.value.textStateEmail, role)
+        }
+    }
+
+    fun initialiseAppSettings() {
+        viewModelScope.launch(Dispatchers.IO) {
+            initialiseAppSettingsUseCase.invoke()
         }
     }
 }

@@ -11,7 +11,11 @@ fun AppSettingsFireStoreDto.toDomain(): AppSettings {
         id = id,
         invoiceCounter = invoiceCounter,
         invoiceYear = invoiceYear,
-        productSkuCounter = productSkuCounter
+        productSkuCounter = productSkuCounter,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        updatedBy = updatedBy
     )
 }
 
@@ -21,7 +25,11 @@ fun AppSettings.toFirestoreDto(): AppSettingsFireStoreDto {
         id = id,
         invoiceCounter = invoiceCounter,
         invoiceYear = invoiceYear,
-        productSkuCounter = productSkuCounter
+        productSkuCounter = productSkuCounter,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        updatedBy = updatedBy
     )
 }
 
@@ -31,7 +39,11 @@ fun AppSettingsEntity.toDomain(): AppSettings {
         id = id,
         invoiceCounter = invoiceCounter,
         invoiceYear = invoiceYear,
-        productSkuCounter = productSkuCounter
+        productSkuCounter = productSkuCounter,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        updatedBy = updatedBy
     )
 }
 
@@ -41,6 +53,10 @@ fun AppSettings.toEntity(): AppSettingsEntity {
         id = id,
         invoiceCounter = invoiceCounter,
         invoiceYear = invoiceYear,
-        productSkuCounter = productSkuCounter
+        productSkuCounter = productSkuCounter,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        updatedBy = updatedBy
     )
 }

@@ -15,7 +15,7 @@ enum class CashCounterStatus(val value:String) {
     CLOSED("closed");
 
     companion object {
-        fun fromRole(status: String): CashCounterStatus? {
+        fun fromStatus(status: String): CashCounterStatus? {
             return CashCounterStatus.entries.firstOrNull { it.value.equals(status, ignoreCase = true) }
         }
     }

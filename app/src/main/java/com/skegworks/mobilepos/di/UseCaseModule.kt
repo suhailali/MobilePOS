@@ -23,6 +23,7 @@ import com.skegworks.mobilepos.pos.GetProductFromBarcodeUseCase
 import com.skegworks.mobilepos.product.ProductRepository
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
+import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -71,9 +72,10 @@ class UseCaseModule {
     fun providesInitialiseAppSettingsUseCase(
         appSettingsRepository: AppSettingsRepository,
         dateUtility: DateUtility,
-        uuidGenerator: UUIDGenerator
+        uuidGenerator: UUIDGenerator,
+        userPreferenceHandler: UserPreferenceHandler
     ): InitialiseAppSettingsUseCase {
-        return InitialiseAppSettingsUseCaseImpl(appSettingsRepository, dateUtility, uuidGenerator)
+        return InitialiseAppSettingsUseCaseImpl(appSettingsRepository, dateUtility, uuidGenerator, userPreferenceHandler)
     }
 
     @Provides
