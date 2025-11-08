@@ -20,6 +20,12 @@ data class CouponEntity(
     val discountPercentage: Double,
     @ColumnInfo(name = "discount_type")
     val discountType: String,
+    @ColumnInfo(name = "discount_valid_till")
+    val discountValidTill: Long,
+    @ColumnInfo(name = "discount_availed_by")
+    val discountAvailedBy: String,
+    @ColumnInfo(name = "invoice_number")
+    val invoiceNumber: String,
     @ColumnInfo(name = "is_active")
     val isActive: Boolean,
     @ColumnInfo(name = "is_synced")

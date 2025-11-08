@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.data.mapper
 import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.local.CouponEntity
 import com.skegworks.mobilepos.data.remote.firestore.CouponFireStoreDto
+import kotlin.Long
 
 
 // Firestore DTO → Domain
@@ -15,6 +16,9 @@ fun CouponFireStoreDto.toDomain(): Coupon {
         discountType = discountType,
         discountPercentage = discountPercentage,
         discountGivenTo = discountGivenTo,
+        discountValidTill = discountValidTill,
+        discountAvailedBy = discountAvailedBy,
+        invoiceNumber = invoiceNumber,
         updatedAt = updatedAt,
         isSynced = isSynced,
         isActive = isActive,
@@ -32,6 +36,9 @@ fun Coupon.toFirestoreDto(): CouponFireStoreDto {
         discountType = discountType,
         discountPercentage = discountPercentage,
         discountGivenTo = discountGivenTo,
+        discountValidTill = discountValidTill,
+        discountAvailedBy = discountAvailedBy,
+        invoiceNumber = invoiceNumber,
         updatedAt = updatedAt,
         isSynced = isSynced,
         isActive = isActive,
@@ -49,6 +56,9 @@ fun CouponEntity.toDomain(): Coupon {
         discountType = discountType,
         discountPercentage = discountPercentage,
         discountGivenTo = discountGivenTo,
+        discountValidTill = discountValidTill,
+        discountAvailedBy = discountAvailedBy,
+        invoiceNumber = invoiceNumber,
         updatedAt = updatedAt,
         isSynced = isSynced,
         isActive = isActive,
@@ -66,6 +76,9 @@ fun Coupon.toEntity(): CouponEntity {
         discountType = discountType,
         discountPercentage = discountPercentage,
         discountGivenTo = discountGivenTo,
+        discountValidTill = discountValidTill,
+        discountAvailedBy = discountAvailedBy,
+        invoiceNumber = invoiceNumber,
         updatedAt = updatedAt,
         isSynced = isSynced,
         isActive = isActive,
