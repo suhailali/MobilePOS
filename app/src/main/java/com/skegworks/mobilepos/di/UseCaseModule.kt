@@ -20,6 +20,8 @@ import com.skegworks.mobilepos.pos.GetCouponFromBarCodeUseCaseImpl
 import com.skegworks.mobilepos.pos.GetCouponFromBarcodeUseCase
 import com.skegworks.mobilepos.pos.GetProductFromBarCodeUseCaseImpl
 import com.skegworks.mobilepos.pos.GetProductFromBarcodeUseCase
+import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
+import com.skegworks.mobilepos.product.CalculateProductPriceUseCaseImpl
 import com.skegworks.mobilepos.product.ProductRepository
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
@@ -81,5 +83,10 @@ class UseCaseModule {
     @Provides
     fun provideGetCouponFromBarcodeUseCase(couponRepository: CouponRepository): GetCouponFromBarcodeUseCase {
         return GetCouponFromBarCodeUseCaseImpl(couponRepository)
+    }
+
+    @Provides
+    fun providePriceCalculationUseCase(): CalculateProductPriceUseCase {
+        return CalculateProductPriceUseCaseImpl()
     }
 }

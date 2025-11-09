@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.product
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.category.CategoryRepository
+import com.skegworks.mobilepos.data.domain.PriceInput
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.vendors.VendorRepository
@@ -24,7 +25,8 @@ class ProductViewModel @Inject constructor(
     private val vendorRepository: VendorRepository,
     private val generateSkuUseCase: GenerateSkuUseCase,
     private val generateBarCodeUseCase: GenerateBarCodeUseCase,
-    private val uuidGenerator: UUIDGenerator
+    private val uuidGenerator: UUIDGenerator,
+    private val priceCalculationUseCase: CalculateProductPriceUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddProductState())
@@ -339,40 +341,29 @@ class ProductViewModel @Inject constructor(
         val saleMargin = state.value.textStateSaleMargin
         val discountPercentage = state.value.textStateDiscountPercentage
 
-        // calculate input gst amount
-        val inputGst = (itemPrice * inputGstPercentage) / 100
-        // item price is price with out gst and it is the cost
-        val cost = itemPrice
-        // adds sale margin percentage to the cost - output gst should be calculated after adding margin
-        val salePriceBeforeGst = cost + (cost * saleMargin / 100)
-
-        //once margin added we need to deduct the discount before calculation output gst
-        val priceAfterDiscount =
-            salePriceBeforeGst - (salePriceBeforeGst * discountPercentage / 100)
-        val discountAmount = salePriceBeforeGst - priceAfterDiscount
-
-        // if discount not applied what would be the price. This is for billing purpose and display tag
-        // this includes output gst as well
-        val priceWithoutDiscount = salePriceBeforeGst + (salePriceBeforeGst * outputGstPercentage) / 100
-
-        // output gst should be calculated on cost + margin - discount(if any)
-        val outputGst = (priceAfterDiscount * outputGstPercentage) / 100
-        // sale price is final price with decimals
-        val salePrice = priceAfterDiscount + outputGst
-        // round off sale price to avoid decimals to display on tag
-        val finalRoundedOffPrice = salePrice.toInt()
+        val inputPrice = PriceInput(
+            itemPrice = itemPrice,
+            inputGstPercentage = inputGstPercentage,
+            outputGstPercentage = outputGstPercentage,
+            saleMargin = saleMargin,
+            discountPercentage = discountPercentage,
+            additionalDiscountPercentage = 0.0
+        )
+        val outputPrice = priceCalculationUseCase.invoke(
+            inputPrice
+        )
 
         _state.update {
             it.copy(
-                textStateInputGst = inputGst,
-                textStateCost = cost,
-                textStateSalePriceWithoutGst = salePriceBeforeGst,
-                textStateOutputGst = outputGst,
-                textStatePriceAfterDiscountWithoutGst = priceAfterDiscount,
-                textStateDiscountAmount = discountAmount,
-                textStateSalePrice = salePrice,
-                textStateSalePriceWithoutDiscount = priceWithoutDiscount.toInt(),
-                textStateFinalRoundedOffPrice = finalRoundedOffPrice,
+                textStateInputGst = outputPrice.inputGst,
+                textStateCost = outputPrice.cost,
+                textStateSalePriceWithoutGst = outputPrice.salePriceBeforeGst,
+                textStateOutputGst = outputPrice.outputGst,
+                textStatePriceAfterDiscountWithoutGst = outputPrice.priceAfterDiscountWithoutGst,
+                textStateDiscountAmount = outputPrice.discountAmount,
+                textStateSalePrice = outputPrice.salePrice,
+                textStateSalePriceWithoutDiscount = outputPrice.priceWithoutDiscount,
+                textStateFinalRoundedOffPrice = outputPrice.finalRoundedOffPrice,
                 isSaved = false
             )
         }
