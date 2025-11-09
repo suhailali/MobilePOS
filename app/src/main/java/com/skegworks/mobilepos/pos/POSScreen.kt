@@ -16,6 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -24,11 +28,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.ui.component.DeleteButton
+import com.skegworks.mobilepos.ui.component.TextFieldBottomSheet
 import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
 fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigator) {
     val state = viewModel.state.collectAsState()
+    var isDiscountSheetOpen by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -46,7 +52,11 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
     val scrollState = rememberScrollState()
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier.height(3.dp))
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Dimens.SMALL_PADDING.dp)
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -87,7 +97,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 ) {
                     state.value.customer?.let {
                         Text("Customer Name: ${it.name}")
-                        Text("Customer Phone: ${it.phone}")
+                        Text("Phone: ${it.phone}")
                     }
                 }
             } else {
@@ -98,24 +108,38 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 }
             }
             Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
-        }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Total Amount ${state.value.totalPrice}")
-            Text("Discount ${state.value.totalDiscount}")
-        }
-        Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("To Pay ${state.value.finalPriceToPay}")
-            Button(onClick = { viewModel.handleIntent(POSIntent.Payment) }) {
-                Text("Add Coupon")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Total Amount ${state.value.totalPrice}")
+                Text("Discount ${state.value.totalDiscount}")
+            }
+            Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("To Pay ${state.value.finalPriceToPay}")
+                Button(onClick = { isDiscountSheetOpen = true }) {
+                    Text("Add Cash Discount")
+                }
             }
         }
+
+        if (state.value.coupon != null) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Coupon: ${state.value.coupon?.title}")
+                Text("Discount: ${state.value.coupon?.discountPercentage}%")
+                DeleteButton {
+                    //TODO remove coupon
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
 
         Column {
@@ -127,6 +151,18 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 }
             }
 
+        }
+        if (isDiscountSheetOpen) {
+            TextFieldBottomSheet(
+                label = "Cash Discount",
+                onItemSelected = {
+                    viewModel.handleIntent(POSIntent.AddCashDiscount(it.toDouble()))
+                    isDiscountSheetOpen = false
+                },
+                onDismiss = {
+                    isDiscountSheetOpen = false
+                }
+            )
         }
     }
 }

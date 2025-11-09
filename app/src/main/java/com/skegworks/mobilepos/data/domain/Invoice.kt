@@ -11,4 +11,5 @@ data class Invoice(
     val customer: Customer,
     val business: Business,
     var isSynced: Boolean,
+    var coupon: Coupon? = null
 )

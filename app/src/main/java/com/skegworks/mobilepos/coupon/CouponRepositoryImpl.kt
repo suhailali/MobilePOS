@@ -6,8 +6,25 @@ import javax.inject.Inject
 
 class CouponRepositoryImpl @Inject constructor(private val couponDao: CouponDao): CouponRepository {
     override suspend fun getCouponFromCode(barcode: String): List<Coupon>? {
-        return couponDao.getCouponByCode(barcode)?.map {
-            it.toDomain()
-        }
+        val coupon = Coupon(
+            id = "abc",
+            title = "Coupon",
+            discountPercentage = 10.0,
+            discountCode = "DISC0001",
+            createdAt = 1L,
+            updatedAt = 1L,
+            isActive = true,
+            isSynced = true,
+            description = "",
+            discountValidTill = 1L,
+            discountAvailedBy = "",
+            discountGivenTo = "",
+            discountType = "",
+            invoiceNumber = ""
+        )
+//        return couponDao.getCouponByCode(barcode)?.map {
+//            it.toDomain()
+//        }
+        return listOf(coupon)
     }
 }

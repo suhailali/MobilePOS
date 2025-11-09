@@ -20,12 +20,15 @@ import com.skegworks.mobilepos.data.domain.Business
 import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
+import com.skegworks.mobilepos.data.domain.PriceInput
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.mapper.toInvoiceItem
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.invoice.UpdateInvoiceNumberUseCase
 import com.skegworks.mobilepos.print.SeznikPrinterManager
+import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
+import com.skegworks.mobilepos.product.CalculateProductPriceUseCaseImpl
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.files.FileHandler
@@ -52,7 +55,8 @@ class POSViewModel @Inject constructor(
     private val syncInvoiceUseCase: SyncInvoiceUseCase,
     private val generateNewInvoiceNumberUseCase: GenerateNewInvoiceNumberUseCase,
     private val updateInvoiceNumberUseCase: UpdateInvoiceNumberUseCase,
-    private val dateUtility: DateUtility
+    private val dateUtility: DateUtility,
+    private val calculatePriceUseCase: CalculateProductPriceUseCase
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(POSState())
@@ -123,28 +127,14 @@ class POSViewModel @Inject constructor(
     }
 
     private fun addOrUpdateCoupon(coupon: Coupon) {
-        val existingItems = state.value.invoiceItems.toMutableList()
-//        val newItem = coupon.toInvoiceItem(uuidGenerator.generateUUID())
-//
-//        val existingIndex = existingItems.indexOfFirst { it.sku == newItem.sku }
-//
-//        if (existingIndex != -1) {
-//            // Item exists → update quantity
-//            val updatedItem = existingItems[existingIndex].copy(
-//                quantity = existingItems[existingIndex].quantity + newItem.quantity
-//            )
-//            existingItems[existingIndex] = updatedItem
-//        } else {
-//            // Item not found → add new one
-//            existingItems.add(newItem)
-//        }
-//        _state.update {
-//            it.copy(
-//                product = product,
-//                invoiceItems = existingItems,
-//                productFound = true,
-//            )
-//        }
+        applyCouponToInvoiceItems(coupon)
+        calculateTotalPrice()
+        _state.update {
+            it.copy(
+                coupon = coupon,
+                productFound = true
+            )
+        }
     }
 
     private fun calculateTotalPrice() {
@@ -225,6 +215,14 @@ class POSViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         searchTerm = intent.term
+                    )
+                }
+            }
+
+            is POSIntent.AddCashDiscount -> {
+                _state.update {
+                    it.copy(
+                        cashDiscount = intent.cashDiscount
                     )
                 }
             }
@@ -361,6 +359,31 @@ class POSViewModel @Inject constructor(
                     invoiceDate = dateUtility.getDate()
                 )
             }
+        }
+    }
+
+    private fun applyCouponToInvoiceItems(coupon: Coupon) {
+        val existingItems = state.value.invoiceItems.toMutableList()
+        for (invoiceItem in existingItems) {
+            val inputPrice = PriceInput(
+                itemPrice = invoiceItem.itemPrice,
+                inputGstPercentage = invoiceItem.inputGstPercentage,
+                outputGstPercentage = invoiceItem.outputGstPercentage,
+                saleMargin = invoiceItem.saleMargin,
+                discountPercentage = invoiceItem.discountPercentage,
+                additionalDiscountPercentage = coupon.discountPercentage
+            )
+            val outputPrice = calculatePriceUseCase.invoke(inputPrice)
+
+            invoiceItem.inputGst = outputPrice.inputGst
+            invoiceItem.cost = outputPrice.cost
+            invoiceItem.salePriceWithoutGst = outputPrice.salePriceBeforeGst
+            invoiceItem.outputGst = outputPrice.outputGst
+            invoiceItem.discountAmount = outputPrice.discountAmount
+            invoiceItem.salePriceWithoutGst = outputPrice.priceAfterDiscountWithoutGst
+            invoiceItem.salePrice = outputPrice.salePrice
+            invoiceItem.salePriceWithoutDiscount = outputPrice.priceWithoutDiscount
+            invoiceItem.finalRoundedOffPrice = outputPrice.finalRoundedOffPrice
         }
     }
 }

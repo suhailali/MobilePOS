@@ -26,4 +26,5 @@ data class POSState(
     val searchTerm: String = "",
     val searchResultProduct: List<Product> = emptyList(),
     val searchResultCoupon: List<Coupon> = emptyList(),
+    val coupon: Coupon? = null
 )
