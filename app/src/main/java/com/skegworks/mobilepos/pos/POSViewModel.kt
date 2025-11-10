@@ -21,6 +21,7 @@ import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.data.domain.PriceInput
+import com.skegworks.mobilepos.data.domain.PriceOutput
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.mapper.toInvoiceItem
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
@@ -39,6 +40,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.FileOutputStream
 import java.io.IOException
 import javax.inject.Inject
@@ -140,7 +142,7 @@ class POSViewModel @Inject constructor(
     private fun calculateTotalPrice() {
         var totalPrice = 0
         var totalPriceBeforeDiscount = 0.0
-        _state.value.invoiceItems.forEach { item ->
+        state.value.invoiceItems.forEach { item ->
             totalPrice = totalPrice + (item.finalRoundedOffPrice * item.quantity)
             totalPriceBeforeDiscount =
                 totalPriceBeforeDiscount + (item.salePriceWithoutDiscount * item.quantity)
@@ -159,6 +161,15 @@ class POSViewModel @Inject constructor(
 
     fun handleIntent(intent: POSIntent) {
         when (intent) {
+            is POSIntent.RemoveCoupon -> {
+                removeCouponForInvoiceItems()
+                _state.update {
+                    it.copy(
+                        coupon = null
+                    )
+                }
+            }
+
             is POSIntent.AddProduct -> {
                 addOrUpdateProduct(intent.product)
                 calculateTotalPrice()
@@ -362,6 +373,37 @@ class POSViewModel @Inject constructor(
         }
     }
 
+    private fun removeCouponForInvoiceItems() {
+        val existingItems = state.value.invoiceItems.toMutableList()
+        val newList = mutableListOf<InvoiceItem>()
+        viewModelScope.launch(Dispatchers.IO) {
+            for (invoiceItem in existingItems) {
+                val product = getProductFromBarcodeUseCase.invoke(invoiceItem.sku)?.first()
+                product?.let {
+                    val inputPrice = PriceInput(
+                        itemPrice = product.itemPrice,
+                        inputGstPercentage = product.inputGstPercentage,
+                        outputGstPercentage = product.outputGstPercentage,
+                        saleMargin = product.saleMargin,
+                        discountPercentage = product.discountPercentage,
+                        additionalDiscountPercentage = 0.0
+                    )
+                    val newInvoiceItem = invoiceItem.copy()
+                    setOutputPriceForInvoiceItem(newInvoiceItem, inputPrice)
+                    newList.add(newInvoiceItem)
+                }
+            }
+            withContext(Dispatchers.Main) {
+                _state.update {
+                    it.copy(
+                        invoiceItems = newList
+                    )
+                }
+                calculateTotalPrice()
+            }
+        }
+    }
+
     private fun applyCouponToInvoiceItems(coupon: Coupon) {
         val existingItems = state.value.invoiceItems.toMutableList()
         for (invoiceItem in existingItems) {
@@ -373,17 +415,21 @@ class POSViewModel @Inject constructor(
                 discountPercentage = invoiceItem.discountPercentage,
                 additionalDiscountPercentage = coupon.discountPercentage
             )
-            val outputPrice = calculatePriceUseCase.invoke(inputPrice)
-
-            invoiceItem.inputGst = outputPrice.inputGst
-            invoiceItem.cost = outputPrice.cost
-            invoiceItem.salePriceWithoutGst = outputPrice.salePriceBeforeGst
-            invoiceItem.outputGst = outputPrice.outputGst
-            invoiceItem.discountAmount = outputPrice.discountAmount
-            invoiceItem.salePriceWithoutGst = outputPrice.priceAfterDiscountWithoutGst
-            invoiceItem.salePrice = outputPrice.salePrice
-            invoiceItem.salePriceWithoutDiscount = outputPrice.priceWithoutDiscount
-            invoiceItem.finalRoundedOffPrice = outputPrice.finalRoundedOffPrice
+            setOutputPriceForInvoiceItem(invoiceItem, inputPrice)
         }
+    }
+
+    private fun setOutputPriceForInvoiceItem(invoiceItem: InvoiceItem, inputPrice: PriceInput) {
+        val outputPrice = calculatePriceUseCase.invoke(inputPrice)
+
+        invoiceItem.inputGst = outputPrice.inputGst
+        invoiceItem.cost = outputPrice.cost
+        invoiceItem.salePriceWithoutGst = outputPrice.salePriceBeforeGst
+        invoiceItem.outputGst = outputPrice.outputGst
+        invoiceItem.discountAmount = outputPrice.discountAmount
+        invoiceItem.salePriceWithoutGst = outputPrice.priceAfterDiscountWithoutGst
+        invoiceItem.salePrice = outputPrice.salePrice
+        invoiceItem.salePriceWithoutDiscount = outputPrice.priceWithoutDiscount
+        invoiceItem.finalRoundedOffPrice = outputPrice.finalRoundedOffPrice
     }
 }

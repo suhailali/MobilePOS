@@ -33,7 +33,7 @@ import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
 fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigator) {
-    val state = viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsState()
     var isDiscountSheetOpen by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -41,9 +41,9 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
     LaunchedEffect(Unit) {
         viewModel.getInvoiceNumber()
     }
-    LaunchedEffect(state.value.pdfGenerated) {
-        if (state.value.pdfGenerated) {
-            state.value.invoicePDF?.let {
+    LaunchedEffect(state.pdfGenerated) {
+        if (state.pdfGenerated) {
+            state.invoicePDF?.let {
                 viewModel.printPdf(context, it, "Invoice")
             }
         }
@@ -86,16 +86,16 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Invoice No. ${state.value.invoiceNumber}")
-                Text("Date: ${state.value.invoiceDate}")
+                Text("Invoice No. ${state.invoiceNumber}")
+                Text("Date: ${state.invoiceDate}")
             }
             Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
-            if (state.value.customer != null) {
+            if (state.customer != null) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    state.value.customer?.let {
+                    state.customer?.let {
                         Text("Customer Name: ${it.name}")
                         Text("Phone: ${it.phone}")
                     }
@@ -112,28 +112,28 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Total Amount ${state.value.totalPrice}")
-                Text("Discount ${state.value.totalDiscount}")
+                Text("Total Amount ${state.totalPrice}")
+                Text("Discount ${state.totalDiscount}")
             }
             Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("To Pay ${state.value.finalPriceToPay}")
+                Text("To Pay ${state.finalPriceToPay}")
                 Button(onClick = { isDiscountSheetOpen = true }) {
                     Text("Add Cash Discount")
                 }
             }
         }
 
-        if (state.value.coupon != null) {
+        if (state.coupon != null) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Coupon: ${state.value.coupon?.title}")
-                Text("Discount: ${state.value.coupon?.discountPercentage}%")
+                Text("Coupon: ${state.coupon?.title}")
+                Text("Discount: ${state.coupon?.discountPercentage}%")
                 DeleteButton {
                     viewModel.handleIntent(POSIntent.RemoveCoupon)
                 }
@@ -144,13 +144,14 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
 
         Column {
             LazyColumn {
-                itemsIndexed(state.value.invoiceItems) { index, invoiceItem ->
+                itemsIndexed(
+                    items = state.invoiceItems,
+                    key = { _, item -> item.id }) { index, invoiceItem ->
                     POSListRow(index, invoiceItem) {
                         viewModel.handleIntent(POSIntent.RemoveItem(invoiceItem))
                     }
                 }
             }
-
         }
         if (isDiscountSheetOpen) {
             TextFieldBottomSheet(
