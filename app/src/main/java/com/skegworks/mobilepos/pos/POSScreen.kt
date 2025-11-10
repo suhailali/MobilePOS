@@ -135,7 +135,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 Text("Coupon: ${state.value.coupon?.title}")
                 Text("Discount: ${state.value.coupon?.discountPercentage}%")
                 DeleteButton {
-                    //TODO remove coupon
+                    viewModel.handleIntent(POSIntent.RemoveCoupon)
                 }
             }
         }
