@@ -64,20 +64,26 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text("POS")
-                Button(onClick = {
-                    //viewModel.handleIntent(POSIntent.AddProduct)
-                    navigator.navigateToAddItem()
-                }) {
+                Button(
+                    enabled = state.coupon == null,
+                    onClick = {
+                        //viewModel.handleIntent(POSIntent.AddProduct)
+                        navigator.navigateToAddItem()
+                    }) {
                     Text("BarCode")
                 }
 
-                Button(onClick = {
-                    viewModel.handleIntent(POSIntent.PrintInvoice)
-                }) {
+                Button(
+                    enabled = state.invoiceItems.isNotEmpty(),
+                    onClick = {
+                        viewModel.handleIntent(POSIntent.PrintInvoice)
+                    }) {
                     Text("Print")
                 }
 
-                Button(onClick = { viewModel.handleIntent(POSIntent.Payment) }) {
+                Button(
+                    enabled = state.invoiceItems.isNotEmpty(),
+                    onClick = { viewModel.handleIntent(POSIntent.Payment) }) {
                     Text("Pay")
                 }
             }
