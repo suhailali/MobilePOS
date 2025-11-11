@@ -113,6 +113,7 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
 // Totals
             val total = invoice.totalPrice
             val totalDiscount = invoice.totalDiscount
+            val cashDiscount = invoice.cashDiscount
             val finalPrice = invoice.finalPrice
 
             val rightX = pageWidthPt - 10f
@@ -123,6 +124,9 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
             y += 14f
             canvas.drawText("Discount:", labelX, y + 12f, small)
             canvas.drawText(formatAmount(totalDiscount), rightX - 50f, y + 12f, small)
+             y += 14f
+            canvas.drawText("Cash Discount:", labelX, y + 12f, small)
+            canvas.drawText(formatAmount(cashDiscount), rightX - 50f, y + 12f, small)
             y += 14f
             canvas.drawText("Final Price:", labelX, y + 12f, bold)
             canvas.drawText(formatAmount(finalPrice), rightX - 50f, y + 12f, bold)
