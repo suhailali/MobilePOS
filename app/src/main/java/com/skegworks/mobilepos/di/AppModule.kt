@@ -94,8 +94,9 @@ class AppModule {
     @Singleton
     fun providesAppSettingsRepository(
         appSettingsDao: AppSettingsDao,
+        syncData: SyncData
     ): AppSettingsRepository {
-        return AppSettingsRepositoryImpl(appSettingsDao)
+        return AppSettingsRepositoryImpl(appSettingsDao, syncData)
     }
 
     @Provides

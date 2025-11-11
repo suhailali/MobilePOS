@@ -14,6 +14,7 @@ import android.print.PrintManager
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.domain.Business
@@ -53,6 +54,7 @@ class POSViewModel @Inject constructor(
     private val fileHandler: FileHandler,
     private val uuidGenerator: UUIDGenerator,
     private val syncInvoiceUseCase: SyncInvoiceUseCase,
+    private val syncAppSettingsUseCase: SyncAppSettingsUseCase,
     private val generateNewInvoiceNumberUseCase: GenerateNewInvoiceNumberUseCase,
     private val updateInvoiceNumberUseCase: UpdateInvoiceNumberUseCase,
     private val dateUtility: DateUtility,
@@ -203,6 +205,7 @@ class POSViewModel @Inject constructor(
                 //update invoice counter and date
                 viewModelScope.launch(Dispatchers.IO) {
                     updateInvoiceNumberUseCase.invoke()
+                    syncAppSettingsUseCase.invoke()
                 }
             }
 
