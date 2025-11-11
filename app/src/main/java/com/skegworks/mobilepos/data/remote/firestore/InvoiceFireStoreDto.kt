@@ -7,9 +7,11 @@ data class InvoiceFireStoreDto(
     val totalPrice: Double = 0.0,
     val totalDiscount: Double = 0.0,
     val finalPrice: Double = 0.0,
+    val cashDiscount: Double = 0.0,
     val customerId: String = "",
     val customerName: String = "",
     val customerPhone: String = "",
     val businessId: String = "",
+    val couponId: String = "",
     val isSynced: Boolean = false
 )

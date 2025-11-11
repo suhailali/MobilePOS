@@ -21,7 +21,6 @@ import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.data.domain.PriceInput
-import com.skegworks.mobilepos.data.domain.PriceOutput
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.mapper.toInvoiceItem
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
@@ -29,7 +28,6 @@ import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.invoice.UpdateInvoiceNumberUseCase
 import com.skegworks.mobilepos.print.SeznikPrinterManager
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
-import com.skegworks.mobilepos.product.CalculateProductPriceUseCaseImpl
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.files.FileHandler
@@ -149,18 +147,27 @@ class POSViewModel @Inject constructor(
         }
 
         val discount = totalPriceBeforeDiscount - totalPrice
+        val toPay = totalPrice - state.value.cashDiscount
 
         _state.update {
             it.copy(
                 totalPrice = totalPrice.toDouble(),
                 totalDiscount = discount,
-                finalPriceToPay = totalPrice.toDouble(),
+                finalPriceToPay = toPay,
             )
         }
     }
 
     fun handleIntent(intent: POSIntent) {
         when (intent) {
+            is POSIntent.RemoveCashDiscount -> {
+                _state.update {
+                    it.copy(
+                        cashDiscount = 0.0
+                    )
+                }
+                calculateTotalPrice()
+            }
             is POSIntent.RemoveCoupon -> {
                 removeCouponForInvoiceItems()
                 _state.update {
@@ -236,6 +243,7 @@ class POSViewModel @Inject constructor(
                         cashDiscount = intent.cashDiscount
                     )
                 }
+                calculateTotalPrice()
             }
         }
     }
@@ -283,7 +291,8 @@ class POSViewModel @Inject constructor(
                 totalPrice = state.value.totalPrice,
                 totalDiscount = state.value.totalDiscount,
                 finalPrice = state.value.finalPriceToPay,
-                isSynced = false
+                isSynced = false,
+                cashDiscount = state.value.cashDiscount
             )
             val pdf = generateInvoicePdfUseCase.generatePdf(invoice)
             _state.update {
@@ -367,7 +376,7 @@ class POSViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     invoiceNumber = invoiceNumber,
-                    invoiceDate = dateUtility.getDate()
+                    invoiceDate = dateUtility.getDateTime()
                 )
             }
         }

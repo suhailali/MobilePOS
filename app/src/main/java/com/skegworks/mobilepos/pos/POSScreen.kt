@@ -121,8 +121,21 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text("To Pay ${state.finalPriceToPay}")
-                Button(onClick = { isDiscountSheetOpen = true }) {
-                    Text("Add Cash Discount")
+                if (state.invoiceItems.isNotEmpty()) {
+                    if (state.cashDiscount > 0.0) {
+                        Row {
+                            Text("Cash Discount: ${state.cashDiscount}")
+                            Spacer(modifier.padding(horizontal = Dimens.SMALL_PADDING.dp))
+                            DeleteButton {
+                                viewModel.handleIntent(POSIntent.RemoveCashDiscount)
+                            }
+                        }
+
+                    } else {
+                        Button(onClick = { isDiscountSheetOpen = true }) {
+                            Text("Add Cash Discount")
+                        }
+                    }
                 }
             }
         }

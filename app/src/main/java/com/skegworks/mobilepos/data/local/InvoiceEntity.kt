@@ -16,5 +16,7 @@ data class InvoiceEntity(
     @ColumnInfo(name = "customer_name") val customerName: String,
     @ColumnInfo(name = "customer_phone") val customerPhone: String,
     @ColumnInfo(name = "business_id") val businessId: String,
+    @ColumnInfo(name = "coupon_id") val couponId: String,
+    @ColumnInfo(name = "cash_discount") val cashDiscount: Double,
     @ColumnInfo(name = "is_synced") var isSynced: Boolean,
 )

@@ -17,4 +17,5 @@ sealed class POSIntent {
     class UpdateSearchTerm(val term: String) : POSIntent()
     class AddCashDiscount(val cashDiscount: Double) : POSIntent()
     object RemoveCoupon : POSIntent()
+    object RemoveCashDiscount : POSIntent()
 }
