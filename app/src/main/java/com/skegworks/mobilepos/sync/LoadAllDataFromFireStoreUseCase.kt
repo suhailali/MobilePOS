@@ -1,17 +1,20 @@
 package com.skegworks.mobilepos.sync
 
 import com.skegworks.mobilepos.appsettings.AppSettingsRepository
+import com.skegworks.mobilepos.cashcounter.CashCounterRepository
 import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.coupon.CouponRepository
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.mapper.toDomain
 import com.skegworks.mobilepos.data.remote.firestore.AppSettingsFireStoreDto
+import com.skegworks.mobilepos.data.remote.firestore.CashCounterFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CategoryFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CouponFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CustomerFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.ProductFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.VendorFireStoreDto
 import com.skegworks.mobilepos.product.ProductRepository
+import com.skegworks.mobilepos.utils.Constants
 import com.skegworks.mobilepos.vendors.VendorRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +33,8 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     private val vendorRepository: VendorRepository,
     private val productRepository: ProductRepository,
     private val couponRepository: CouponRepository,
-    private val appSettingsRepository: AppSettingsRepository
+    private val appSettingsRepository: AppSettingsRepository,
+    private val cashCounterRepository: CashCounterRepository
 ) {
     private val supervisor = SupervisorJob()
     private val scope = CoroutineScope(supervisor + Dispatchers.IO)
@@ -80,6 +84,13 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
                         } catch (ex: Exception) {
                             // Log or handle the exception as needed
                         }
+                    },
+                    async {
+                        try {
+                            getCoupons()
+                        } catch (ex: Exception) {
+                            // Log or handle the exception as needed
+                        }
                     }
                 )
                 tasks.awaitAll()
@@ -89,8 +100,12 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
             }
         }
     }
+
     private suspend fun getAppSettings() {
-        val result = syncDataWithFireStore.downloadAll("appSettings", AppSettingsFireStoreDto::class.java)
+        val result = syncDataWithFireStore.downloadAll(
+            Constants.FirebaseDocument.APP_SETTINGS,
+            AppSettingsFireStoreDto::class.java
+        )
         if (result.isSuccess) {
             for (appSetting in result.getOrNull().orEmpty()) {
                 appSettingsRepository.insertAppSettings(appSetting.toDomain())
@@ -99,9 +114,13 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
             throw result.exceptionOrNull() ?: Exception("Unknown error while loading appSettings")
         }
     }
+
     private suspend fun getCategories() {
         val result =
-            syncDataWithFireStore.downloadAll("categories", CategoryFireStoreDto::class.java)
+            syncDataWithFireStore.downloadAll(
+                Constants.FirebaseDocument.CATEGORIES,
+                CategoryFireStoreDto::class.java
+            )
         if (result.isSuccess) {
             for (category in result.getOrNull().orEmpty()) {
                 categoryRepository.insertCategory(category.toDomain())
@@ -112,7 +131,10 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     }
 
     private suspend fun getProducts() {
-        val result = syncDataWithFireStore.downloadAll("products", ProductFireStoreDto::class.java)
+        val result = syncDataWithFireStore.downloadAll(
+            Constants.FirebaseDocument.PRODUCTS,
+            ProductFireStoreDto::class.java
+        )
         if (result.isSuccess) {
             for (product in result.getOrNull().orEmpty()) {
                 productRepository.insertProduct(product.toDomain())
@@ -124,7 +146,10 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
 
     private suspend fun getCustomers() {
         val result =
-            syncDataWithFireStore.downloadAll("customers", CustomerFireStoreDto::class.java)
+            syncDataWithFireStore.downloadAll(
+                Constants.FirebaseDocument.CUSTOMERS,
+                CustomerFireStoreDto::class.java
+            )
         if (result.isSuccess) {
             for (customer in result.getOrNull().orEmpty()) {
                 customerRepository.insertCustomer(customer.toDomain())
@@ -135,7 +160,10 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     }
 
     private suspend fun getVendors() {
-        val result = syncDataWithFireStore.downloadAll("vendors", VendorFireStoreDto::class.java)
+        val result = syncDataWithFireStore.downloadAll(
+            Constants.FirebaseDocument.VENDORS,
+            VendorFireStoreDto::class.java
+        )
         if (result.isSuccess) {
             for (vendor in result.getOrNull().orEmpty()) {
                 vendorRepository.insertVendor(vendor.toDomain())
@@ -146,13 +174,30 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     }
 
     private suspend fun getCoupons() {
-        val result = syncDataWithFireStore.downloadAll("coupons", CouponFireStoreDto::class.java)
+        val result = syncDataWithFireStore.downloadAll(
+            Constants.FirebaseDocument.COUPONS,
+            CouponFireStoreDto::class.java
+        )
         if (result.isSuccess) {
             for (coupon in result.getOrNull().orEmpty()) {
                 couponRepository.insertCoupon(coupon.toDomain())
             }
         } else {
             throw result.exceptionOrNull() ?: Exception("Unknown error while loading coupons")
+        }
+    }
+
+    private suspend fun getCashCounter() {
+        val result = syncDataWithFireStore.downloadAll(
+            Constants.FirebaseDocument.CASH_COUNTER,
+            CashCounterFireStoreDto::class.java
+        )
+        if (result.isSuccess) {
+            for (cashCounter in result.getOrNull().orEmpty()) {
+                cashCounterRepository.insertCashCounter(cashCounter.toDomain())
+            }
+        } else {
+            throw result.exceptionOrNull() ?: Exception("Unknown error while loading cashCounter")
         }
     }
 }
