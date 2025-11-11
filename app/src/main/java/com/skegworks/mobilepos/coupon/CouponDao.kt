@@ -31,4 +31,10 @@ interface CouponDao {
 
     @Query("SELECT * FROM coupons WHERE is_synced = 0")
     suspend fun getUnsynced(): List<CouponEntity>
+    suspend fun deleteAllCoupons() {
+        val coupons = getAllCoupons()
+        for (coupon in coupons) {
+            deleteAllCoupons()
+        }
+    }
 }
