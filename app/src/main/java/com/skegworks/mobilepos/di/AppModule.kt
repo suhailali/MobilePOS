@@ -102,8 +102,9 @@ class AppModule {
     @Singleton
     fun providesCouponRepository(
         couponDao: CouponDao,
+        syncData: SyncData
     ): CouponRepository {
-        return CouponRepositoryImpl(couponDao)
+        return CouponRepositoryImpl(couponDao, syncData)
     }
 
 }
