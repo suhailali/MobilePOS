@@ -1,9 +1,11 @@
 package com.skegworks.mobilepos.sync
 
 import com.skegworks.mobilepos.category.CategoryRepository
+import com.skegworks.mobilepos.coupon.CouponRepository
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.mapper.toDomain
 import com.skegworks.mobilepos.data.remote.firestore.CategoryFireStoreDto
+import com.skegworks.mobilepos.data.remote.firestore.CouponFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CustomerFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.ProductFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.VendorFireStoreDto
@@ -24,7 +26,8 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val customerRepository: CustomerRepository,
     private val vendorRepository: VendorRepository,
-    private val productRepository: ProductRepository
+    private val productRepository: ProductRepository,
+    private val couponRepository: CouponRepository,
 ) {
     private val supervisor = SupervisorJob()
     private val scope = CoroutineScope(supervisor + Dispatchers.IO)
@@ -58,7 +61,14 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
                         try {
                             getVendors()
                         } catch (ex: Exception) {
-
+                            // Log or handle the exception as needed
+                        }
+                    },
+                    async {
+                        try {
+                            getCoupons()
+                        } catch (ex: Exception) {
+                            // Log or handle the exception as needed
                         }
                     }
                 )
@@ -70,8 +80,20 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
         }
     }
 
+    private suspend fun getCoupons() {
+        val result = syncDataWithFireStore.downloadAll("coupons", CouponFireStoreDto::class.java)
+        if (result.isSuccess) {
+            for (coupon in result.getOrNull().orEmpty()) {
+                couponRepository.insertCoupon(coupon.toDomain())
+            }
+        } else {
+            throw result.exceptionOrNull() ?: Exception("Unknown error while loading categories")
+        }
+    }
+
     private suspend fun getCategories() {
-        val result = syncDataWithFireStore.downloadAll("categories", CategoryFireStoreDto::class.java)
+        val result =
+            syncDataWithFireStore.downloadAll("categories", CategoryFireStoreDto::class.java)
         if (result.isSuccess) {
             for (category in result.getOrNull().orEmpty()) {
                 categoryRepository.insertCategory(category.toDomain())
@@ -93,7 +115,8 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     }
 
     private suspend fun getCustomers() {
-        val result = syncDataWithFireStore.downloadAll("customers", CustomerFireStoreDto::class.java)
+        val result =
+            syncDataWithFireStore.downloadAll("customers", CustomerFireStoreDto::class.java)
         if (result.isSuccess) {
             for (customer in result.getOrNull().orEmpty()) {
                 customerRepository.insertCustomer(customer.toDomain())
