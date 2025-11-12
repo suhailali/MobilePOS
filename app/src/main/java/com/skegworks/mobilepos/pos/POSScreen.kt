@@ -126,7 +126,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("To Pay ${state.finalPriceToPay}")
+                Text("To Pay ${state.finalPriceToPay}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 if (state.invoiceItems.isNotEmpty()) {
                     if (state.cashDiscount > 0.0) {
                         Row {
