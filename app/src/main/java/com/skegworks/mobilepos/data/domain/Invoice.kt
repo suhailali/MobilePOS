@@ -12,5 +12,17 @@ data class Invoice(
     val business: Business,
     var isSynced: Boolean,
     var coupon: Coupon? = null,
-    val cashDiscount: Double
+    val cashDiscount: Double,
+    val invoiceState: InvoiceState
 )
+
+enum class InvoiceState(val value:String) {
+    PRINT("print"),
+    PAID("paid");
+
+    companion object {
+        fun fromState(status: String): InvoiceState? {
+            return InvoiceState.entries.firstOrNull { it.value.equals(status, ignoreCase = true) }
+        }
+    }
+}

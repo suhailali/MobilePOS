@@ -21,6 +21,7 @@ import com.skegworks.mobilepos.data.domain.Business
 import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
+import com.skegworks.mobilepos.data.domain.InvoiceState
 import com.skegworks.mobilepos.data.domain.PriceInput
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.mapper.toInvoiceItem
@@ -295,7 +296,8 @@ class POSViewModel @Inject constructor(
                 totalDiscount = state.value.totalDiscount,
                 finalPrice = state.value.finalPriceToPay,
                 isSynced = false,
-                cashDiscount = state.value.cashDiscount
+                cashDiscount = state.value.cashDiscount,
+                invoiceState = InvoiceState.PRINT
             )
             val pdf = generateInvoicePdfUseCase.generatePdf(invoice)
             _state.update {

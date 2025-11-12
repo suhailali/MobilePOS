@@ -12,6 +12,7 @@ data class InvoiceFireStoreDto(
     val customerName: String = "",
     val customerPhone: String = "",
     val businessId: String = "",
+    val invoiceState: String = "",
     val couponId: String = "",
     val isSynced: Boolean = false
 )

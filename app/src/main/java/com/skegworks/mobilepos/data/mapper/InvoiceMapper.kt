@@ -18,7 +18,8 @@ fun InvoiceFireStoreDto.toEntity(): InvoiceEntity {
         businessId = businessId,
         isSynced = isSynced,
         cashDiscount = cashDiscount,
-        couponId = couponId
+        couponId = couponId,
+        invoiceState = invoiceState
     )
 }
 
@@ -36,7 +37,8 @@ fun Invoice.toFirestoreDto(): InvoiceFireStoreDto {
         businessId = business.id,
         isSynced = isSynced,
         cashDiscount = cashDiscount,
-        couponId = coupon?.id ?: ""
+        couponId = coupon?.id ?: "",
+        invoiceState = invoiceState.name
     )
 }
 
@@ -54,6 +56,7 @@ fun Invoice.toEntity(): InvoiceEntity {
         businessId = business.id,
         isSynced = isSynced,
         cashDiscount = cashDiscount,
-        couponId = coupon?.id ?: ""
+        couponId = coupon?.id ?: "",
+        invoiceState = invoiceState.name
     )
 }
