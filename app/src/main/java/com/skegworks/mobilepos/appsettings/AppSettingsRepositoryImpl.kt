@@ -4,8 +4,12 @@ import com.skegworks.mobilepos.data.domain.AppSettings
 import com.skegworks.mobilepos.data.mapper.toDomain
 import com.skegworks.mobilepos.data.mapper.toEntity
 import com.skegworks.mobilepos.sync.SyncData
+import com.skegworks.mobilepos.utils.Constants
 
-class AppSettingsRepositoryImpl(private val appSettingsDao: AppSettingsDao, private val syncData: SyncData): AppSettingsRepository {
+class AppSettingsRepositoryImpl(
+    private val appSettingsDao: AppSettingsDao,
+    private val syncData: SyncData
+) : AppSettingsRepository {
     override suspend fun getAppSettings(): AppSettings? {
         return appSettingsDao.getAppSettings()?.toDomain()
     }
@@ -24,7 +28,7 @@ class AppSettingsRepositoryImpl(private val appSettingsDao: AppSettingsDao, priv
         onFailure: (Exception) -> Unit
     ) {
         syncData.uploadData(
-            name = "appSettings",
+            name = Constants.FirebaseDocument.APP_SETTINGS,
             id = appSettings.id,
             data = appSettings,
             onSuccess = onSuccess,
