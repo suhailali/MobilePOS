@@ -68,7 +68,7 @@ class CashCounterViewModel @Inject constructor(
             cashCounterRepository.insertCashCounter(cashCounter)
             val result = firestoreHelper.addDocument(
                 collection = "cash_counter",
-                id = "1",
+                id = cashCounter.id,
                 data = cashCounter.toFirestoreDto()
             )
             if (result.isSuccess) {
