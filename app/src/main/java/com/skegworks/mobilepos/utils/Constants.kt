@@ -13,4 +13,10 @@ class Constants {
         const val COUPONS = "coupons"
         const val CASH_COUNTER = "cash_counter"
     }
+
+    class DateFormat {
+        companion object {
+            const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+        }
+    }
 }

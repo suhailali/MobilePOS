@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.cashcounter.CashCounterRepository
 import com.skegworks.mobilepos.data.domain.CashCounterStatus
 import com.skegworks.mobilepos.data.domain.UserRole
+import com.skegworks.mobilepos.utils.Constants
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -100,7 +101,7 @@ class HomeViewModel @Inject constructor(
                 if (cashCounter.status == CashCounterStatus.CLOSED) {
                     _events.emit(HomeEvents.NAVIGATE_TO_CASH_COUNTER)
                 } else {
-                    if (dateUtility.isDateToday(cashCounter.date, "yyyy-MM-dd'T'HH:mm:ss.SSSSSS")) {
+                    if (dateUtility.isDateToday(cashCounter.date, Constants.DateFormat.DATE_TIME_FORMAT)) {
                         _events.emit(HomeEvents.NAVIGATE_TO_CUSTOMER)
                     } else {
                         _events.emit(HomeEvents.NAVIGATE_TO_CASH_COUNTER)
