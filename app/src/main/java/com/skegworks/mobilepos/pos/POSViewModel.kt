@@ -283,7 +283,8 @@ class POSViewModel @Inject constructor(
                 mobile = "9995 42 9878",
                 email = "nadhik@gmail.com",
                 gstNumber = "32Ox44hsjjsoosjsjj",
-                address = "AbcdEfghihs, jjs, sjks, djhjdk, 676567"
+                address = "AbcdEfghihs, jjs, sjks, djhjdk, 676567",
+                isSynced = true
             )
             val invoice = Invoice(
                 id = uuidGenerator.generateUUID(),

@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.utils
 class Constants {
     companion object FirebaseDocument {
         const val APP_SETTINGS = "app_settings"
+        const val BUSINESS = "business"
         const val CATEGORIES = "categories"
         const val PRODUCTS = "products"
         const val CUSTOMERS = "customers"

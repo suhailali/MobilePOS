@@ -3,6 +3,9 @@ package com.skegworks.mobilepos.di
 import com.skegworks.mobilepos.appsettings.AppSettingsDao
 import com.skegworks.mobilepos.appsettings.AppSettingsRepository
 import com.skegworks.mobilepos.appsettings.AppSettingsRepositoryImpl
+import com.skegworks.mobilepos.business.BusinessDao
+import com.skegworks.mobilepos.business.BusinessRepository
+import com.skegworks.mobilepos.business.BusinessRepositoryImpl
 import com.skegworks.mobilepos.cashcounter.CashCounterDao
 import com.skegworks.mobilepos.cashcounter.CashCounterRepository
 import com.skegworks.mobilepos.cashcounter.CashCounterRepositoryImpl
@@ -108,4 +111,11 @@ class AppModule {
         return CouponRepositoryImpl(couponDao, syncData)
     }
 
+    @Provides
+    @Singleton
+    fun providesBusinessRepository(
+        businessDao: BusinessDao,
+    ): BusinessRepository {
+        return BusinessRepositoryImpl(businessDao)
+    }
 }

@@ -6,5 +6,6 @@ data class BusinessFireStoreDto(
     val mobile: String = "",
     val email: String = "",
     val address: String = "",
-    val gstNumber: String = ""
+    val gstNumber: String = "",
+    val isSynced: Boolean = false
 )

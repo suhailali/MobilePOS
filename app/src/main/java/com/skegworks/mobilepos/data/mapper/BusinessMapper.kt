@@ -13,7 +13,8 @@ fun BusinessFireStoreDto.toDomain(): Business {
         mobile = mobile,
         email = email,
         address = address,
-        gstNumber = gstNumber
+        gstNumber = gstNumber,
+        isSynced = isSynced
     )
 }
 
@@ -25,7 +26,8 @@ fun Business.toFirestoreDto(): BusinessFireStoreDto {
         mobile = mobile,
         email = email,
         address = address,
-        gstNumber = gstNumber
+        gstNumber = gstNumber,
+        isSynced = isSynced
     )
 }
 
@@ -37,7 +39,8 @@ fun BusinessEntity.toDomain(): Business {
         mobile = mobile,
         email = email,
         address = address,
-        gstNumber = gstNumber
+        gstNumber = gstNumber,
+        isSynced = isSynced
     )
 }
 
@@ -49,6 +52,7 @@ fun Business.toEntity(): BusinessEntity {
         mobile = mobile,
         email = email,
         address = address,
-        gstNumber = gstNumber
+        gstNumber = gstNumber,
+        isSynced = isSynced
     )
 }

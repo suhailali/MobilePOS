@@ -1,12 +1,14 @@
 package com.skegworks.mobilepos.sync
 
 import com.skegworks.mobilepos.appsettings.AppSettingsRepository
+import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.cashcounter.CashCounterRepository
 import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.coupon.CouponRepository
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.mapper.toDomain
 import com.skegworks.mobilepos.data.remote.firestore.AppSettingsFireStoreDto
+import com.skegworks.mobilepos.data.remote.firestore.BusinessFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CashCounterFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CategoryFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CouponFireStoreDto
@@ -34,7 +36,8 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     private val productRepository: ProductRepository,
     private val couponRepository: CouponRepository,
     private val appSettingsRepository: AppSettingsRepository,
-    private val cashCounterRepository: CashCounterRepository
+    private val cashCounterRepository: CashCounterRepository,
+    private val businessRepository: BusinessRepository
 ) {
     private val supervisor = SupervisorJob()
     private val scope = CoroutineScope(supervisor + Dispatchers.IO)
@@ -46,6 +49,13 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
                     async {
                         try {
                             getAppSettings()
+                        } catch (ex: Exception) {
+                            // Log or handle the exception as needed
+                        }
+                    },
+                    async {
+                        try {
+                            getBusiness()
                         } catch (ex: Exception) {
                             // Log or handle the exception as needed
                         }
@@ -87,7 +97,7 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
                     },
                     async {
                         try {
-                            getCoupons()
+                            getCashCounter()
                         } catch (ex: Exception) {
                             // Log or handle the exception as needed
                         }
@@ -112,6 +122,19 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
             }
         } else {
             throw result.exceptionOrNull() ?: Exception("Unknown error while loading appSettings")
+        }
+    }
+    private suspend fun getBusiness() {
+        val result = syncDataWithFireStore.downloadAll(
+            Constants.FirebaseDocument.BUSINESS,
+            BusinessFireStoreDto::class.java
+        )
+        if (result.isSuccess) {
+            for (business in result.getOrNull().orEmpty()) {
+                businessRepository.insertBusiness(business.toDomain())
+            }
+        } else {
+            throw result.exceptionOrNull() ?: Exception("Unknown error while loading Business")
         }
     }
 

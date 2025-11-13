@@ -11,5 +11,6 @@ data class BusinessEntity(
     @ColumnInfo(name = "mobile") val mobile: String,
     @ColumnInfo(name = "email") val email: String,
     @ColumnInfo(name = "address") val address: String,
-    @ColumnInfo(name = "gstNumber") var gstNumber: String
+    @ColumnInfo(name = "gst_number") var gstNumber: String,
+    @ColumnInfo(name = "is_synced") var isSynced: Boolean
 )

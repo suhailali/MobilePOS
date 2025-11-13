@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.databse
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.skegworks.mobilepos.appsettings.AppSettingsDao
+import com.skegworks.mobilepos.business.BusinessDao
 import com.skegworks.mobilepos.cashcounter.CashCounterDao
 import com.skegworks.mobilepos.category.CategoryDao
 import com.skegworks.mobilepos.coupon.CouponDao
@@ -34,7 +35,7 @@ import com.skegworks.mobilepos.vendors.VendorDao
         CashCounterEntity::class,
         AppSettingsEntity::class,
         CouponEntity::class
-    ], version = 21
+    ], version = 22
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
@@ -46,4 +47,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun cashCounterDao(): CashCounterDao
     abstract fun appSettingsDao(): AppSettingsDao
     abstract fun couponDao(): CouponDao
+    abstract fun businessDao(): BusinessDao
 }
