@@ -15,6 +15,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
+import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.domain.Business
@@ -59,7 +60,8 @@ class POSViewModel @Inject constructor(
     private val generateNewInvoiceNumberUseCase: GenerateNewInvoiceNumberUseCase,
     private val updateInvoiceNumberUseCase: UpdateInvoiceNumberUseCase,
     private val dateUtility: DateUtility,
-    private val calculatePriceUseCase: CalculateProductPriceUseCase
+    private val calculatePriceUseCase: CalculateProductPriceUseCase,
+    private val businessRepository: BusinessRepository
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(POSState())
@@ -171,6 +173,7 @@ class POSViewModel @Inject constructor(
                 }
                 calculateTotalPrice()
             }
+
             is POSIntent.RemoveCoupon -> {
                 removeCouponForInvoiceItems()
                 _state.update {
@@ -276,37 +279,31 @@ class POSViewModel @Inject constructor(
 
     private fun createInvoice() {
         viewModelScope.launch(Dispatchers.IO) {
-            val customer = customerRepository.getAllCustomers().first()
-            val business = Business(
-                id = uuidGenerator.generateUUID(),
-                name = "Jyothika",
-                mobile = "9995 42 9878",
-                email = "nadhik@gmail.com",
-                gstNumber = "32Ox44hsjjsoosjsjj",
-                address = "AbcdEfghihs, jjs, sjks, djhjdk, 676567",
-                isSynced = true
-            )
-            val invoice = Invoice(
-                id = uuidGenerator.generateUUID(),
-                business = business,
-                customer = customer,
-                invoiceNumber = state.value.invoiceNumber,
-                invoiceDate = state.value.invoiceDate,
-                items = state.value.invoiceItems,
-                totalPrice = state.value.totalPrice,
-                totalDiscount = state.value.totalDiscount,
-                finalPrice = state.value.finalPriceToPay,
-                isSynced = false,
-                cashDiscount = state.value.cashDiscount,
-                invoiceState = InvoiceState.PRINT
-            )
-            val pdf = generateInvoicePdfUseCase.generatePdf(invoice)
-            _state.update {
-                it.copy(
-                    invoicePDF = pdf,
-                    pdfGenerated = true,
-                    invoice = invoice
+            val customer = state.value.customer
+            val business = state.value.business
+            if (customer != null && business != null) {
+                val invoice = Invoice(
+                    id = uuidGenerator.generateUUID(),
+                    business = business,
+                    customer = customer,
+                    invoiceNumber = state.value.invoiceNumber,
+                    invoiceDate = state.value.invoiceDate,
+                    items = state.value.invoiceItems,
+                    totalPrice = state.value.totalPrice,
+                    totalDiscount = state.value.totalDiscount,
+                    finalPrice = state.value.finalPriceToPay,
+                    isSynced = false,
+                    cashDiscount = state.value.cashDiscount,
+                    invoiceState = InvoiceState.PRINT
                 )
+                val pdf = generateInvoicePdfUseCase.generatePdf(invoice)
+                _state.update {
+                    it.copy(
+                        invoicePDF = pdf,
+                        pdfGenerated = true,
+                        invoice = invoice
+                    )
+                }
             }
             //printPdf(application, pdf, "Invoice")
             //fileHandler.writePdfDocument(pdf)
@@ -383,6 +380,17 @@ class POSViewModel @Inject constructor(
                 it.copy(
                     invoiceNumber = invoiceNumber,
                     invoiceDate = dateUtility.getDateTime()
+                )
+            }
+        }
+    }
+
+    fun getBusiness() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val business = businessRepository.getBusiness()
+            _state.update {
+                it.copy(
+                    business = business
                 )
             }
         }

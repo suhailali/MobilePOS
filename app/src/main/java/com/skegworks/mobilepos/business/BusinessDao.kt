@@ -13,8 +13,8 @@ interface BusinessDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBusiness(business: BusinessEntity)
 
-    @Query("SELECT * FROM business WHERE id = :id")
-    suspend fun getBusinessById(id: String): BusinessEntity?
+    @Query("SELECT * FROM business LIMIT 1")
+    suspend fun getBusiness(): BusinessEntity?
 
     @Query("SELECT * FROM business")
     suspend fun getAllBusiness(): List<BusinessEntity>

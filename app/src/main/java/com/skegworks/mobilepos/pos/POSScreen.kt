@@ -40,6 +40,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
 
     LaunchedEffect(Unit) {
         viewModel.getInvoiceNumber()
+        viewModel.getBusiness()
     }
     LaunchedEffect(state.pdfGenerated) {
         if (state.pdfGenerated) {

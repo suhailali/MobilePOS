@@ -8,7 +8,7 @@ class BusinessRepositoryImpl(private val businessDao: BusinessDao): BusinessRepo
         businessDao.insertBusiness(business.toEntity())
     }
 
-    override suspend fun getBusinessById(id: String): Business? {
-        return businessDao.getBusinessById(id)?.toDomain()
+    override suspend fun getBusiness(): Business? {
+        return businessDao.getBusiness()?.toDomain()
     }
 }

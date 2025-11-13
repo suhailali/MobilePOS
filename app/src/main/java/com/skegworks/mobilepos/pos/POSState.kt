@@ -1,6 +1,7 @@
 package com.skegworks.mobilepos.pos
 
 import android.graphics.pdf.PdfDocument
+import com.skegworks.mobilepos.data.domain.Business
 import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Customer
 import com.skegworks.mobilepos.data.domain.Invoice
@@ -26,5 +27,6 @@ data class POSState(
     val searchTerm: String = "",
     val searchResultProduct: List<Product> = emptyList(),
     val searchResultCoupon: List<Coupon> = emptyList(),
-    val coupon: Coupon? = null
+    val coupon: Coupon? = null,
+    val business: Business? = null
 )
