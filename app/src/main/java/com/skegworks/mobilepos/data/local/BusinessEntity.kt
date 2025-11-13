@@ -10,6 +10,6 @@ data class BusinessEntity(
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "mobile") val mobile: String,
     @ColumnInfo(name = "email") val email: String,
-    @ColumnInfo(name = "address") val address: Boolean,
-    @ColumnInfo(name = "gstNumber") var gstNumber: Boolean
+    @ColumnInfo(name = "address") val address: String,
+    @ColumnInfo(name = "gstNumber") var gstNumber: String
 )
