@@ -1,8 +1,11 @@
 package com.skegworks.mobilepos.utils
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
-class DateUtilityImpl: DateUtility {
+class DateUtilityImpl : DateUtility {
     override fun getYear(): Int {
         val calendar = Calendar.getInstance()
         return calendar.get(Calendar.YEAR)
@@ -20,6 +23,18 @@ class DateUtilityImpl: DateUtility {
     }
 
     override fun getCurrentTimeStamp(): Long {
-       return System.currentTimeMillis()
+        return System.currentTimeMillis()
+    }
+
+    override fun isDateToday(date: String, pattern: String): Boolean {
+        // Parse the given date-time string
+        val formatter = DateTimeFormatter.ofPattern(pattern)
+        val dateTime = LocalDateTime.parse(date, formatter)
+
+        // Compare only the date part
+        val inputDate = dateTime.toLocalDate()
+        val today = LocalDate.now()
+
+        return inputDate == today
     }
 }
