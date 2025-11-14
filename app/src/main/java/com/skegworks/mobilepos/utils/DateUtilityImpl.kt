@@ -11,6 +11,25 @@ class DateUtilityImpl : DateUtility {
         return calendar.get(Calendar.YEAR)
     }
 
+    override fun getDateForToday(): String {
+        val calendar = Calendar.getInstance()
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        val month = calendar.get(Calendar.MONTH) + 1
+        val year = calendar.get(Calendar.YEAR)
+        return "${day.toString().padStart(2, '0')}/$month/$year"
+    }
+
+    override fun formatDate(
+        date: String,
+        inputPattern: String,
+        outputPattern: String
+    ): String {
+        val inputFormatter = DateTimeFormatter.ofPattern(inputPattern)
+        val outputFormatter = DateTimeFormatter.ofPattern(outputPattern)
+        val dateTime = LocalDateTime.parse(date, inputFormatter)
+        return dateTime.format(outputFormatter)
+    }
+
     override fun getDateTime(): String {
         val calendar = Calendar.getInstance()
         val day = calendar.get(Calendar.DAY_OF_MONTH)
