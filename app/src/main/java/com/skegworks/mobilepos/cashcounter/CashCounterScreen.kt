@@ -52,11 +52,7 @@ fun CashCounterScreen(modifier: Modifier, viewModel: CashCounterViewModel, onSuc
         Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
 
         Button(enabled = state.buttonEnabled, onClick = {
-            if (state.state == CashCounterStatus.OPEN) {
-                viewModel.handleIntent(CashCounterIntent.CloseCashCounter)
-            } else {
-                viewModel.handleIntent(CashCounterIntent.OpenCashCounter)
-            }
+            viewModel.handleIntent(CashCounterIntent.UpdateCashCounter)
         }) {
             Text(state.buttonText)
         }

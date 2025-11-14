@@ -34,12 +34,8 @@ class CashCounterViewModel @Inject constructor(
 
     fun handleIntent(intent: CashCounterIntent) {
         when (intent) {
-            is CashCounterIntent.OpenCashCounter -> {
-                syncCashCounter(CashCounterStatus.OPEN)
-            }
-
-            is CashCounterIntent.CloseCashCounter -> {
-                syncCashCounter(CashCounterStatus.CLOSED)
+            is CashCounterIntent.UpdateCashCounter -> {
+                updateCashCounter()
             }
 
             is CashCounterIntent.UpdateCash -> {
@@ -65,7 +61,7 @@ class CashCounterViewModel @Inject constructor(
         }
     }
 
-    private fun syncCashCounter(status: CashCounterStatus) {
+    private fun updateCashCounter() {
         _state.update {
             it.copy(
                 isLoading = true,
@@ -74,47 +70,98 @@ class CashCounterViewModel @Inject constructor(
             )
         }
         viewModelScope.launch(Dispatchers.IO) {
-            val cashCounter = CashCounter(
-                id = uuidGenerator.generateUUID(),
-                date = LocalDateTime.now().toString(),
-                balance = _state.value.textStateCashInCounter,
-                status = status,
-                createdBy = userPreferenceHandler.getUserEmail() ?: "",
-                createdAt = System.currentTimeMillis(),
-                isSynced = false
-            )
-            cashCounterRepository.insertCashCounter(cashCounter)
-            val result = firestoreHelper.addDocument(
-                collection = "cash_counter",
-                id = cashCounter.id,
-                data = cashCounter.toFirestoreDto()
-            )
-            if (result.isSuccess) {
-                cashCounterRepository.updateCashCounter(cashCounter.apply {
-                    isSynced = true
-                })
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = null,
-                        isSynced = true,
-                    )
+            when (state.value.cashCounterAction) {
+                CashCounterAction.ACTION_CLOSE -> {
+                    closeCashCounter()
                 }
-            } else {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = "Failed to update cash counter",
-                        isSynced = false,
-                    )
+
+                CashCounterAction.ACTION_OPEN -> {
+                    openCashCounter()
+                }
+
+                CashCounterAction.ACTION_CLOSE_AND_OPEN -> {
+                    closeCashCounter()
+                    openCashCounter()
+                }
+            }
+            syncCashCounter()
+        }
+    }
+
+    private suspend fun syncCashCounter() {
+        val unsynced = cashCounterRepository.getAllUnsyncedCashCounter()
+        if (unsynced.isNotEmpty()) {
+            unsynced.forEach { cashCounter ->
+                cashCounter.apply {
+                    isSynced = true
+                }
+                val result = firestoreHelper.addDocument(
+                    collection = "cash_counter",
+                    id = cashCounter.id,
+                    data = cashCounter.toFirestoreDto()
+                )
+                if (result.isSuccess) {
+                    cashCounterRepository.updateCashCounter(cashCounter.apply {
+                        isSynced = true
+                    })
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = null,
+                            isSynced = true,
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = "Failed to update cash counter",
+                            isSynced = false,
+                        )
+                    }
                 }
             }
         }
     }
 
+    private suspend fun closeCashCounter() {
+        state.value.previousCashCounter?.let {
+            cashCounterRepository.updateCashCounter(
+                it.apply {
+                    closingBalance = _state.value.textStateCashInCounter
+                    status = CashCounterStatus.CLOSED
+                    closedBy = userPreferenceHandler.getUserEmail() ?: ""
+                    closedAt = System.currentTimeMillis()
+                    isSynced = false
+                }
+            )
+        }
+    }
+
+    private suspend fun openCashCounter() {
+        val cashCounter = CashCounter(
+            id = uuidGenerator.generateUUID(),
+            date = LocalDateTime.now().toString(),
+            openingBalance = _state.value.textStateCashInCounter,
+            closingBalance = -1.0,
+            status = CashCounterStatus.OPEN,
+            openedBy = userPreferenceHandler.getUserEmail() ?: "",
+            openedAt = System.currentTimeMillis(),
+            closedBy = "",
+            closedAt = -1L,
+            isSynced = false
+        )
+        cashCounterRepository.insertCashCounter(cashCounter)
+    }
+
     fun fetchLatestCashCounter() {
         viewModelScope.launch(Dispatchers.IO) {
             val cashCounter = cashCounterRepository.getLatestCashCounter()
+            _state.update {
+                it.copy(
+                    previousCashCounter = cashCounter
+                )
+            }
             val today = dateUtility.getDateForToday()
             if (cashCounter == null || cashCounter.status == CashCounterStatus.CLOSED) {
                 _state.update {
@@ -138,7 +185,11 @@ class CashCounterViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    val formattedDate = dateUtility.formatDate(cashCounter.date, Constants.DateFormat.DATE_TIME_FORMAT, "dd/MM/yyyy")
+                    val formattedDate = dateUtility.formatDate(
+                        cashCounter.date,
+                        Constants.DateFormat.DATE_TIME_FORMAT,
+                        "dd/MM/yyyy"
+                    )
                     _state.update {
                         it.copy(
                             state = CashCounterStatus.OPEN,
