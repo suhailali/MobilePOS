@@ -3,10 +3,13 @@ package com.skegworks.mobilepos.data.domain
 data class CashCounter(
     val id:String,
     val date:String,
-    val balance:Double,
-    val status: CashCounterStatus,
-    val createdAt:Long,
-    val createdBy:String,
+    val openingBalance:Double,
+    var closingBalance:Double,
+    var status: CashCounterStatus,
+    val openedAt:Long,
+    val openedBy:String,
+    var closedAt:Long,
+    var closedBy:String,
     var isSynced:Boolean
 )
 

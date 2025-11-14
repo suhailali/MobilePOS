@@ -11,10 +11,13 @@ fun CashCounterFireStoreDto.toDomain(): CashCounter {
     return CashCounter(
         id = id,
         date = date,
-        balance = balance,
+        openingBalance = openingBalance,
+        closingBalance = closingBalance,
         status = CashCounterStatus.fromStatus(status) ?: CashCounterStatus.CLOSED,
-        createdAt = createdAt,
-        createdBy = createdBy,
+        openedAt = openedAt,
+        openedBy = openedBy,
+        closedAt = closedAt,
+        closedBy = closedBy,
         isSynced = isSynced
     )
 }
@@ -24,10 +27,13 @@ fun CashCounter.toFirestoreDto(): CashCounterFireStoreDto {
     return CashCounterFireStoreDto(
         id = id,
         date = date,
-        balance = balance,
+        openingBalance = openingBalance,
+        closingBalance = closingBalance,
         status = status.name,
-        createdAt = createdAt,
-        createdBy = createdBy,
+        openedAt = openedAt,
+        openedBy = openedBy,
+        closedAt = closedAt,
+        closedBy = closedBy,
         isSynced = isSynced
     )
 }
@@ -37,10 +43,13 @@ fun CashCounterEntity.toDomain(): CashCounter {
     return CashCounter(
         id = id,
         date = date,
-        balance = balance,
+        openingBalance = openingBalance,
+        closingBalance = closingBalance,
         status = CashCounterStatus.fromStatus(status) ?: CashCounterStatus.CLOSED,
-        createdAt = createdAt,
-        createdBy = createdBy,
+        openedAt = openedAt,
+        openedBy = openedBy,
+        closedAt = closedAt,
+        closedBy = closedBy,
         isSynced = isSynced
     )
 }
@@ -50,10 +59,13 @@ fun CashCounter.toEntity(): CashCounterEntity {
     return CashCounterEntity(
         id = id,
         date = date,
-        balance = balance,
+        openingBalance = openingBalance,
+        closingBalance = closingBalance,
         status = status.name,
-        createdAt = createdAt,
-        createdBy = createdBy,
+        openedAt = openedAt,
+        openedBy = openedBy,
+        closedAt = closedAt,
+        closedBy = closedBy,
         isSynced = isSynced
     )
 }
