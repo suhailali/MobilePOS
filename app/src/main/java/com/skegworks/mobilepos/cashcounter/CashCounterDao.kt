@@ -19,12 +19,15 @@ interface CashCounterDao {
     @Query("SELECT * FROM cash_counter")
     suspend fun getAllCashCounters(): List<CashCounterEntity>
 
+    @Query("SELECT * FROM cash_counter WHERE is_synced = false")
+    suspend fun getAllUnSyncedCashCounters(): List<CashCounterEntity>
+
     @Update
     suspend fun updateCashCounter(cashCounter: CashCounterEntity)
 
     @Delete
     suspend fun deleteCashCounter(cashCounter: CashCounterEntity)
 
-    @Query("SELECT * FROM cash_counter ORDER BY created_at DESC LIMIT 1")
+    @Query("SELECT * FROM cash_counter ORDER BY opened_at DESC LIMIT 1")
     suspend fun getLatestCashCounter(): CashCounterEntity?
 }
