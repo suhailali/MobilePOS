@@ -6,4 +6,5 @@ interface CashCounterRepository {
     suspend fun insertCashCounter(cashCounter: CashCounter)
     suspend fun updateCashCounter(cashCounter: CashCounter)
     suspend fun getLatestCashCounter(): CashCounter?
+    suspend fun getAllUnsyncedCashCounter(): List<CashCounter>
 }

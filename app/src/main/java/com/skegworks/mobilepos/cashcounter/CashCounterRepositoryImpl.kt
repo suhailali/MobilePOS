@@ -22,4 +22,10 @@ class CashCounterRepositoryImpl @Inject constructor(private val cashCounterDao: 
         }
         return cashCounter.toDomain()
     }
+
+    override suspend fun getAllUnsyncedCashCounter(): List<CashCounter> {
+        return cashCounterDao.getAllUnSyncedCashCounters().map {
+            it.toDomain()
+        }
+    }
 }
