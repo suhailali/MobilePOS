@@ -8,5 +8,8 @@ data class CashCounterState(
     val textStateCashInCounter:Double = 0.0,
     val isLoading: Boolean = false,
     val isSynced: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val buttonText: String = "Open Cash Counter for Today",
+    val cashCounterAction: CashCounterAction = CashCounterAction.ACTION_CLOSE,
+    val buttonEnabled: Boolean = false
 )

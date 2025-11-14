@@ -6,6 +6,8 @@ import com.skegworks.mobilepos.data.domain.CashCounter
 import com.skegworks.mobilepos.data.domain.CashCounterStatus
 import com.skegworks.mobilepos.data.mapper.toFirestoreDto
 import com.skegworks.mobilepos.data.remote.firestore.FirestoreHelper
+import com.skegworks.mobilepos.utils.Constants
+import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +25,8 @@ class CashCounterViewModel @Inject constructor(
     private val firestoreHelper: FirestoreHelper,
     private val uuidGenerator: UUIDGenerator,
     private val userPreferenceHandler: UserPreferenceHandler,
-    private val cashCounterRepository: CashCounterRepository
+    private val cashCounterRepository: CashCounterRepository,
+    private val dateUtility: DateUtility
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(CashCounterState())
@@ -40,6 +43,21 @@ class CashCounterViewModel @Inject constructor(
             }
 
             is CashCounterIntent.UpdateCash -> {
+                if (intent.cash == 0.0) {
+                    _state.update {
+                        it.copy(
+                            error = "Cash can not be zero",
+                            buttonEnabled = false
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            error = null,
+                            buttonEnabled = true
+                        )
+                    }
+                }
                 _state.value = _state.value.copy(
                     textStateCashInCounter = intent.cash
                 )
@@ -89,6 +107,45 @@ class CashCounterViewModel @Inject constructor(
                         error = "Failed to update cash counter",
                         isSynced = false,
                     )
+                }
+            }
+        }
+    }
+
+    fun fetchLatestCashCounter() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val cashCounter = cashCounterRepository.getLatestCashCounter()
+            val today = dateUtility.getDateForToday()
+            if (cashCounter == null || cashCounter.status == CashCounterStatus.CLOSED) {
+                _state.update {
+                    it.copy(
+                        state = CashCounterStatus.CLOSED,
+                        cashCounterAction = CashCounterAction.ACTION_OPEN,
+                        buttonText = "Open Cash Counter for Today $today"
+                    )
+                }
+            } else {
+                if (dateUtility.isDateToday(
+                        cashCounter.date,
+                        Constants.DateFormat.DATE_TIME_FORMAT
+                    )
+                ) {
+                    _state.update {
+                        it.copy(
+                            state = CashCounterStatus.OPEN,
+                            cashCounterAction = CashCounterAction.ACTION_CLOSE,
+                            buttonText = "Close Cash Counter for Today $today"
+                        )
+                    }
+                } else {
+                    val formattedDate = dateUtility.formatDate(cashCounter.date, Constants.DateFormat.DATE_TIME_FORMAT, "dd/MM/yyyy")
+                    _state.update {
+                        it.copy(
+                            state = CashCounterStatus.OPEN,
+                            cashCounterAction = CashCounterAction.ACTION_CLOSE_AND_OPEN,
+                            buttonText = "Close Cash Counter for $formattedDate and Open for Today $today"
+                        )
+                    }
                 }
             }
         }
