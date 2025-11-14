@@ -96,7 +96,7 @@ class CashCounterViewModel @Inject constructor(
                     isSynced = true
                 }
                 val result = firestoreHelper.addDocument(
-                    collection = "cash_counter",
+                    collection = Constants.FirebaseDocument.CASH_COUNTER,
                     id = cashCounter.id,
                     data = cashCounter.toFirestoreDto()
                 )
