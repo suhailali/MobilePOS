@@ -16,7 +16,11 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateProduct(product: Product) {
-        // Implementation here
+        productDao.updateProduct(product.toEntity())
+    }
+
+    override suspend fun updateProductQuantity(productId: String, quantity: Int){
+        productDao.subtractFromQuantity(productId, quantity)
     }
 
     override suspend fun deleteProduct(product: Product) {

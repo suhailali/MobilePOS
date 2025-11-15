@@ -5,6 +5,7 @@ import com.skegworks.mobilepos.data.domain.Product
 interface ProductRepository {
     suspend fun insertProduct(product: Product)
     suspend fun updateProduct(product: Product)
+    suspend fun updateProductQuantity(productId: String, quantity: Int)
     suspend fun deleteProduct(product: Product)
     suspend fun getProductById(id: String): Product?
     suspend fun getProductForSku(sku: String): List<Product>?

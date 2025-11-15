@@ -61,7 +61,8 @@ class POSViewModel @Inject constructor(
     private val updateInvoiceNumberUseCase: UpdateInvoiceNumberUseCase,
     private val dateUtility: DateUtility,
     private val calculatePriceUseCase: CalculateProductPriceUseCase,
-    private val businessRepository: BusinessRepository
+    private val businessRepository: BusinessRepository,
+    private val updateInventoryAfterSaleUseCase: UpdateInventoryAfterSaleUseCase
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(POSState())
@@ -208,6 +209,9 @@ class POSViewModel @Inject constructor(
 //                }
                 //update invoice counter and date
                 viewModelScope.launch(Dispatchers.IO) {
+                    state.value.invoice?.let {
+                        updateInventoryAfterSaleUseCase.invoke(it)
+                    }
                     updateInvoiceNumberUseCase.invoke()
                     syncAppSettingsUseCase.invoke()
                 }

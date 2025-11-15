@@ -22,6 +22,8 @@ import com.skegworks.mobilepos.pos.GetCouponFromBarCodeUseCaseImpl
 import com.skegworks.mobilepos.pos.GetCouponFromBarcodeUseCase
 import com.skegworks.mobilepos.pos.GetProductFromBarCodeUseCaseImpl
 import com.skegworks.mobilepos.pos.GetProductFromBarcodeUseCase
+import com.skegworks.mobilepos.pos.UpdateInventoryAfterSaleUseCase
+import com.skegworks.mobilepos.pos.UpdateInventoryAfterSaleUseCaseImpl
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCaseImpl
 import com.skegworks.mobilepos.product.ProductRepository
@@ -102,5 +104,12 @@ class UseCaseModule {
         appSettingsRepository: AppSettingsRepository
     ): SyncAppSettingsUseCase {
         return SyncAppSettingsUseCaseImpl(appSettingsRepository)
+    }
+
+    @Provides
+    fun providesUpdateInventoryAfterSaleUseCase(
+        productRepository: ProductRepository
+    ): UpdateInventoryAfterSaleUseCase {
+        return UpdateInventoryAfterSaleUseCaseImpl(productRepository)
     }
 }
