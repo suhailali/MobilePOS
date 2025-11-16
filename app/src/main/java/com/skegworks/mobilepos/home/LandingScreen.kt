@@ -36,7 +36,7 @@ fun LandingScreen(
                 modifier = Modifier
                     .padding(12.dp)
                     .size(32.dp)
-                    .background(MobilePOSTheme.colorScheme.secondary)
+                    .background(MaterialTheme.colorScheme.secondary)
                     .clickable {
                         onClick(item)
                     }) {
