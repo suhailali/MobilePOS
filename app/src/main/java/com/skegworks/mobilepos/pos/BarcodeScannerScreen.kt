@@ -14,6 +14,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -58,8 +60,10 @@ import java.util.concurrent.Executors
 fun BarcodeScannerScreen(
     modifier: Modifier = Modifier,
     viewModel: POSViewModel,
-    onBarcodeDetected: () -> Unit
+    scanCode: ScanCode,
+    onBarcodeDetected: () -> Unit,
 ) {
+    println("Item Barcode reader $scanCode")
     val state = viewModel.state.collectAsState()
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -110,7 +114,6 @@ fun BarcodeScannerScreen(
                 .height(250.dp)
         ) {
             AndroidView(
-                modifier = Modifier.fillMaxSize(),
                 factory = { ctx ->
                     val previewView = PreviewView(ctx).apply {
                         layoutParams = FrameLayout.LayoutParams(
@@ -159,8 +162,11 @@ fun BarcodeScannerScreen(
                                             lastValue = value
                                             lastTime = now
                                             println("Barcode detected: $value")
-                                            viewModel.getProductForBarcode(value)
-                                            viewModel.getCouponForBarcode(value)
+                                            if(scanCode.scanType == BarcodeScanType.PRODUCT) {
+                                                viewModel.getProductForBarcode(value)
+                                            } else {
+                                                viewModel.getCouponForBarcode(value)
+                                            }
                                         }
                                     }
                                 }
@@ -182,47 +188,58 @@ fun BarcodeScannerScreen(
             )
         }
         Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
-        Row {
+        Row(modifier = Modifier.background(Color.White).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             SimpleTextField(state.value.searchTerm, "Search") {
                 viewModel.handleIntent(POSIntent.UpdateSearchTerm(it))
             }
             Button(onClick = {
-                viewModel.handleIntent(POSIntent.SearchItem)
+                viewModel.handleIntent(POSIntent.SearchItem(scanCode.scanType))
             }) {
                 Text("Search")
             }
         }
         Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text("Products", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
-            LazyColumn {
-                items(state.value.searchResultProduct) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().clickable{
-                            viewModel.handleIntent(POSIntent.AddProduct(it))
-                        },
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(it.title)
-                        Text(it.sku)
+        if (scanCode.scanType == BarcodeScanType.PRODUCT) {
+            Column(modifier = Modifier.fillMaxWidth().padding(Dimens.SMALL_PADDING.dp)) {
+                Text("Products", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
+                LazyColumn {
+                    items(state.value.searchResultProduct) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.handleIntent(POSIntent.AddProduct(it))
+                                },
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(it.title)
+                            Text(it.sku)
+                        }
                     }
                 }
             }
-            Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
-            Text("Coupons", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
-            LazyColumn {
-                items(state.value.searchResultCoupon) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().clickable{
-                            viewModel.handleIntent(POSIntent.AddCoupon(it))
-                        },
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(it.title)
-                        Text(it.discountCode)
+        }
+
+        if (scanCode.scanType == BarcodeScanType.COUPON) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text("Coupons", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
+                LazyColumn {
+                    items(state.value.searchResultCoupon) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.handleIntent(POSIntent.AddCoupon(it))
+                                },
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(it.title)
+                            Text(it.discountCode)
+                        }
                     }
                 }
             }
+        }
 
 //        IconButton(
 //            onClick = {
@@ -239,6 +256,11 @@ fun BarcodeScannerScreen(
 //                contentDescription = "Toggle Flash"
 //            )
 //        }
-        }
     }
+}
+
+
+enum class BarcodeScanType {
+    PRODUCT,
+    COUPON
 }
