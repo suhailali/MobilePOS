@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -51,6 +52,7 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import com.skegworks.mobilepos.product.ProductListRow
 import com.skegworks.mobilepos.ui.component.SimpleTextField
 import com.skegworks.mobilepos.utils.Dimens
 import java.util.concurrent.Executors
@@ -203,17 +205,18 @@ fun BarcodeScannerScreen(
             Column(modifier = Modifier.fillMaxWidth().padding(Dimens.SMALL_PADDING.dp)) {
                 Text("Products", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
                 LazyColumn {
-                    items(state.value.searchResultProduct) {
+                    itemsIndexed(
+                        items = state.value.searchResultProduct,
+                        key = { _, item -> item.id }) { index, product ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    viewModel.handleIntent(POSIntent.AddProduct(it))
+                                    viewModel.handleIntent(POSIntent.AddProduct(product))
                                 },
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(it.title)
-                            Text(it.sku)
+                            ProductListRow(index, product)
                         }
                     }
                 }
