@@ -13,7 +13,7 @@ sealed class POSIntent {
     class AddCustomer(val customer: Customer) : POSIntent()
     class AddCoupon(val coupon: Coupon) : POSIntent()
     class RemoveItem(val invoiceItem: InvoiceItem) : POSIntent()
-    object SearchItem : POSIntent()
+    class SearchItem(val scanType: BarcodeScanType) : POSIntent()
     class UpdateSearchTerm(val term: String) : POSIntent()
     class AddCashDiscount(val cashDiscount: Double) : POSIntent()
     object RemoveCoupon : POSIntent()

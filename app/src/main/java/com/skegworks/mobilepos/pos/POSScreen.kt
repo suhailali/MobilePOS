@@ -64,14 +64,19 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     .padding(horizontal = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("POS")
                 Button(
                     enabled = state.coupon == null,
                     onClick = {
-                        //viewModel.handleIntent(POSIntent.AddProduct)
-                        navigator.navigateToAddItem()
+                        navigator.navigateToAddItem(BarcodeScanType.PRODUCT)
                     }) {
                     Text("BarCode")
+                }
+                Button(
+                    enabled = state.coupon == null,
+                    onClick = {
+                        navigator.navigateToAddItem(BarcodeScanType.COUPON)
+                    }) {
+                    Text("Coupon")
                 }
 
                 Button(

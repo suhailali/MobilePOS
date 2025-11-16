@@ -236,8 +236,17 @@ class POSViewModel @Inject constructor(
             }
 
             is POSIntent.SearchItem -> {
-                getProductForBarcode(state.value.searchTerm)
-                getCouponForBarcode(state.value.searchTerm)
+                when (intent.scanType) {
+                    BarcodeScanType.PRODUCT ->
+                        if (state.value.searchTerm.isNotEmpty() &&
+                            state.value.searchTerm.length > 2
+                        ) {
+                            getProductForBarcode(state.value.searchTerm)
+                        }
+
+                    BarcodeScanType.COUPON ->
+                        getCouponForBarcode(state.value.searchTerm)
+                }
             }
 
             is POSIntent.UpdateSearchTerm -> {

@@ -4,16 +4,16 @@ import androidx.annotation.OptIn
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 
 
 @Serializable
-object AddItem
+data class ScanCode(val scanType: BarcodeScanType)
 
 @Serializable
 object SearchProduct
@@ -51,8 +51,13 @@ fun POSScreenNavigation(
 
         }
 
-        composable<AddItem> {
-            BarcodeScannerScreen(modifier = modifier, viewModel = viewmodel) {
+        composable<ScanCode> { backStackEntry ->
+            val scanCode: ScanCode = backStackEntry.toRoute()
+            BarcodeScannerScreen(
+                modifier = modifier,
+                viewModel = viewmodel,
+                scanCode = scanCode
+            ) {
                 navController.popBackStack()
             }
         }
@@ -61,7 +66,9 @@ fun POSScreenNavigation(
 }
 
 class POSNavigator(private val navController: NavController) {
-    fun navigateToAddItem() = navController.navigate(AddItem)
+    fun navigateToAddItem(scanFor: BarcodeScanType) =
+        navController.navigate(ScanCode(scanType = scanFor))
+
     fun navigateToPOSScreen() = navController.navigate(POSScreen)
     fun navigateToCustomerScreen() = navController.navigate(AddCustomer)
 }
