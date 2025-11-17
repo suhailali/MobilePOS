@@ -72,7 +72,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     Text("BarCode")
                 }
                 Button(
-                    enabled = state.coupon == null,
+                    enabled = state.coupon == null && state.invoiceItems.isNotEmpty(),
                     onClick = {
                         navigator.navigateToAddItem(BarcodeScanType.COUPON)
                     }) {
