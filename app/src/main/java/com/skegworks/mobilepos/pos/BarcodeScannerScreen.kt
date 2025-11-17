@@ -85,6 +85,7 @@ fun BarcodeScannerScreen(
 
             else -> permissionLauncher.launch(Manifest.permission.CAMERA)
         }
+        viewModel.handleIntent(POSIntent.ResetError)
     }
 
     LaunchedEffect(state.value.productFound) {
@@ -200,7 +201,11 @@ fun BarcodeScannerScreen(
                 Text("Search")
             }
         }
-        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        Spacer(modifier = Modifier.padding(Dimens.MEDIUM_PADDING.dp))
+        state.value.errorBarcodeScreen?.let {
+            Text(it, color = Color.Red)
+        }
+        Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
         if (scanCode.scanType == BarcodeScanType.PRODUCT) {
             Column(modifier = Modifier.fillMaxWidth().padding(Dimens.SMALL_PADDING.dp)) {
                 Text("Products", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
@@ -212,7 +217,7 @@ fun BarcodeScannerScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    viewModel.handleIntent(POSIntent.AddProduct(product))
+                                        viewModel.handleIntent(POSIntent.AddProduct(product))
                                 },
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {

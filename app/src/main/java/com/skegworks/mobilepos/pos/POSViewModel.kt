@@ -110,26 +110,53 @@ class POSViewModel @Inject constructor(
     private fun addOrUpdateProduct(product: Product) {
         val existingItems = state.value.invoiceItems.toMutableList()
         val newItem = product.toInvoiceItem(uuidGenerator.generateUUID())
+        if (product.quantity != 0) {
+            val existingIndex = existingItems.indexOfFirst { it.sku == newItem.sku }
 
-        val existingIndex = existingItems.indexOfFirst { it.sku == newItem.sku }
-
-        if (existingIndex != -1) {
-            // Item exists → update quantity
-            val updatedItem = existingItems[existingIndex].copy(
-                quantity = existingItems[existingIndex].quantity + newItem.quantity
-            )
-            existingItems[existingIndex] = updatedItem
+            // -1 means, it is an existing item
+            if (existingIndex != -1) {
+                //Check if invoice item quantity exceeds product available quantity
+                if (existingItems[existingIndex].quantity < product.quantity) {
+                    // Item exists → update quantity
+                    val updatedItem = existingItems[existingIndex].copy(
+                        quantity = existingItems[existingIndex].quantity + newItem.quantity
+                    )
+                    existingItems[existingIndex] = updatedItem
+                    _state.update {
+                        it.copy(
+                            product = product,
+                            invoiceItems = existingItems,
+                            productFound = true,
+                            errorBarcodeScreen = null
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            errorBarcodeScreen = "You can not add this product. Already ${product.quantity} quantity added."
+                        )
+                    }
+                }
+            } else {
+                // Item not found → add new one
+                existingItems.add(newItem)
+                _state.update {
+                    it.copy(
+                        product = product,
+                        invoiceItems = existingItems,
+                        productFound = true,
+                        errorBarcodeScreen = null
+                    )
+                }
+            }
         } else {
-            // Item not found → add new one
-            existingItems.add(newItem)
+            _state.update {
+                it.copy(
+                    errorBarcodeScreen = "Product Quantity is Zero. You can not add this product."
+                )
+            }
         }
-        _state.update {
-            it.copy(
-                product = product,
-                invoiceItems = existingItems,
-                productFound = true,
-            )
-        }
+
     }
 
     private fun addOrUpdateCoupon(coupon: Coupon) {
@@ -166,6 +193,13 @@ class POSViewModel @Inject constructor(
 
     fun handleIntent(intent: POSIntent) {
         when (intent) {
+            is POSIntent.ResetError -> {
+                _state.update {
+                    it.copy(
+                        errorBarcodeScreen = null
+                    )
+                }
+            }
             is POSIntent.RemoveCashDiscount -> {
                 _state.update {
                     it.copy(

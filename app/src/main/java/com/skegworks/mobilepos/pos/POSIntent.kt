@@ -18,4 +18,5 @@ sealed class POSIntent {
     class AddCashDiscount(val cashDiscount: Double) : POSIntent()
     object RemoveCoupon : POSIntent()
     object RemoveCashDiscount : POSIntent()
+    object ResetError : POSIntent()
 }
