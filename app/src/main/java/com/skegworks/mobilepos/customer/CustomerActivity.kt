@@ -12,13 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.os.bundleOf
-import com.skegworks.mobilepos.category.AddCategoryScreen
-import com.skegworks.mobilepos.category.CategoryViewModel
-import com.skegworks.mobilepos.data.domain.Customer
-import com.skegworks.mobilepos.login.LoginActivity
 import com.skegworks.mobilepos.pos.POSActivity
-import com.skegworks.mobilepos.product.AddProductScreen
-import com.skegworks.mobilepos.product.ProductViewModel
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.json.Json

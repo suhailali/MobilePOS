@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import com.skegworks.mobilepos.pos.POSActivity
+import com.skegworks.mobilepos.customer.CustomerActivity
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,7 +29,7 @@ class CashCounterActivity: ComponentActivity() {
                         modifier = Modifier.padding(innerPadding),
                         viewModel
                     ) {
-                        val intent = Intent(context, POSActivity::class.java)
+                        val intent = Intent(context, CustomerActivity::class.java)
                         context.startActivity(intent)
                         finish()
                     }
