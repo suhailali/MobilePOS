@@ -90,6 +90,9 @@ class HomeActivity : ComponentActivity() {
 
                             "Customers" -> {
                                 val intent = Intent(context, CustomerActivity::class.java)
+                                val bundle = bundleOf()
+                                bundle.putBoolean("isFromLandingScreen", true)
+                                intent.putExtras(bundle)
                                 context.startActivity(intent)
                             }
 

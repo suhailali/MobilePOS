@@ -27,13 +27,18 @@ class CustomerActivity : ComponentActivity() {
             MobilePOSTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val viewModel: CustomerViewModel by viewModels<CustomerViewModel>()
-                    CustomerScreenNavigation(viewModel, modifier = Modifier.padding(innerPadding)) { customer ->
-                        val intent = Intent(context, POSActivity::class.java)
-                        val json = Json.encodeToString(customer)
-                        val bundle = bundleOf()
-                        bundle.putSerializable("customer", json)
-                        intent.putExtras(bundle)
-                        context.startActivity(intent)
+                    CustomerScreenNavigation(
+                        viewModel,
+                        modifier = Modifier.padding(innerPadding)
+                    ) { customer ->
+                        if (intent.getBooleanExtra("isFromLandingScreen", false).not()) {
+                            val intent = Intent(context, POSActivity::class.java)
+                            val json = Json.encodeToString(customer)
+                            val bundle = bundleOf()
+                            bundle.putSerializable("customer", json)
+                            intent.putExtras(bundle)
+                            context.startActivity(intent)
+                        }
                     }
                 }
             }
