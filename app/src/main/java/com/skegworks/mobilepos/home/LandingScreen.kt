@@ -37,14 +37,20 @@ fun LandingScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         items(state.value.features) { item ->
-            Box(contentAlignment = Alignment.Center,
+            Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.secondary)
+                    .background(MaterialTheme.colorScheme.primary)
                     .clickable {
                         onClick(item)
                     }) {
-                Text(text = item, modifier = Modifier.padding(vertical = Dimens.MEDIUM_PADDING.dp))
+                Text(
+                    text = item,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(vertical = Dimens.MEDIUM_PADDING.dp)
+                )
             }
         }
     }
