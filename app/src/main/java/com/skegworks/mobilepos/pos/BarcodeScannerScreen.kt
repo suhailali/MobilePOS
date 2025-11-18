@@ -165,7 +165,7 @@ fun BarcodeScannerScreen(
                                             lastValue = value
                                             lastTime = now
                                             println("Barcode detected: $value")
-                                            if(scanCode.scanType == BarcodeScanType.PRODUCT) {
+                                            if (scanCode.scanType == BarcodeScanType.PRODUCT) {
                                                 viewModel.getProductForBarcode(value)
                                             } else {
                                                 viewModel.getCouponForBarcode(value)
@@ -191,8 +191,14 @@ fun BarcodeScannerScreen(
             )
         }
         Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
-        Row(modifier = Modifier.background(Color.White).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            SimpleTextField(state.value.searchTerm, "Search") {
+        Row(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            SimpleTextField(state.value.searchTerm, "Enter Code") {
                 viewModel.handleIntent(POSIntent.UpdateSearchTerm(it))
             }
             Button(onClick = {
@@ -207,7 +213,9 @@ fun BarcodeScannerScreen(
         }
         Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
         if (scanCode.scanType == BarcodeScanType.PRODUCT) {
-            Column(modifier = Modifier.fillMaxWidth().padding(Dimens.SMALL_PADDING.dp)) {
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .padding(Dimens.SMALL_PADDING.dp)) {
                 Text("Products", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
                 LazyColumn {
                     itemsIndexed(
@@ -217,7 +225,7 @@ fun BarcodeScannerScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                        viewModel.handleIntent(POSIntent.AddProduct(product))
+                                    viewModel.handleIntent(POSIntent.AddProduct(product))
                                 },
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
