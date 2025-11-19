@@ -248,6 +248,11 @@ class POSViewModel @Inject constructor(
                     }
                     updateInvoiceNumberUseCase.invoke()
                     syncAppSettingsUseCase.invoke()
+                    _state.update {
+                        it.copy(
+                            paymentComplete = true
+                        )
+                    }
                 }
             }
 

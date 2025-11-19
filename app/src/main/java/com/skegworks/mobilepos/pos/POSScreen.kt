@@ -1,5 +1,6 @@
 package com.skegworks.mobilepos.pos
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skegworks.mobilepos.data.domain.InvoiceItem
+import com.skegworks.mobilepos.home.HomeActivity
 import com.skegworks.mobilepos.ui.component.DeleteButton
 import com.skegworks.mobilepos.ui.component.TextFieldBottomSheet
 import com.skegworks.mobilepos.utils.Dimens
@@ -47,6 +49,14 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
             state.invoicePDF?.let {
                 viewModel.printPdf(context, it, "Invoice")
             }
+        }
+    }
+
+    LaunchedEffect(state.paymentComplete) {
+        if (state.paymentComplete) {
+            val intent = Intent(context, HomeActivity::class.java)
+            context.startActivity(intent)
+            //TODO finish activity
         }
     }
 

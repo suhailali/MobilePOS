@@ -29,5 +29,6 @@ data class POSState(
     val searchResultCoupon: List<Coupon> = emptyList(),
     val coupon: Coupon? = null,
     val business: Business? = null,
-    val errorBarcodeScreen: String? = null
+    val errorBarcodeScreen: String? = null,
+    val paymentComplete: Boolean = false
 )
