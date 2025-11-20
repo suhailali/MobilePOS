@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.os.bundleOf
 import com.skegworks.mobilepos.pos.POSActivity
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
+import com.skegworks.mobilepos.utils.findActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.json.Json
 
@@ -38,6 +39,7 @@ class CustomerActivity : ComponentActivity() {
                             bundle.putSerializable("customer", json)
                             intent.putExtras(bundle)
                             context.startActivity(intent)
+                            context.findActivity()?.finish()
                         }
                     }
                 }
