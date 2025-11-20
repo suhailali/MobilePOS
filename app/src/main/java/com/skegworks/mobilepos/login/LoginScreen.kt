@@ -1,7 +1,9 @@
 package com.skegworks.mobilepos.login
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
@@ -25,9 +27,12 @@ fun LoginScreen(
 ) {
     val state = viewModel.state.collectAsState()
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
         SimpleTextField(textState = state.value.textStateEmail, "Email") {
             viewModel.handleIntent(LoginIntent.UpdateUsername(it))
         }
