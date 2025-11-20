@@ -32,6 +32,7 @@ import com.skegworks.mobilepos.home.HomeActivity
 import com.skegworks.mobilepos.ui.component.DeleteButton
 import com.skegworks.mobilepos.ui.component.TextFieldBottomSheet
 import com.skegworks.mobilepos.utils.Dimens
+import com.skegworks.mobilepos.utils.findActivity
 
 @Composable
 fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigator) {
@@ -56,7 +57,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
         if (state.paymentComplete) {
             val intent = Intent(context, HomeActivity::class.java)
             context.startActivity(intent)
-            //TODO finish activity
+            context.findActivity()?.finish()
         }
     }
 
