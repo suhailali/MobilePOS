@@ -129,7 +129,7 @@ class LoginViewModel @Inject constructor(
                 state.copy(
                     success = false,
                     isLoading = false,
-                    errorMessage = "Failed to Login"
+                    errorMessage = "Failed to Fetch User"
                 )
             }
             Log.e("Auth", "Get user role failed: ${it.message}")
