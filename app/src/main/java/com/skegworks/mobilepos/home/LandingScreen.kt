@@ -4,9 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -18,9 +19,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
+import androidx.compose.ui.unit.sp
+import com.skegworks.mobilepos.ui.component.clock.Clock
 import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
@@ -30,27 +31,41 @@ fun LandingScreen(
     onClick: (String) -> Unit,
 ) {
     val state = viewModel.state.collectAsState()
-    LazyVerticalGrid(
-        modifier = modifier.padding(Dimens.LARGE_PADDING.dp),
-        columns = GridCells.Fixed(3),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        items(state.value.features) { item ->
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.primary)
-                    .clickable {
-                        onClick(item)
-                    }) {
-                Text(
-                    text = item,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(vertical = Dimens.MEDIUM_PADDING.dp)
-                )
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        Text("Hi ${state.value.userEmail}")
+        Clock(
+            showDate = true,
+            dateFontSize = 24.sp,
+            timeFontSize = 26.sp,
+            modifier = Modifier.padding(Dimens.MEDIUM_PADDING.dp)
+        )
+        LazyVerticalGrid(
+            modifier = modifier.padding(Dimens.LARGE_PADDING.dp),
+            columns = GridCells.Fixed(3),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            items(state.value.features) { item ->
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.primary)
+                        .clickable {
+                            onClick(item)
+                        }) {
+                    Text(
+                        text = item,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(vertical = Dimens.MEDIUM_PADDING.dp)
+                    )
+                }
             }
         }
     }

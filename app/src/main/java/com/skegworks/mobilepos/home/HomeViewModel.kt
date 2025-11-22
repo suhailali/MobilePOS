@@ -32,14 +32,16 @@ class HomeViewModel @Inject constructor(
     private val _events = MutableSharedFlow<HomeEvents>()
     val events = _events.asSharedFlow()
 
-    fun getUserRole() {
+    fun setupUser() {
         viewModelScope.launch {
             val role = userPreferenceHandler.getUserRole()
+            val email = userPreferenceHandler.getUserEmail()
             val features = getFeatures(role)
             println("Userrole ${role?.name}")
             _state.update {
                 it.copy(
                     userRole = role,
+                    userEmail = email,
                     features = features
                 )
             }
