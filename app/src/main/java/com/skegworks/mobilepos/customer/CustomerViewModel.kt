@@ -122,13 +122,13 @@ class CustomerViewModel @Inject constructor(
                     return
                 }
                 val customer = Customer(
-                    name = _state.value.textStateName,
-                    email = _state.value.textStateEmail,
-                    phone = _state.value.textStatePhone,
-                    address = _state.value.textStateAddress,
-                    isActive = _state.value.textStateIsActive,
-                    createdAt = _state.value.textStateCreatedAt,
-                    updatedAt = _state.value.textStateUpdatedAt,
+                    name = state.value.textStateName,
+                    email = state.value.textStateEmail,
+                    phone = state.value.textStatePhone,
+                    address = state.value.textStateAddress,
+                    isActive = state.value.textStateIsActive,
+                    createdAt = state.value.textStateCreatedAt,
+                    updatedAt = state.value.textStateUpdatedAt,
                     isSynced = true,
                     id = uuidGenerator.generateUUID()
                 )
@@ -138,6 +138,11 @@ class CustomerViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             isSaved = true
+                        )
+                    }
+                    _stateSearch.update {
+                        it.copy(
+                            textStatePhone = state.value.textStatePhone
                         )
                     }
                     delay(1000)
