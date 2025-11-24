@@ -20,7 +20,7 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE sku LIKE '%' || :sku || '%'")
     suspend fun getProductBySku(sku: String): List<ProductEntity>?
 
-    @Query("SELECT * FROM products")
+    @Query("SELECT * FROM products ORDER by created_at DESC")
     suspend fun getAllProducts(): List<ProductEntity>
 
     @Update
