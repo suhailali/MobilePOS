@@ -237,7 +237,7 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
             Button(onClick = {
                 viewModel.handleIntent(AddProductIntent.AddAnother)
             }) {
-                Text("Add Another Size/Color")
+                Text("Add Another Size")
             }
         }
 

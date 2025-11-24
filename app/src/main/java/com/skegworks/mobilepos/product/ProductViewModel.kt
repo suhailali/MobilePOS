@@ -270,9 +270,6 @@ class ProductViewModel @Inject constructor(
                         _state.update {
                             it.copy(
                                 textStateSize = "",
-                                textStateColor = "",
-                                textStateQuantity = 0,
-                                textStateAlertQuantity = 0
                             )
                         }
                     } else {
