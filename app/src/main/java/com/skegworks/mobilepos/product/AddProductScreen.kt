@@ -1,5 +1,8 @@
 package com.skegworks.mobilepos.product
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.skegworks.mobilepos.ui.component.ReadOnlyTextField
 import com.skegworks.mobilepos.ui.component.SimpleBottomSheet
@@ -33,6 +37,7 @@ import com.skegworks.mobilepos.utils.Dimens
 fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
     val state = viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     var isCategorySheetOpen by remember { mutableStateOf(false) }
     var isVendorSheetOpen by remember { mutableStateOf(false) }
@@ -49,6 +54,12 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         viewModel.handleIntent(AddProductIntent.LoadCategories)
         viewModel.handleIntent(AddProductIntent.LoadVendors)
     }
+
+    LaunchedEffect(state.value.textStateSku) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        clipboard.setPrimaryClip(ClipData.newPlainText("SKU", state.value.textStateSku))
+    }
+
     Column(
         modifier = modifier
             .verticalScroll(scrollState)
@@ -86,7 +97,7 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         Button(onClick = {
             viewModel.handleIntent(AddProductIntent.GenerateSku)
         }) {
-            Text("Generate SKU")
+            Text("Generate and Copy SKU")
         }
         Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
         state.value.barcodeBitmap?.let { bmp ->
