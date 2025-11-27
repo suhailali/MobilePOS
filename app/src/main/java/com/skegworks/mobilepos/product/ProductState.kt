@@ -1,12 +1,11 @@
 package com.skegworks.mobilepos.product
 
 import android.graphics.Bitmap
-import androidx.compose.ui.graphics.Color
 import com.skegworks.mobilepos.data.domain.Category
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.domain.Vendor
 
-data class AddProductState(
+data class ProductState(
     val textStateCategoryId: String = "",
     val textStateCategoryName: String = "",
 
@@ -63,10 +62,11 @@ data class AddProductState(
     val errorCalculatePrice: Boolean = false,
     val validationErrorMessageCalculatePrice:String = "",
     val errorSave:Boolean = false,
-    val validationErrorMessageSave:String = ""
+    val validationErrorMessageSave:String = "",
+    val productDetail: Product? = null
 ) {
-    fun clearState(): AddProductState {
-        return AddProductState(
+    fun clearState(): ProductState {
+        return ProductState(
             categories = this.categories,
             vendors = this.vendors
         )
