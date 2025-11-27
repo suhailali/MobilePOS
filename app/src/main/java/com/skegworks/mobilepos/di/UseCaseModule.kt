@@ -11,6 +11,8 @@ import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCaseImpl
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.FetchCustomerUseCase
 import com.skegworks.mobilepos.customer.FetchCustomerUseCaseImpl
+import com.skegworks.mobilepos.dashboard.GetDashboardDataUseCase
+import com.skegworks.mobilepos.dashboard.GetDashboardDataUseCaseImpl
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCaseImpl
 import com.skegworks.mobilepos.invoice.InvoiceRepository
@@ -111,5 +113,18 @@ class UseCaseModule {
         productRepository: ProductRepository
     ): UpdateInventoryAfterSaleUseCase {
         return UpdateInventoryAfterSaleUseCaseImpl(productRepository)
+    }
+
+    @Provides
+    fun providesGetDashboardDataUseCase(
+        productRepository: ProductRepository,
+        customerRepository: CustomerRepository,
+        invoiceRepository: InvoiceRepository,
+    ): GetDashboardDataUseCase {
+        return GetDashboardDataUseCaseImpl(
+            productRepository,
+            customerRepository,
+            invoiceRepository
+        )
     }
 }
