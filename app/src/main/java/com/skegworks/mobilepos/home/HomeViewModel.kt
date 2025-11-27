@@ -80,6 +80,7 @@ class HomeViewModel @Inject constructor(
                     "Orders",
                     "Settings",
                     "Category",
+                    "Dashboard"
                 )
 
             UserRole.ROLE_STAFF ->

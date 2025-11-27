@@ -23,6 +23,7 @@ import com.skegworks.mobilepos.barcode.ZxingBarcodeGenerator
 import com.skegworks.mobilepos.cashcounter.CashCounterActivity
 import com.skegworks.mobilepos.category.CategoryActivity
 import com.skegworks.mobilepos.customer.CustomerActivity
+import com.skegworks.mobilepos.dashboard.DashboardActivity
 import com.skegworks.mobilepos.utils.files.FileHandlerImpl
 import com.skegworks.mobilepos.login.LoginActivity
 import com.skegworks.mobilepos.pdf.PdfGeneratorImpl
@@ -135,6 +136,11 @@ class HomeActivity : ComponentActivity() {
 
                             "POS" -> {
                                 viewModel.openCashCounter()
+                            }
+
+                            "Dashboard" -> {
+                                val intent = Intent(context, DashboardActivity::class.java)
+                                context.startActivity(intent)
                             }
                         }
                     }

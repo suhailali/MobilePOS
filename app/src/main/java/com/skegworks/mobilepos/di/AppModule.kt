@@ -118,4 +118,17 @@ class AppModule {
     ): BusinessRepository {
         return BusinessRepositoryImpl(businessDao)
     }
+
+//    @Provides
+//    @Singleton
+//    fun providesDashboardRepository(
+//        productDao: ProductDao,
+//        customerDao: CustomerDao,
+//        invoiceDao: InvoiceDao,
+//    ): DashboardRepository {
+//        return DashboardRepositoryImpl(productDao, customerDao, invoiceDao)
+//    }
+//}
+
+
 }
