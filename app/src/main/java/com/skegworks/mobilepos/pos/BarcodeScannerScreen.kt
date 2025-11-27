@@ -229,7 +229,9 @@ fun BarcodeScannerScreen(
                                 },
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            ProductListRow(index, product)
+                            ProductListRow(index, product) {
+                                //ignore
+                            }
                         }
                     }
                 }

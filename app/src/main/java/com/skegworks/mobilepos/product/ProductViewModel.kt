@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.data.domain.PriceInput
+import com.skegworks.mobilepos.data.domain.PriceOutput
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.vendors.VendorRepository
@@ -29,11 +30,32 @@ class ProductViewModel @Inject constructor(
     private val priceCalculationUseCase: CalculateProductPriceUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AddProductState())
-    val state: StateFlow<AddProductState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(ProductState())
+    val state: StateFlow<ProductState> = _state.asStateFlow()
+
+    fun handleProductDetailIntent(intent: ProductDetailIntent) {
+        when (intent) {
+            is ProductDetailIntent.DeleteProduct -> {
+
+            }
+
+            is ProductDetailIntent.UpdateProduct -> {
+
+            }
+
+            is ProductDetailIntent.FetchProduct -> {
+                fetchProduct(intent.id)
+            }
+        }
+    }
 
     fun handleIntent(intent: AddProductIntent) {
         when (intent) {
+            is AddProductIntent.NavigateToAddProduct -> {
+                _state.update {
+                    it.clearState()
+                }
+            }
             is AddProductIntent.LoadCategories -> {
                 loadCategories()
             }
@@ -250,7 +272,6 @@ class ProductViewModel @Inject constructor(
                         salePriceWithoutDiscount = state.value.textStateSalePriceWithoutDiscount,
 
 
-
                         isActive = state.value.textStateIsActive,
                         isSynced = true,
                         createdAt = state.value.textStateCreatedAt,
@@ -313,7 +334,7 @@ class ProductViewModel @Inject constructor(
         if (maxProductId == null) {
             maxProductId = 0
         }
-        maxProductId = maxProductId + 1
+        maxProductId += 1
         return generateSkuUseCase.invoke(
             category = state.value.textStateCategoryName,
             vendor = state.value.textStateVendorName,
@@ -332,6 +353,15 @@ class ProductViewModel @Inject constructor(
     }
 
     private fun calculatePricing() {
+
+        val outputPrice = priceCalculationUseCase.invoke(
+            readInputPrice()
+        )
+
+        updateOutputPrice(outputPrice)
+    }
+
+    private fun readInputPrice(): PriceInput {
         val itemPrice = state.value.textStateItemPrice
         val inputGstPercentage = state.value.textStateInputGstPercentage
         val outputGstPercentage = state.value.textStateOutputGstPercentage
@@ -346,10 +376,10 @@ class ProductViewModel @Inject constructor(
             discountPercentage = discountPercentage,
             additionalDiscountPercentage = 0.0
         )
-        val outputPrice = priceCalculationUseCase.invoke(
-            inputPrice
-        )
+        return inputPrice
+    }
 
+    private fun updateOutputPrice(outputPrice: PriceOutput) {
         _state.update {
             it.copy(
                 textStateInputGst = outputPrice.inputGst,
@@ -381,6 +411,64 @@ class ProductViewModel @Inject constructor(
                 println("PVM fetchProducts crash: ${e.localizedMessage}")
                 _state.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    fun fetchProduct(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val productFetched = productRepository.getProductById(id)
+            productFetched?.let { product ->
+                _state.update {
+                    it.clearState()
+
+                    it.copy(
+                        textStateCategoryId = product.categoryId,
+                        textStateCategoryName = product.categoryName,
+
+                        textStateVendorId = product.vendorId,
+                        textStateVendorName = product.vendorName,
+
+                        textStateTitle = product.title,
+                        // TODO Convert enum value
+                        textStateSize = product.size,
+                        textStateColor = product.color,
+                        textStateSku = product.sku,
+
+                        textStateItemPrice = product.itemPrice,
+                        textStateInputGstPercentage = product.inputGstPercentage,
+                        textStateOutputGstPercentage = product.outputGstPercentage,
+                        textStateSaleMargin = product.saleMargin,
+                        textStateInputGst = product.inputGst,
+                        textStateCost = product.cost,
+                        textStateSalePriceWithoutGst = product.salePriceWithoutGst,
+                        textStateOutputGst = product.outputGst,
+                        textStateSalePrice = product.salePrice,
+                        textStateSalePriceWithoutDiscount = product.salePriceWithoutDiscount,
+                        textStateFinalRoundedOffPrice = product.finalRoundedOffPrice,
+                        
+                        textStateHsnCode = product.hsnCode,
+                        textStateQuantity = product.quantity,
+                        textStateAlertQuantity = product.alertQuantity,
+                        textStateDescription = product.description,
+                        textStateImageUrl = product.imageUrl,
+                        textStateIsActive = product.isActive,
+                        textStateDiscountPercentage = product.discountPercentage,
+                        textStateDiscountAmount = product.discountAmount,
+                        textStateCreatedAt = product.createdAt,
+                    )
+
+                }
+                val inputPrice = readInputPrice()
+                val outputPrice = priceCalculationUseCase.invoke(
+                    inputPrice
+                )
+                _state.update {
+                    it.copy(
+                        textStatePriceAfterDiscountWithoutGst = outputPrice.priceAfterDiscountWithoutGst
+                    )
+                }
+            }
+
         }
     }
 
@@ -451,12 +539,19 @@ class ProductViewModel @Inject constructor(
         val hsnCode = state.value.textStateHsnCode
         val quantity = state.value.textStateQuantity
 
+        val size = state.value.textStateSize
+        val color = state.value.textStateColor
+
+        val sku = state.value.textStateSku
+
         val isValid = hsnCode.isNotEmpty() && quantity > 0
+                && size.isNotEmpty() && color.isNotEmpty()
+                && sku.isNotEmpty()
         return isValid
     }
 
     private fun updateSaveProductValidationState(isValid: Boolean) {
-        if(isValid) {
+        if (isValid) {
             _state.update {
                 it.copy(
                     errorSave = false,
@@ -466,7 +561,7 @@ class ProductViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     errorSave = true,
-                    validationErrorMessageSave = "HSN Code and Quantity are required",
+                    validationErrorMessageSave = "Make sure Size, Color, SKU, HSN Code and Quantity are added",
                 )
             }
         }

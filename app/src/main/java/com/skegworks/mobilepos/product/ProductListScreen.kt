@@ -1,6 +1,7 @@
 package com.skegworks.mobilepos.product
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +36,7 @@ import com.skegworks.mobilepos.utils.Dimens
 fun ProductListScreen(
     modifier: Modifier,
     viewModel: ProductViewModel,
+    onNavigateToProductDetail: (id: String) -> Unit,
     onNavigateToAddProduct: () -> Unit
 ) {
     val state = viewModel.state.collectAsState()
@@ -47,10 +50,13 @@ fun ProductListScreen(
         ProductFilter()
         SpacerMedium()
         ProductHeading {
+            viewModel.handleIntent(AddProductIntent.NavigateToAddProduct)
             onNavigateToAddProduct()
         }
         SpacerMedium()
-        ProductList(state.value.products)
+        ProductList(state.value.products) { id ->
+            onNavigateToProductDetail(id)
+        }
     }
 }
 
@@ -114,7 +120,7 @@ fun ProductHeading(navigate: () -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        Text("Products")
+        Text("Products", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
         Button(onClick = { navigate() }) {
             Text("Add Product")
         }
@@ -122,19 +128,21 @@ fun ProductHeading(navigate: () -> Unit) {
 }
 
 @Composable
-fun ProductList(list: List<Product>) {
+fun ProductList(list: List<Product>, onClick: (id: String) -> Unit) {
     // Implementation for Product List UI goes here
     LazyColumn {
         itemsIndexed(
             items = list,
             key = { _, item -> item.id }) { index, product ->
-            ProductListRow(index, product)
+            ProductListRow(index, product) {
+                onClick(product.id)
+            }
         }
     }
 }
 
 @Composable
-fun ProductListRow(index: Int, product: Product) {
+fun ProductListRow(index: Int, product: Product, onClick: () -> Unit) {
     val backgroundColor =
         if (index % 2 == 0) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.inversePrimary
     Column(
@@ -142,6 +150,7 @@ fun ProductListRow(index: Int, product: Product) {
             .fillMaxWidth()
             .background(backgroundColor)
             .padding(Dimens.MEDIUM_PADDING.dp)
+            .clickable(onClick = onClick)
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text(product.title, fontSize = 16.sp, fontWeight = FontWeight.Bold)

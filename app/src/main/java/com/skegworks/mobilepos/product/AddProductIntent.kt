@@ -34,4 +34,5 @@ sealed class AddProductIntent {
     data object LoadCategories : AddProductIntent()
     data object LoadVendors : AddProductIntent()
     data object GenerateSku : AddProductIntent()
+    data object NavigateToAddProduct : AddProductIntent()
 }

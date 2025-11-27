@@ -24,8 +24,7 @@ class CustomerViewModel @Inject constructor(
     private val syncCustomerUseCase: SyncCustomerUseCase,
     private val fetchCustomerUseCase: FetchCustomerUseCase,
     private val uuidGenerator: UUIDGenerator
-) :
-    ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(AddCustomerState())
     val state: StateFlow<AddCustomerState> = _state.asStateFlow()

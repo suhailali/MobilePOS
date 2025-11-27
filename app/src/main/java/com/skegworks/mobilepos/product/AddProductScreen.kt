@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.skegworks.mobilepos.ui.component.ReadOnlyTextField
 import com.skegworks.mobilepos.ui.component.SimpleBottomSheet
 import com.skegworks.mobilepos.ui.component.SimpleTextField
+import com.skegworks.mobilepos.ui.component.SpacerMedium
 import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
@@ -66,6 +67,7 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        SpacerMedium()
         ReadOnlyTextField(textState = state.value.textStateCategoryName, "Category") {
             isCategorySheetOpen = true
         }
@@ -75,41 +77,8 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         SimpleTextField(textState = state.value.textStateTitle, "Title") {
             viewModel.handleIntent(AddProductIntent.UpdateTitle(it))
         }
-        ReadOnlyTextField(textState = state.value.textStateSize, "Size") {
-            isSizeSheetOpen = true
-        }
-        ReadOnlyTextField(textState = state.value.textStateColor, "Color") {
-            isColorSheetOpen = true
-        }
-        ReadOnlyTextField(textState = state.value.textStateSku, "SKU") {
-            // No action on click
-        }
 
-        if (state.value.errorSku) {
-            Text(
-                text = state.value.validationErrorMessageSku,
-                modifier = Modifier.padding(Dimens.SMALL_PADDING.dp),
-                color = Color.Red
-            )
-        }
-
-        Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
-        Button(onClick = {
-            viewModel.handleIntent(AddProductIntent.GenerateSku)
-        }) {
-            Text("Generate and Copy SKU")
-        }
-        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
-        state.value.barcodeBitmap?.let { bmp ->
-            Image(
-                bitmap = bmp.asImageBitmap(),
-                contentDescription = "Barcode",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-            )
-        }
-        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        SpacerMedium()
 
         SimpleTextField(textState = state.value.textStateItemPrice.toString(), "Item Price") {
             val price = it.toDoubleOrNull() ?: 0.0
@@ -206,6 +175,7 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
 
         }
 
+        SpacerMedium()
         ReadOnlyTextField(textState = state.value.textStateQuantity.toString(), "Quantity") {
             isQuantitySheetOpen = true
         }
@@ -233,9 +203,45 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
             )
         }
         Spacer(modifier = Modifier.padding(Dimens.MEDIUM_PADDING.dp))
+        ReadOnlyTextField(textState = state.value.textStateSku, "SKU") {
+            // No action on click
+        }
+
+        if (state.value.errorSku) {
+            Text(
+                text = state.value.validationErrorMessageSku,
+                modifier = Modifier.padding(Dimens.SMALL_PADDING.dp),
+                color = Color.Red
+            )
+        }
+
+        Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+        Button(onClick = {
+            viewModel.handleIntent(AddProductIntent.GenerateSku)
+        }) {
+            Text("Generate and Copy SKU")
+        }
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        state.value.barcodeBitmap?.let { bmp ->
+            Image(
+                bitmap = bmp.asImageBitmap(),
+                contentDescription = "Barcode",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+            )
+        }
+        Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
+        ReadOnlyTextField(textState = state.value.textStateSize, "Size") {
+            isSizeSheetOpen = true
+        }
+        ReadOnlyTextField(textState = state.value.textStateColor, "Color") {
+            isColorSheetOpen = true
+        }
+        Spacer(modifier = Modifier.padding(Dimens.MEDIUM_PADDING.dp))
 
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.SpaceAround,
             modifier = Modifier.fillMaxWidth()
         )
         {
@@ -248,7 +254,7 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
             Button(onClick = {
                 viewModel.handleIntent(AddProductIntent.AddAnother)
             }) {
-                Text("Add Another Size")
+                Text("Add Another Size/Color")
             }
         }
 

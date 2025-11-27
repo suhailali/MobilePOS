@@ -6,9 +6,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.skegworks.mobilepos.data.domain.Customer
-import com.skegworks.mobilepos.product.AddProductScreen
-import com.skegworks.mobilepos.product.ProductListScreen
-import com.skegworks.mobilepos.product.ProductViewModel
 import kotlinx.serialization.Serializable
 
 

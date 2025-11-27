@@ -28,8 +28,7 @@ class ProductRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getProductById(id: String): Product? {
-        // Implementation here
-        return null
+        return productDao.getProductById(id)?.toDomain()
     }
 
     override suspend fun getProductForSku(sku: String): List<Product>? {
