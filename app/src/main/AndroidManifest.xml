@@ -9,7 +9,10 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera.any" android:required="false"/>
+
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="false" />
 
     <application
         android:name=".MobilePOSApplication"
@@ -41,6 +44,9 @@
             android:exported="false" />
         <activity
             android:name=".pos.POSActivity"
+            android:exported="false" />
+        <activity
+            android:name=".dashboard.DashboardActivity"
             android:exported="false" />
         <activity
             android:name=".cashcounter.CashCounterActivity"

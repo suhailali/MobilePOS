@@ -37,4 +37,31 @@ interface ProductDao {
 
     @Query("SELECT * FROM products WHERE is_synced = 0")
     suspend fun getUnsynced(): List<ProductEntity>
+
+    @Query("SELECT Count(*) FROM products WHERE is_active = :isActive")
+    suspend fun getTotalProductCount(isActive: Boolean = true): Int
+
+    @Query("SELECT SUM(quantity) FROM products WHERE is_active = :isActive")
+    suspend fun getTotalProductQuantity(isActive: Boolean = true): Int
+
+    @Query("SELECT Count(*) FROM products WHERE quantity = 0 AND is_active = :isActive")
+    suspend fun getTotalOutOfStockProductCount(isActive: Boolean = true): Int
+
+    @Query("SELECT SUM(cost) FROM products WHERE quantity > 0 AND is_active = :isActive")
+    suspend fun getTotalCostOfProductsInStockWithOutGST(isActive: Boolean = true): Double
+
+    @Query("SELECT SUM(input_gst) FROM products WHERE quantity > 0 AND is_active = :isActive")
+    suspend fun getTotalInputGSTOfProductsInStock(isActive: Boolean = true): Double
+
+    @Query("SELECT SUM(cost) FROM products")
+    suspend fun getTotalCostOfProductsWithOutGST(): Double
+
+    @Query("SELECT SUM(input_gst) FROM products")
+    suspend fun getTotalInputGSTOfProducts(): Double
+
+    @Query("SELECT SUM(final_rounded_off_price) FROM products WHERE quantity > 0 AND is_active =:isActive")
+    suspend fun getTotalPriceOfProductsInStockWithOutGST(isActive: Boolean = true): Double
+
+    @Query("SELECT SUM(output_gst) FROM products WHERE quantity > 0 AND is_active = :isActive")
+    suspend fun getTotalOutputGSTOfProductsInStock(isActive: Boolean = true): Double
 }

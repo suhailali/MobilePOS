@@ -11,6 +11,27 @@ interface ProductRepository {
     suspend fun getProductForSku(sku: String): List<Product>?
     suspend fun getAllProducts(): List<Product>
 
+    suspend fun getTotalProductCount(): Int
+
+    suspend fun getTotalProductQuantity(): Int
+
+    suspend fun getTotalOutOfStockProductCount(): Int
+
+    suspend fun getTotalInactiveProductCount(): Int
+
+    suspend fun getTotalCostOfProductsInStockWithOutGST(): Double
+
+    suspend fun getTotalInputGSTOfProductsInStock(): Double
+
+    suspend fun getTotalCostOfProductsWithOutGST(): Double
+
+    suspend fun getTotalInputGSTOfProducts(): Double
+
+    suspend fun getTotalPriceOfProductsInStockWithOutGST(): Double
+
+    suspend fun getTotalOutputGSTOfProductsInStock(): Double
+
+
     suspend fun getMaxId(): Int?
 
     suspend fun syncProduct(

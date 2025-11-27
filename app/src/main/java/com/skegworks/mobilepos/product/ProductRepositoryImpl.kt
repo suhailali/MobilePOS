@@ -45,6 +45,46 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getTotalProductCount(): Int {
+        return productDao.getTotalProductCount()
+    }
+
+    override suspend fun getTotalProductQuantity(): Int {
+        return productDao.getTotalProductQuantity()
+    }
+
+    override suspend fun getTotalOutOfStockProductCount(): Int {
+        return productDao.getTotalOutOfStockProductCount()
+    }
+
+    override suspend fun getTotalInactiveProductCount(): Int {
+        return productDao.getTotalProductCount(isActive = false)
+    }
+
+    override suspend fun getTotalCostOfProductsInStockWithOutGST(): Double {
+        return productDao.getTotalCostOfProductsInStockWithOutGST()
+    }
+
+    override suspend fun getTotalInputGSTOfProductsInStock(): Double {
+        return productDao.getTotalInputGSTOfProductsInStock()
+    }
+
+    override suspend fun getTotalCostOfProductsWithOutGST(): Double {
+        return productDao.getTotalCostOfProductsWithOutGST()
+    }
+
+    override suspend fun getTotalInputGSTOfProducts(): Double {
+        return productDao.getTotalInputGSTOfProducts()
+    }
+
+    override suspend fun getTotalPriceOfProductsInStockWithOutGST(): Double {
+        return productDao.getTotalPriceOfProductsInStockWithOutGST()
+    }
+
+    override suspend fun getTotalOutputGSTOfProductsInStock(): Double {
+        return productDao.getTotalOutputGSTOfProductsInStock()
+    }
+
     override suspend fun getMaxId(): Int? {
         return productDao.getMaxId()
     }
