@@ -1,10 +1,10 @@
 package com.skegworks.mobilepos.data.remote.firestore
 
 import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
-import com.google.firebase.firestore.model.Document
 import kotlinx.coroutines.tasks.await
 
 class FirestoreHelper(val db: FirebaseFirestore = FirebaseFirestore.getInstance()) {
@@ -97,7 +97,9 @@ class FirestoreHelper(val db: FirebaseFirestore = FirebaseFirestore.getInstance(
         collection: String,
         clazz: Class<T>
     ): Result<List<T>> = runCatching {
-        val snapshot = db.collection(collection).get().await()
+        val snapshot = db.collection(collection)
+            .orderBy(FieldPath.documentId())
+            .get().await()
         snapshot.documents.mapNotNull { it.toObject(clazz) }
     }
 }
