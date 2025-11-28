@@ -2,14 +2,12 @@ package com.skegworks.mobilepos.appsettings
 
 import com.skegworks.mobilepos.data.domain.AppSettings
 import com.skegworks.mobilepos.utils.DateUtility
-import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import javax.inject.Inject
 
 class InitialiseAppSettingsUseCaseImpl @Inject constructor(
     private val appSettingsRepository: AppSettingsRepository,
     private val utility: DateUtility,
-    private val uuidGenerator: UUIDGenerator,
     private val userPreferenceHandler: UserPreferenceHandler
 ) : InitialiseAppSettingsUseCase {
 
@@ -32,7 +30,7 @@ class InitialiseAppSettingsUseCaseImpl @Inject constructor(
             )
         } else {
             appSettings = AppSettings(
-                id = uuidGenerator.generateUUID(),
+                id = "dd9b8e9c-343e-475f-b0ca-4b5f0bd0debb",
                 invoiceCounter = 0,
                 invoiceYear = currentYear,
                 productSkuCounter = 0,
