@@ -1,7 +1,7 @@
 package com.skegworks.mobilepos.data.domain
 
 data class Product(
-    val id: String,
+    var id: String,
     val vendorId: String,
     val vendorName: String,
     val hsnCode: String,
@@ -29,11 +29,12 @@ data class Product(
     val description: String,
     val imageUrl: String,
     val isActive: Boolean,
+    var isDeleted: Boolean,
     var isSynced: Boolean,
     val createdAt: Long,
-    val updatedAt: Long,
+    var updatedAt: Long,
     val discountPercentage: Double,
     val discountAmount: Double,
-    val createdBy: String,
-    val updatedBy: String
+    var createdBy: String,
+    var updatedBy: String
 )

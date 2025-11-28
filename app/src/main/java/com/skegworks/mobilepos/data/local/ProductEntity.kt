@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.data.local
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.ColumnInfo
+import androidx.room.Delete
 
 @Entity(tableName = "products")
 data class ProductEntity(
@@ -34,6 +35,7 @@ data class ProductEntity(
     @ColumnInfo(name = "description") val description: String,
     @ColumnInfo(name = "image_url") val imageUrl: String,
     @ColumnInfo(name = "is_active") val isActive: Boolean,
+    @ColumnInfo(name = "is_deleted") val isDeleted : Boolean,
     @ColumnInfo(name = "is_synced") var isSynced: Boolean,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,

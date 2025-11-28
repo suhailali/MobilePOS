@@ -29,6 +29,7 @@ data class ProductFireStoreDto(
     val description: String = "",
     val imageUrl: String = "",
     val isActive: Boolean = true,
+    val isDeleted: Boolean = false,
     var isSynced: Boolean = true,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L,
