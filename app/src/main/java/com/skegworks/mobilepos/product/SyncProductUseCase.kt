@@ -9,8 +9,6 @@ import javax.inject.Inject
 
 class SyncProductUseCase @Inject constructor(private val repository: ProductRepository) {
     suspend operator fun invoke(product: Product) {
-
-        repository.insertProduct(product)
         repository.syncProduct(
             product.apply { isSynced = true },
             onSuccess = { id ->

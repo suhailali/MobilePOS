@@ -1,10 +1,14 @@
 package com.skegworks.mobilepos.di
 
 import com.skegworks.mobilepos.appsettings.AppSettingsRepository
+import com.skegworks.mobilepos.appsettings.GenerateNewProductCounterUseCase
+import com.skegworks.mobilepos.appsettings.GenerateNewProductCounterUseCaseImpl
 import com.skegworks.mobilepos.appsettings.InitialiseAppSettingsUseCase
 import com.skegworks.mobilepos.appsettings.InitialiseAppSettingsUseCaseImpl
 import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
 import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCaseImpl
+import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCase
+import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCaseImpl
 import com.skegworks.mobilepos.coupon.CouponRepository
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCaseImpl
@@ -80,13 +84,11 @@ class UseCaseModule {
     fun providesInitialiseAppSettingsUseCase(
         appSettingsRepository: AppSettingsRepository,
         dateUtility: DateUtility,
-        uuidGenerator: UUIDGenerator,
         userPreferenceHandler: UserPreferenceHandler
     ): InitialiseAppSettingsUseCase {
         return InitialiseAppSettingsUseCaseImpl(
             appSettingsRepository,
             dateUtility,
-            uuidGenerator,
             userPreferenceHandler
         )
     }
@@ -126,5 +128,19 @@ class UseCaseModule {
             customerRepository,
             invoiceRepository
         )
+    }
+
+    @Provides
+    fun providesGenerateProductCounterUseCase(
+        appSettingsRepository: AppSettingsRepository
+    ): GenerateNewProductCounterUseCase {
+        return GenerateNewProductCounterUseCaseImpl(appSettingsRepository)
+    }
+
+    @Provides
+    fun providesUpdateProductCounterUseCase(
+        appSettingsRepository: AppSettingsRepository
+    ): UpdateProductCounterUseCase {
+        return UpdateProductCounterUseCaseImpl(appSettingsRepository)
     }
 }
