@@ -245,15 +245,18 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
             modifier = Modifier.fillMaxWidth()
         )
         {
-            Button(onClick = {
-                viewModel.handleIntent(AddProductIntent.Save)
-            }) {
+            Button(
+                enabled = !state.value.productSaved,
+                onClick = {
+                    viewModel.handleIntent(AddProductIntent.Save)
+                }) {
                 Text("Save")
             }
 
-            Button(onClick = {
-                viewModel.handleIntent(AddProductIntent.AddAnother)
-            }) {
+            Button(
+                enabled = state.value.productSaved, onClick = {
+                    viewModel.handleIntent(AddProductIntent.AddAnother)
+                }) {
                 Text("Add Another Size/Color")
             }
         }
@@ -261,6 +264,7 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
         if (state.value.isSaved) {
             Text("Value Saved Successfully")
         }
+        SpacerMedium()
     }
     if (isCategorySheetOpen) {
         SimpleBottomSheet(

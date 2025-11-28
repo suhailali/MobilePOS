@@ -44,7 +44,7 @@ fun ProductListScreen(
         viewModel.fetchProducts()
     }
     // Implementation for Product List Screen goes here
-    Column {
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         // UI components to display the list of products
         SpacerLarge()
         ProductFilter()

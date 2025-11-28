@@ -2,18 +2,24 @@ package com.skegworks.mobilepos.product
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.appsettings.GenerateNewProductCounterUseCase
+import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
+import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCase
 import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.data.domain.PriceInput
 import com.skegworks.mobilepos.data.domain.PriceOutput
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.utils.UUIDGenerator
+import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import com.skegworks.mobilepos.vendors.VendorRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -27,24 +33,84 @@ class ProductViewModel @Inject constructor(
     private val generateSkuUseCase: GenerateSkuUseCase,
     private val generateBarCodeUseCase: GenerateBarCodeUseCase,
     private val uuidGenerator: UUIDGenerator,
-    private val priceCalculationUseCase: CalculateProductPriceUseCase
+    private val priceCalculationUseCase: CalculateProductPriceUseCase,
+    private val userPreferenceHandler: UserPreferenceHandler,
+    private val productCounterUseCase: GenerateNewProductCounterUseCase,
+    private val updateProductCounterUseCase: UpdateProductCounterUseCase,
+    private val syncAppSettingsUseCase: SyncAppSettingsUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProductState())
     val state: StateFlow<ProductState> = _state.asStateFlow()
 
+    private val _navigateBack = MutableSharedFlow<Boolean>()
+    val navigateBack = _navigateBack.asSharedFlow()
+
     fun handleProductDetailIntent(intent: ProductDetailIntent) {
         when (intent) {
             is ProductDetailIntent.DeleteProduct -> {
-
-            }
-
-            is ProductDetailIntent.UpdateProduct -> {
-
+                viewModelScope.launch(Dispatchers.IO) {
+                    val product = createProductModel(true)
+                    product.apply {
+                        isDeleted = true
+                        createdBy = state.value.productDetail?.createdBy ?: ""
+                        updatedBy = userPreferenceHandler.getUserEmail() ?: ""
+                        updatedAt = System.currentTimeMillis()
+                    }
+                    productRepository.updateProduct(product)
+                    syncProductUseCase(product)
+                    _state.update {
+                        it.copy(
+                            isSaved = true
+                        )
+                    }
+                    _navigateBack.emit(true)
+                }
             }
 
             is ProductDetailIntent.FetchProduct -> {
                 fetchProduct(intent.id)
+            }
+
+            is ProductDetailIntent.UpdateProduct -> {
+                if (!areFieldsValid()) return
+                viewModelScope.launch(Dispatchers.IO) {
+                    val product = createProductModel(true)
+                    product.apply {
+                        createdBy = state.value.productDetail?.createdBy ?: ""
+                        updatedBy = userPreferenceHandler.getUserEmail() ?: ""
+                        updatedAt = System.currentTimeMillis()
+                    }
+                    productRepository.updateProduct(product)
+                    syncProductUseCase(product)
+                    _state.update {
+                        it.copy(
+                            isSaved = true
+                        )
+                    }
+                    _navigateBack.emit(true)
+                }
+            }
+
+            is ProductDetailIntent.AddAnotherProduct -> {
+                if (!areFieldsValid()) return
+                viewModelScope.launch(Dispatchers.IO) {
+                    val product = createProductModel()
+                    productRepository.insertProduct(product)
+                    syncProductUseCase(product)
+                    _state.update {
+                        it.copy(
+                            isSaved = true
+                        )
+                    }
+                    delay(1000)
+                    _state.update {
+                        it.copy(
+                            textStateSize = "",
+                        )
+                    }
+                    _navigateBack.emit(true)
+                }
             }
         }
     }
@@ -56,6 +122,7 @@ class ProductViewModel @Inject constructor(
                     it.clearState()
                 }
             }
+
             is AddProductIntent.LoadCategories -> {
                 loadCategories()
             }
@@ -226,61 +293,21 @@ class ProductViewModel @Inject constructor(
             is AddProductIntent.AddAnother,
             is AddProductIntent.Save -> {
 
-                val isSkuValid = haveFieldsForSkuValid()
-                updateSkuValidationState(isSkuValid)
-
-                val isPriceValid = haveFieldForPriceCalculationValid()
-                updatePriceCalculationValidationState(isPriceValid)
-
-                val isSaveValid = haveFieldForSaveProductValid()
-                updateSaveProductValidationState(isSaveValid)
-
-                if (isSaveValid.not() || isPriceValid.not() || isSaveValid.not()) {
-                    return
-                }
+                if (!areFieldsValid()) return
 
                 viewModelScope.launch(Dispatchers.IO) {
-                    val product = Product(
-                        vendorName = state.value.textStateVendorName,
-                        vendorId = state.value.textStateVendorId,
-                        categoryId = state.value.textStateCategoryId,
-                        hsnCode = state.value.textStateHsnCode,
-                        title = state.value.textStateTitle,
-                        categoryName = state.value.textStateCategoryName,
-                        sku = state.value.textStateSku,
-                        size = state.value.textStateSize,
-                        color = state.value.textStateColor,
-
-
-                        quantity = state.value.textStateQuantity,
-                        alertQuantity = state.value.textStateAlertQuantity,
-                        description = state.value.textStateDescription,
-                        imageUrl = state.value.textStateImageUrl,
-
-                        itemPrice = state.value.textStateItemPrice,
-                        inputGstPercentage = state.value.textStateInputGstPercentage,
-                        inputGst = state.value.textStateInputGst,
-                        outputGstPercentage = state.value.textStateOutputGstPercentage,
-                        outputGst = state.value.textStateOutputGst,
-                        saleMargin = state.value.textStateSaleMargin,
-                        cost = state.value.textStateCost,
-                        discountPercentage = state.value.textStateDiscountPercentage,
-                        discountAmount = state.value.textStateDiscountAmount,
-                        salePriceWithoutGst = state.value.textStateSalePriceWithoutGst,
-                        salePrice = state.value.textStateSalePrice,
-                        finalRoundedOffPrice = state.value.textStateFinalRoundedOffPrice,
-                        salePriceWithoutDiscount = state.value.textStateSalePriceWithoutDiscount,
-
-
-                        isActive = state.value.textStateIsActive,
-                        isSynced = true,
-                        createdAt = state.value.textStateCreatedAt,
-                        updatedAt = state.value.textStateUpdatedAt,
-                        id = uuidGenerator.generateUUID(),
-                        createdBy = "",
-                        updatedBy = "",
-                    )
+                    val product = createProductModel()
+                    productRepository.insertProduct(product)
                     syncProductUseCase(product)
+                    if (intent is AddProductIntent.Save) {
+                        updateProductCounterUseCase.invoke()
+                        syncAppSettingsUseCase.invoke()
+                        _state.update {
+                            it.copy(
+                                productSaved = true
+                            )
+                        }
+                    }
                     _state.update {
                         it.copy(
                             isSaved = true
@@ -291,6 +318,7 @@ class ProductViewModel @Inject constructor(
                         _state.update {
                             it.copy(
                                 textStateSize = "",
+                                textStateColor = ""
                             )
                         }
                     } else {
@@ -301,6 +329,70 @@ class ProductViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun createProductModel(isForUpdate: Boolean = false): Product {
+        val id = if (isForUpdate) {
+            state.value.productDetail?.id ?: uuidGenerator.generateUUID()
+        } else {
+            uuidGenerator.generateUUID()
+        }
+
+        val product = Product(
+            vendorName = state.value.textStateVendorName,
+            vendorId = state.value.textStateVendorId,
+            categoryId = state.value.textStateCategoryId,
+            hsnCode = state.value.textStateHsnCode,
+            title = state.value.textStateTitle,
+            categoryName = state.value.textStateCategoryName,
+            sku = state.value.textStateSku,
+            size = state.value.textStateSize,
+            color = state.value.textStateColor,
+
+
+            quantity = state.value.textStateQuantity,
+            alertQuantity = state.value.textStateAlertQuantity,
+            description = state.value.textStateDescription,
+            imageUrl = state.value.textStateImageUrl,
+
+            itemPrice = state.value.textStateItemPrice,
+            inputGstPercentage = state.value.textStateInputGstPercentage,
+            inputGst = state.value.textStateInputGst,
+            outputGstPercentage = state.value.textStateOutputGstPercentage,
+            outputGst = state.value.textStateOutputGst,
+            saleMargin = state.value.textStateSaleMargin,
+            cost = state.value.textStateCost,
+            discountPercentage = state.value.textStateDiscountPercentage,
+            discountAmount = state.value.textStateDiscountAmount,
+            salePriceWithoutGst = state.value.textStateSalePriceWithoutGst,
+            salePrice = state.value.textStateSalePrice,
+            finalRoundedOffPrice = state.value.textStateFinalRoundedOffPrice,
+            salePriceWithoutDiscount = state.value.textStateSalePriceWithoutDiscount,
+
+
+            isActive = state.value.textStateIsActive,
+            isDeleted = false,
+            isSynced = false,
+            createdAt = state.value.textStateCreatedAt,
+            updatedAt = state.value.textStateUpdatedAt,
+            id = id,
+            createdBy = "",
+            updatedBy = "",
+        )
+        return product
+    }
+
+    private fun areFieldsValid(): Boolean {
+        val isSkuValid = haveFieldsForSkuValid()
+        updateSkuValidationState(isSkuValid)
+
+        val isPriceValid = haveFieldForPriceCalculationValid()
+        updatePriceCalculationValidationState(isPriceValid)
+
+        val isSaveValid = haveFieldForSaveProductValid()
+        updateSaveProductValidationState(isSaveValid)
+
+        return !(isSaveValid.not() || isPriceValid.not() || isSaveValid.not())
     }
 
     fun loadCategories() = viewModelScope.launch(Dispatchers.IO) {
@@ -330,18 +422,14 @@ class ProductViewModel @Inject constructor(
     }
 
     suspend fun generateSku(): String {
-        var maxProductId = productRepository.getMaxId()
-        if (maxProductId == null) {
-            maxProductId = 0
-        }
-        maxProductId += 1
+        val maxProductId = productCounterUseCase.invoke()
         return generateSkuUseCase.invoke(
             category = state.value.textStateCategoryName,
             vendor = state.value.textStateVendorName,
             title = state.value.textStateTitle,
             color = state.value.textStateColor,
             size = state.value.textStateSize,
-            sequence = maxProductId
+            sequence = maxProductId.toInt()
         )
     }
 
@@ -420,7 +508,7 @@ class ProductViewModel @Inject constructor(
             productFetched?.let { product ->
                 _state.update {
                     it.clearState()
-
+                    it.productDetail = productFetched
                     it.copy(
                         textStateCategoryId = product.categoryId,
                         textStateCategoryName = product.categoryName,
@@ -445,7 +533,7 @@ class ProductViewModel @Inject constructor(
                         textStateSalePrice = product.salePrice,
                         textStateSalePriceWithoutDiscount = product.salePriceWithoutDiscount,
                         textStateFinalRoundedOffPrice = product.finalRoundedOffPrice,
-                        
+
                         textStateHsnCode = product.hsnCode,
                         textStateQuantity = product.quantity,
                         textStateAlertQuantity = product.alertQuantity,

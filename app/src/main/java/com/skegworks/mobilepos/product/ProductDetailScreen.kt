@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,25 +25,38 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.skegworks.mobilepos.ui.component.ReadOnlyTextField
+import com.skegworks.mobilepos.ui.component.SimpleAlertDialog
 import com.skegworks.mobilepos.ui.component.SimpleBottomSheet
 import com.skegworks.mobilepos.ui.component.SimpleTextField
+import com.skegworks.mobilepos.ui.component.SpacerLarge
 import com.skegworks.mobilepos.ui.component.SpacerMedium
 import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
-fun ProductDetailScreen(modifier: Modifier, viewModel: ProductViewModel, productId: String) {
+fun ProductDetailScreen(
+    modifier: Modifier,
+    viewModel: ProductViewModel,
+    productId: String,
+    navigateBack: () -> Unit
+) {
 
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
 
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.navigateBack.collect { shouldGoBack ->
+            if (shouldGoBack) {
+                navigateBack()
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.handleProductDetailIntent(ProductDetailIntent.FetchProduct(productId))
     }
-
-    val context = LocalContext.current
 
     var isCategorySheetOpen by remember { mutableStateOf(false) }
     var isVendorSheetOpen by remember { mutableStateOf(false) }
@@ -53,6 +68,7 @@ fun ProductDetailScreen(modifier: Modifier, viewModel: ProductViewModel, product
     var isDiscountSheetOpen by remember { mutableStateOf(false) }
     var isQuantitySheetOpen by remember { mutableStateOf(false) }
     var isAlertQuantitySheetOpen by remember { mutableStateOf(false) }
+    var openDeleteDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(AddProductIntent.LoadCategories)
@@ -243,21 +259,28 @@ fun ProductDetailScreen(modifier: Modifier, viewModel: ProductViewModel, product
         )
         {
             Button(onClick = {
-                viewModel.handleIntent(AddProductIntent.Save)
+                viewModel.handleProductDetailIntent(ProductDetailIntent.UpdateProduct)
             }) {
                 Text("Update")
             }
 
             Button(onClick = {
-                viewModel.handleIntent(AddProductIntent.AddAnother)
+                viewModel.handleProductDetailIntent(ProductDetailIntent.AddAnotherProduct)
             }) {
                 Text("Add Another Size/Color")
             }
         }
-
         if (state.isSaved) {
             Text("Value Saved Successfully")
         }
+        SpacerLarge()
+        Button(onClick = {
+            openDeleteDialog = true
+        }) {
+            Text("Delete")
+        }
+
+        SpacerMedium()
     }
     if (isCategorySheetOpen) {
         SimpleBottomSheet(
@@ -399,5 +422,20 @@ fun ProductDetailScreen(modifier: Modifier, viewModel: ProductViewModel, product
         ) {
             isAlertQuantitySheetOpen = false
         }
+    }
+
+    if (openDeleteDialog) {
+        SimpleAlertDialog(
+            onDismissRequest = { openDeleteDialog = false },
+            onConfirmation = {
+                openDeleteDialog = false
+                state.productDetail?.let {
+                    viewModel.handleProductDetailIntent(ProductDetailIntent.DeleteProduct(id = it.id))
+                }
+            },
+            dialogTitle = "Delete Product",
+            dialogText = "Are you sure you want to delete this product?",
+            icon = Icons.Default.Info
+        )
     }
 }
