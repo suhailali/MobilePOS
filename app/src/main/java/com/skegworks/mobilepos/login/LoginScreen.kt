@@ -53,7 +53,7 @@ fun LoginScreen(
         }
 
         if (state.isLoading) {
-            Text("Logging in...")
+            Text(state.loadingMessage?: "Loading...")
         }
 
         if (state.success) {

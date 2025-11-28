@@ -10,6 +10,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -30,9 +31,8 @@ class SplashViewModel @Inject constructor(
     fun loadAllData() {
         viewModelScope.launch(Dispatchers.IO) {
 
-            loadAllDataUseCase.invoke {
-                _uiState.value = SplashUiState.Success
-            }
+            delay(1500)
+            _uiState.value = SplashUiState.Success
 //            if (result.isSuccess) {
 //                for (category in result.getOrNull().orEmpty()) {
 //                    categoryRepository.insertCategory(category)

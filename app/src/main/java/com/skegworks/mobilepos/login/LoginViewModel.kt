@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.skegworks.mobilepos.appsettings.InitialiseAppSettingsUseCase
 import com.skegworks.mobilepos.data.domain.UserRole
 import com.skegworks.mobilepos.data.remote.firestore.FirestoreHelper
+import com.skegworks.mobilepos.sync.LoadAllDataFromFireStoreUseCase
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +23,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val firestoreHelper: FirestoreHelper,
     private val userPreferenceHandler: UserPreferenceHandler,
-    private val initialiseAppSettingsUseCase: InitialiseAppSettingsUseCase
+    private val initialiseAppSettingsUseCase: InitialiseAppSettingsUseCase,
+    private val loadAllDataUseCase: LoadAllDataFromFireStoreUseCase
 ) :
     ViewModel() {
     private val _state = MutableStateFlow(LoginState())
@@ -59,10 +61,27 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private fun loadAllData() {
+        _state.update {
+            it.copy(
+                loadingMessage = "Downloading Data. Please Wait..."
+            )
+        }
+        loadAllDataUseCase.invoke {
+            _state.update {
+                it.copy(
+                    success = true,
+                    isLoading = false,
+                    errorMessage = null
+                )
+            }
+        }
+    }
+
     private fun login(email: String, password: String) {
         // Implement login logic here
         _state.update {
-            it.copy(isLoading = true, errorMessage = null)
+            it.copy(isLoading = true, errorMessage = null, loadingMessage = "Logging In...")
         }
         val auth = FirebaseAuth.getInstance()
         auth.signInWithEmailAndPassword(email, password)
@@ -117,11 +136,10 @@ class LoginViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             userRole = userRole,
-                            success = true,
-                            isLoading = false,
                             errorMessage = null
                         )
                     }
+                    loadAllData()
                 }
             }
         }) {
