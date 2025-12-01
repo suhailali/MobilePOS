@@ -223,14 +223,11 @@ fun BarcodeScannerScreen(
                         key = { _, item -> item.id }) { index, product ->
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    viewModel.handleIntent(POSIntent.AddProduct(product))
-                                },
+                                .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             ProductListRow(index, product) {
-                                //ignore
+                                viewModel.handleIntent(POSIntent.AddProduct(product))
                             }
                         }
                     }
