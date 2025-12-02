@@ -9,6 +9,7 @@ import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.data.domain.PriceInput
 import com.skegworks.mobilepos.data.domain.PriceOutput
 import com.skegworks.mobilepos.data.domain.Product
+import com.skegworks.mobilepos.data.domain.UserRole
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import com.skegworks.mobilepos.vendors.VendorRepository
@@ -120,6 +121,7 @@ class ProductViewModel @Inject constructor(
             is AddProductIntent.SearchItem -> {
                 fetchProducts(state.value.textStateProductSearchTerm)
             }
+
             is AddProductIntent.UpdateSearchTerm -> {
                 _state.update {
                     it.copy(
@@ -127,6 +129,7 @@ class ProductViewModel @Inject constructor(
                     )
                 }
             }
+
             is AddProductIntent.NavigateToAddProduct -> {
                 _state.update {
                     it.clearState()
@@ -139,6 +142,18 @@ class ProductViewModel @Inject constructor(
 
             is AddProductIntent.LoadVendors -> {
                 loadVendors()
+            }
+
+            is AddProductIntent.GetUserRole -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    userPreferenceHandler.getUserRole()?.let { role ->
+                        if (role != UserRole.ROLE_STAFF) {
+                            _state.update {
+                                it.copy(isUserStaff = false)
+                            }
+                        }
+                    }
+                }
             }
 
             is AddProductIntent.UpdateCategory -> _state.update {

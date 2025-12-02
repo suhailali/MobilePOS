@@ -38,6 +38,7 @@ fun ProductListScreen(
 ) {
     val state = viewModel.state.collectAsState()
     LaunchedEffect(Unit) {
+        viewModel.handleIntent(AddProductIntent.GetUserRole)
         viewModel.fetchProducts()
     }
     // Implementation for Product List Screen goes here
@@ -50,13 +51,15 @@ fun ProductListScreen(
             viewModel.handleIntent(AddProductIntent.SearchItem)
         }
         SpacerMedium()
-        ProductHeading {
+        ProductHeading(state.value.isUserStaff.not()) {
             viewModel.handleIntent(AddProductIntent.NavigateToAddProduct)
             onNavigateToAddProduct()
         }
         SpacerMedium()
         ProductList(state.value.products) { id ->
-            onNavigateToProductDetail(id)
+            if (state.value.isUserStaff.not()) {
+                onNavigateToProductDetail(id)
+            }
         }
     }
 }
@@ -82,14 +85,16 @@ fun ProductFilter(productSearchTerm: String, onTextChange: (String) -> Unit, onS
 }
 
 @Composable
-fun ProductHeading(navigate: () -> Unit) {
+fun ProductHeading(enableAddProduct: Boolean, navigate: () -> Unit) {
     // Implementation for Product Heading UI goes here
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         Text("Products", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
-        Button(onClick = { navigate() }) {
+        Button(
+            enabled = enableAddProduct,
+            onClick = { navigate() }) {
             Text("Add Product")
         }
     }

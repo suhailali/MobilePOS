@@ -67,7 +67,8 @@ class HomeViewModel @Inject constructor(
                     "Settings",
                     "Category",
                     "Login",
-                    "CreateUser"
+                    "CreateUser",
+                    "Invoices"
                 )
 
             UserRole.ROLE_OWNER ->
@@ -80,7 +81,8 @@ class HomeViewModel @Inject constructor(
                     "Orders",
                     "Settings",
                     "Category",
-                    "Dashboard"
+                    "Dashboard",
+                    "Invoices"
                 )
 
             UserRole.ROLE_STAFF ->
@@ -89,6 +91,8 @@ class HomeViewModel @Inject constructor(
                     "Customers",
                     "Expenses",
                     "Coupons",
+                    "Product",
+                    "Invoices"
                 )
 
             null -> return listOf()

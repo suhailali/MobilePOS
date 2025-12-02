@@ -65,7 +65,8 @@ data class ProductState(
     val errorSave: Boolean = false,
     val validationErrorMessageSave: String = "",
     var productDetail: Product? = null,
-    var textStateProductSearchTerm: String = ""
+    var textStateProductSearchTerm: String = "",
+    var isUserStaff: Boolean = true,
 ) {
     fun clearState(): ProductState {
         return ProductState(
