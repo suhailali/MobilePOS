@@ -117,6 +117,16 @@ class ProductViewModel @Inject constructor(
 
     fun handleIntent(intent: AddProductIntent) {
         when (intent) {
+            is AddProductIntent.SearchItem -> {
+                fetchProducts(state.value.textStateProductSearchTerm)
+            }
+            is AddProductIntent.UpdateSearchTerm -> {
+                _state.update {
+                    it.copy(
+                        textStateProductSearchTerm = intent.searchTerm
+                    )
+                }
+            }
             is AddProductIntent.NavigateToAddProduct -> {
                 _state.update {
                     it.clearState()
@@ -484,11 +494,16 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    fun fetchProducts() {
+    fun fetchProducts(sku: String = "") {
         viewModelScope.launch(Dispatchers.IO) {
             _state.update { it.copy(isLoading = true) }
             try {
-                val productList = productRepository.getAllProducts()
+                val productList =
+                    if (sku.isEmpty()) {
+                        productRepository.getAllProducts()
+                    } else {
+                        productRepository.getProductForSku(sku)
+                    }
                 _state.update {
                     it.copy(
                         products = productList,

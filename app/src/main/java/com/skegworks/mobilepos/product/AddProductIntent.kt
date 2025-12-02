@@ -35,4 +35,7 @@ sealed class AddProductIntent {
     data object LoadVendors : AddProductIntent()
     data object GenerateSku : AddProductIntent()
     data object NavigateToAddProduct : AddProductIntent()
+
+    data class  UpdateSearchTerm(val searchTerm: String) : AddProductIntent()
+    object  SearchItem : AddProductIntent()
 }

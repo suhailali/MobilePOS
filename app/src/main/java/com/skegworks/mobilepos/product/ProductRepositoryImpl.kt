@@ -31,14 +31,13 @@ class ProductRepositoryImpl @Inject constructor(
         return productDao.getProductById(id)?.toDomain()
     }
 
-    override suspend fun getProductForSku(sku: String): List<Product>? {
-        return productDao.getProductBySku(sku)?.map {
+    override suspend fun getProductForSku(sku: String): List<Product> {
+        return productDao.getProductBySku(sku).map {
             it.toDomain()
         }
     }
 
     override suspend fun getAllProducts(): List<Product> {
-        // Implementation here
         return productDao.getAllProducts().map {
             it.toDomain()
         }

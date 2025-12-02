@@ -51,25 +51,26 @@ data class ProductState(
     val saleMargins: List<Int> = listOf(30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 52, 53, 55, 58, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 80, 85, 90, 95, 100, 0, 5, 10, 15, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29),
     val isLoading: Boolean = false,
     val barcodeBitmap: Bitmap? = null,
-    val color: List<String> = listOf("Red", "Blue", "Green", "Yellow", "Magenta", "Rust Orange", "Mustard Yellow", "Maroon", "Brown",
+    val color: List<String> = listOf("Red", "Blue", "Green", "Yellow", "Magenta", "Rust Orange", "Mustard Yellow", "Maroon", "Brown", "Golden", "Silver", "Light Red", "Light Green", "Navy Blue", "Indigo", "Peacock Green", "Lime Green",
         "Cyan", "Gray", "Black", "White", "LightGray", "DarkGray", "Transparent", "Unspecified", "Light Blue", "Off White", "Peach", "Pink", "Orange", "Teal", "Purple", "MultiColor"),
-    val size: List<String> = listOf("S", "M", "L", "XL", "XXL", "XXXL", "Free", "NONE", "36", "37", "38", "39", "40", "41", "42", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"),
+    val size: List<String> = listOf("S", "M", "L", "XL", "XXL", "XXXL", "Free", "NONE", "36", "37", "38", "39", "40", "41", "42", "43", "44", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"),
     val quantity: List<Int> = listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50),
 
     val products: List<Product> = emptyList(),
 
-    val errorSku:Boolean = false,
-    val validationErrorMessageSku:String = "",
+    val errorSku: Boolean = false,
+    val validationErrorMessageSku: String = "",
     val errorCalculatePrice: Boolean = false,
-    val validationErrorMessageCalculatePrice:String = "",
-    val errorSave:Boolean = false,
-    val validationErrorMessageSave:String = "",
-    var productDetail: Product? = null
+    val validationErrorMessageCalculatePrice: String = "",
+    val errorSave: Boolean = false,
+    val validationErrorMessageSave: String = "",
+    var productDetail: Product? = null,
+    var textStateProductSearchTerm: String = ""
 ) {
     fun clearState(): ProductState {
         return ProductState(
             categories = this.categories,
-            vendors = this.vendors
+            vendors = this.vendors,
         )
     }
 }

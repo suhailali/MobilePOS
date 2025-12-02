@@ -8,7 +8,7 @@ interface ProductRepository {
     suspend fun updateProductQuantity(productId: String, quantity: Int)
     suspend fun deleteProduct(product: Product)
     suspend fun getProductById(id: String): Product?
-    suspend fun getProductForSku(sku: String): List<Product>?
+    suspend fun getProductForSku(sku: String): List<Product>
     suspend fun getAllProducts(): List<Product>
 
     suspend fun getTotalProductCount(): Int

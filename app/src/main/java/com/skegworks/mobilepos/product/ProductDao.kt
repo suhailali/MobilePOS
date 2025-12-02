@@ -17,10 +17,10 @@ interface ProductDao {
     @Query("SELECT * FROM products WHERE id = :id")
     suspend fun getProductById(id: String): ProductEntity?
 
-    @Query("SELECT * FROM products WHERE sku LIKE '%' || :sku || '%'")
-    suspend fun getProductBySku(sku: String): List<ProductEntity>?
+    @Query("SELECT * FROM products WHERE sku LIKE '%' || :sku || '%' AND is_deleted = false AND is_active = true ORDER by updated_at DESC LIMIT 100")
+    suspend fun getProductBySku(sku: String): List<ProductEntity>
 
-    @Query("SELECT * FROM products WHERE is_deleted = false ORDER by updated_at DESC LIMIT 100")
+    @Query("SELECT * FROM products WHERE is_deleted = false AND is_active = true ORDER by updated_at DESC LIMIT 100")
     suspend fun getAllProducts(): List<ProductEntity>
 
     @Update
