@@ -236,11 +236,11 @@ class POSViewModel @Inject constructor(
             }
 
             is POSIntent.Payment -> {
-//                viewModelScope.launch(Dispatchers.IO) {
-//                    _state.value.invoice?.let {
-//                        syncInvoiceUseCase.invoke(it)
-//                    }
-//                }
+                viewModelScope.launch(Dispatchers.IO) {
+                    _state.value.invoice?.let {
+                        syncInvoiceUseCase.invoke(it)
+                    }
+                }
                 //update invoice counter and date
                 viewModelScope.launch(Dispatchers.IO) {
                     state.value.invoice?.let {
@@ -365,8 +365,9 @@ class POSViewModel @Inject constructor(
     // Print helper
     fun printPdf(context: Context, pdfDocument: PdfDocument, jobName: String) {
         _state.update {
-            it.copy()
-            //Todo change state to print again
+            it.copy(
+                pdfGenerated = false
+            )
         }
         // Convert PdfDocument to ByteArray
         val outStream = java.io.ByteArrayOutputStream()

@@ -492,7 +492,8 @@ class ProductViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         products = productList,
-                        isLoading = false
+                        isLoading = false,
+                        productSaved = false,
                     )
                 }
             } catch (e: Exception) {

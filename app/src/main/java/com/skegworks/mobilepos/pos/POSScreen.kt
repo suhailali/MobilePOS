@@ -1,6 +1,7 @@
 package com.skegworks.mobilepos.pos
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -56,6 +57,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
     LaunchedEffect(state.paymentComplete) {
         if (state.paymentComplete) {
             val intent = Intent(context, HomeActivity::class.java)
+            Toast.makeText(context, "Payment Complete", Toast.LENGTH_SHORT).show()
             context.startActivity(intent)
             context.findActivity()?.finish()
         }
