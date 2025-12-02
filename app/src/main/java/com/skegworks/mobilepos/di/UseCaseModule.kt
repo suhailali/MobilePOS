@@ -10,8 +10,6 @@ import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCaseImpl
 import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCase
 import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCaseImpl
 import com.skegworks.mobilepos.coupon.CouponRepository
-import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
-import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCaseImpl
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.FetchCustomerUseCase
 import com.skegworks.mobilepos.customer.FetchCustomerUseCaseImpl
@@ -19,6 +17,8 @@ import com.skegworks.mobilepos.dashboard.GetDashboardDataUseCase
 import com.skegworks.mobilepos.dashboard.GetDashboardDataUseCaseImpl
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCaseImpl
+import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
+import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCaseImpl
 import com.skegworks.mobilepos.invoice.InvoiceRepository
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCaseImpl
@@ -33,8 +33,8 @@ import com.skegworks.mobilepos.pos.UpdateInventoryAfterSaleUseCaseImpl
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCaseImpl
 import com.skegworks.mobilepos.product.ProductRepository
+import com.skegworks.mobilepos.product.SyncProductUseCase
 import com.skegworks.mobilepos.utils.DateUtility
-import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.Module
 import dagger.Provides
@@ -112,9 +112,10 @@ class UseCaseModule {
 
     @Provides
     fun providesUpdateInventoryAfterSaleUseCase(
-        productRepository: ProductRepository
+        productRepository: ProductRepository,
+        syncProductUseCase: SyncProductUseCase
     ): UpdateInventoryAfterSaleUseCase {
-        return UpdateInventoryAfterSaleUseCaseImpl(productRepository)
+        return UpdateInventoryAfterSaleUseCaseImpl(productRepository, syncProductUseCase)
     }
 
     @Provides

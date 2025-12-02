@@ -1,7 +1,6 @@
 package com.skegworks.mobilepos.customer
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,6 +8,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +21,10 @@ import com.skegworks.mobilepos.ui.component.SpacerMedium
 fun AddCustomerScreen(modifier: Modifier, viewModel: CustomerViewModel, onSuccess: () -> Unit) {
     val state = viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        viewModel.handleIntent(AddCustomerIntent.SetData)
+    }
 
     Column(
         modifier = modifier

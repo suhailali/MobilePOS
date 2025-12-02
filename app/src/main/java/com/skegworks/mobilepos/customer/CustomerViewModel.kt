@@ -60,6 +60,14 @@ class CustomerViewModel @Inject constructor(
 
     fun handleIntent(intent: AddCustomerIntent) {
         when (intent) {
+            is AddCustomerIntent.SetData -> {
+                _state.update {
+                    it.copy(
+                        textStatePhone = stateSearch.value.textStatePhone
+                    )
+                }
+            }
+
             is AddCustomerIntent.UpdateName -> _state.update {
                 it.copy(
                     textStateName = intent.name,

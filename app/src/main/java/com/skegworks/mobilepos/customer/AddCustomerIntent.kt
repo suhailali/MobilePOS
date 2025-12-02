@@ -7,6 +7,7 @@ sealed class AddCustomerIntent {
     data class UpdateEmail(val email: String) : AddCustomerIntent()
     data class UpdateCreatedAt(val createdAt: Long) : AddCustomerIntent()
     data class UpdateUpdatedAt(val updatedAt: Long) : AddCustomerIntent()
+    object SetData: AddCustomerIntent()
 
     object Save : AddCustomerIntent()
 }
