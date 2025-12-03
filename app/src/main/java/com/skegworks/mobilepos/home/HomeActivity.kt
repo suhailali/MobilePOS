@@ -24,6 +24,7 @@ import com.skegworks.mobilepos.cashcounter.CashCounterActivity
 import com.skegworks.mobilepos.category.CategoryActivity
 import com.skegworks.mobilepos.customer.CustomerActivity
 import com.skegworks.mobilepos.dashboard.DashboardActivity
+import com.skegworks.mobilepos.invoice.InvoicesActivity
 import com.skegworks.mobilepos.utils.files.FileHandlerImpl
 import com.skegworks.mobilepos.login.LoginActivity
 import com.skegworks.mobilepos.pdf.PdfGeneratorImpl
@@ -140,6 +141,10 @@ class HomeActivity : ComponentActivity() {
 
                             "Dashboard" -> {
                                 val intent = Intent(context, DashboardActivity::class.java)
+                                context.startActivity(intent)
+                            }
+                            "Invoices" -> {
+                                val intent = Intent(context, InvoicesActivity::class.java)
                                 context.startActivity(intent)
                             }
                         }

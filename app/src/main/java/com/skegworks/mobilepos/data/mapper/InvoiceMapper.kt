@@ -1,6 +1,11 @@
 package com.skegworks.mobilepos.data.mapper
 
+import com.skegworks.mobilepos.data.domain.Business
+import com.skegworks.mobilepos.data.domain.Coupon
+import com.skegworks.mobilepos.data.domain.Customer
 import com.skegworks.mobilepos.data.domain.Invoice
+import com.skegworks.mobilepos.data.domain.InvoiceItem
+import com.skegworks.mobilepos.data.domain.InvoiceState
 import com.skegworks.mobilepos.data.local.InvoiceEntity
 import com.skegworks.mobilepos.data.remote.firestore.InvoiceFireStoreDto
 
@@ -58,5 +63,41 @@ fun Invoice.toEntity(): InvoiceEntity {
         cashDiscount = cashDiscount,
         couponId = coupon?.id ?: "",
         invoiceState = invoiceState.name
+    )
+}
+
+fun InvoiceEntity.toDomain(customer: Customer, business: Business, coupon: Coupon?,  items: List<InvoiceItem>): Invoice {
+    return Invoice(
+        id = id,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        totalPrice = totalPrice,
+        totalDiscount = totalDiscount,
+        finalPrice = finalPrice,
+        customer = customer,
+        business = business,
+        isSynced = true,
+        cashDiscount = cashDiscount,
+        invoiceState = InvoiceState.fromState(invoiceState) ?: InvoiceState.PRINT,
+        items = items,
+        coupon = coupon
+    )
+}
+
+fun InvoiceFireStoreDto.toDomain(customer: Customer, business: Business, coupon: Coupon?,  items: List<InvoiceItem>): Invoice {
+    return Invoice(
+        id = id,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        totalPrice = totalPrice,
+        totalDiscount = totalDiscount,
+        finalPrice = finalPrice,
+        customer = customer,
+        business = business,
+        isSynced = true,
+        cashDiscount = cashDiscount,
+        invoiceState = InvoiceState.fromState(invoiceState) ?: InvoiceState.PRINT,
+        items = items,
+        coupon = coupon
     )
 }

@@ -1,7 +1,12 @@
 package com.skegworks.mobilepos.invoice
 
+import com.skegworks.mobilepos.business.BusinessDao
+import com.skegworks.mobilepos.coupon.CouponDao
+import com.skegworks.mobilepos.customer.CustomerDao
+import com.skegworks.mobilepos.data.domain.Customer
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
+import com.skegworks.mobilepos.data.mapper.toDomain
 import com.skegworks.mobilepos.data.mapper.toEntity
 import com.skegworks.mobilepos.data.mapper.toFirestoreDto
 import com.skegworks.mobilepos.sync.SyncData
@@ -10,6 +15,9 @@ import javax.inject.Inject
 class InvoiceRepositoryImpl @Inject constructor(
     private val invoiceDao: InvoiceDao,
     private val invoiceItemDao: InvoiceItemDao,
+    private val customerDao: CustomerDao,
+    private val businessDao: BusinessDao,
+    private val couponDao: CouponDao,
     private val syncData: SyncData
 ) :
     InvoiceRepository {
@@ -55,5 +63,25 @@ class InvoiceRepositoryImpl @Inject constructor(
             onSuccess = onSuccess,
             onFailure = onFailure
         )
+    }
+
+    override suspend fun getAllInvoices(): List<Invoice> {
+        val invoices = invoiceDao.getAllInvoices()
+        val newInvoices = invoices.map { invoice ->
+            val invoiceItems = invoiceItemDao.getAllInvoiceItems(invoice.id).map {
+                it.toDomain()
+            }
+            val customer = customerDao.getCustomerById(invoice.customerId)
+            val business = businessDao.getBusiness()
+            val coupon = couponDao.getCouponById(invoice.couponId)?.toDomain()
+            if (customer == null || business == null) {
+                return@map null
+            }
+            invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
+        }
+        if (newInvoices.isEmpty()) {
+            return emptyList()
+        }
+        return newInvoices.filterNotNull()
     }
 }

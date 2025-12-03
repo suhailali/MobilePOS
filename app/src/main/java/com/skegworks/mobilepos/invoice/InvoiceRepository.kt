@@ -21,4 +21,7 @@ interface InvoiceRepository {
         onSuccess: (String) -> Unit,
         onFailure: (Exception) -> Unit
     )
+
+    suspend fun getAllInvoices(): List<Invoice>
+
 }

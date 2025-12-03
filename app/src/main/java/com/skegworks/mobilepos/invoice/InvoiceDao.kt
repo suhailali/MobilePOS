@@ -15,7 +15,7 @@ interface InvoiceDao {
     @Query("SELECT * FROM invoices WHERE id = :id")
     suspend fun getInvoiceById(id: String): InvoiceEntity?
 
-    @Query("SELECT * FROM invoices")
+    @Query("SELECT * FROM invoices ORDER BY invoice_number DESC")
     suspend fun getAllInvoices(): List<InvoiceEntity>
 
     @Update

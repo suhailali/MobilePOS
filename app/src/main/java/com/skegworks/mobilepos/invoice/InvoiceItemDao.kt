@@ -15,8 +15,8 @@ interface InvoiceItemDao {
     @Query("SELECT * FROM invoice_items WHERE id = :id")
     suspend fun getInvoiceItemById(id: String): InvoiceItemEntity?
 
-    @Query("SELECT * FROM invoice_items")
-    suspend fun getAllInvoiceItems(): List<InvoiceItemEntity>
+    @Query("SELECT * FROM invoice_items WHERE invoice_id = :invoiceId")
+    suspend fun getAllInvoiceItems(invoiceId: String): List<InvoiceItemEntity>
 
     @Update
     suspend fun updateInvoiceItem(invoiceItem: InvoiceItemEntity)
