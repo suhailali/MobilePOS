@@ -6,5 +6,5 @@ interface DateUtility {
     fun formatDate(date: String, inputPattern: String, outputPattern: String): String
     fun getDateTime(): String
     fun getCurrentTimeStamp(): Long
-    fun isDateToday(date: String, pattern: String): Boolean
+    fun isDateToday(date: String): Boolean
 }

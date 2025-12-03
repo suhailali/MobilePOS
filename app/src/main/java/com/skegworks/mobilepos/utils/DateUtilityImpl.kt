@@ -45,15 +45,11 @@ class DateUtilityImpl : DateUtility {
         return System.currentTimeMillis()
     }
 
-    override fun isDateToday(date: String, pattern: String): Boolean {
+    override fun isDateToday(date: String): Boolean {
         // Parse the given date-time string
-        val formatter = DateTimeFormatter.ofPattern(pattern)
-        val dateTime = LocalDateTime.parse(date, formatter)
 
-        // Compare only the date part
-        val inputDate = dateTime.toLocalDate()
-        val today = LocalDate.now()
 
-        return inputDate == today
-    }
+        val dateTime = LocalDateTime.parse(date) // ISO-8601 → parses automatically
+        return dateTime.toLocalDate() == LocalDate.now()
+        }
 }
