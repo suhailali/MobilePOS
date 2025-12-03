@@ -172,11 +172,7 @@ class CashCounterViewModel @Inject constructor(
                     )
                 }
             } else {
-                if (dateUtility.isDateToday(
-                        cashCounter.date,
-                        Constants.DateFormat.DATE_TIME_FORMAT
-                    )
-                ) {
+                if (dateUtility.isDateToday(cashCounter.date)) {
                     _state.update {
                         it.copy(
                             state = CashCounterStatus.OPEN,

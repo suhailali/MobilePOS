@@ -80,9 +80,12 @@ class AppModule {
     fun providesInvoiceRepository(
         invoiceDao: InvoiceDao,
         invoiceItemDao: InvoiceItemDao,
+        customerDao: CustomerDao,
+        businessDao: BusinessDao,
+        couponDao: CouponDao,
         syncData: SyncData
     ): InvoiceRepository {
-        return InvoiceRepositoryImpl(invoiceDao, invoiceItemDao, syncData)
+        return InvoiceRepositoryImpl(invoiceDao, invoiceItemDao, customerDao, businessDao, couponDao, syncData)
     }
 
     @Provides

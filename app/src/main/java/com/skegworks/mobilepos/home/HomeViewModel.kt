@@ -108,7 +108,7 @@ class HomeViewModel @Inject constructor(
                 if (cashCounter.status == CashCounterStatus.CLOSED) {
                     _events.emit(HomeEvents.NAVIGATE_TO_CASH_COUNTER)
                 } else {
-                    if (dateUtility.isDateToday(cashCounter.date, Constants.DateFormat.DATE_TIME_FORMAT)) {
+                    if (dateUtility.isDateToday(cashCounter.date)) {
                         _events.emit(HomeEvents.NAVIGATE_TO_CUSTOMER)
                     } else {
                         _events.emit(HomeEvents.NAVIGATE_TO_CASH_COUNTER)

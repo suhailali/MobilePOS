@@ -18,7 +18,7 @@ class Constants {
 
     class DateFormat {
         companion object {
-            const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS"
+            const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
         }
     }
 }
