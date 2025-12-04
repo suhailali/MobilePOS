@@ -4,7 +4,6 @@ import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.local.ProductEntity
 import com.skegworks.mobilepos.data.remote.firestore.ProductFireStoreDto
-import java.util.UUID
 
 // --- Firestore DTO -> Domain ---
 fun ProductFireStoreDto.toDomain(): Product {
@@ -199,6 +198,7 @@ fun Product.toInvoiceItem(id: String): InvoiceItem {
 
 
         productId = id,
+        // Invoice and user details will be added just before generating invoice
         invoiceId = "",
         invoiceNumber = "",
         invoiceDate = 0L,

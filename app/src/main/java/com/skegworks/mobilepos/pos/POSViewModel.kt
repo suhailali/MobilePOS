@@ -34,6 +34,7 @@ import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.files.FileHandler
+import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,7 +63,8 @@ class POSViewModel @Inject constructor(
     private val dateUtility: DateUtility,
     private val calculatePriceUseCase: CalculateProductPriceUseCase,
     private val businessRepository: BusinessRepository,
-    private val updateInventoryAfterSaleUseCase: UpdateInventoryAfterSaleUseCase
+    private val updateInventoryAfterSaleUseCase: UpdateInventoryAfterSaleUseCase,
+    private val userPreferenceHandler: UserPreferenceHandler
 ) : AndroidViewModel(application) {
 
     private val _state = MutableStateFlow(POSState())
@@ -237,7 +239,7 @@ class POSViewModel @Inject constructor(
 
             is POSIntent.Payment -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    _state.value.invoice?.let {
+                    state.value.invoice?.let {
                         syncInvoiceUseCase.invoke(it)
                     }
                 }
@@ -348,6 +350,16 @@ class POSViewModel @Inject constructor(
                     cashDiscount = state.value.cashDiscount,
                     invoiceState = InvoiceState.PRINT
                 )
+                invoice.items.forEach { invoiceItem ->
+                    invoiceItem.apply {
+                        invoiceId = invoice.id
+                        invoiceNumber = invoice.invoiceNumber
+                        invoiceDate = System.currentTimeMillis()
+                        isSynced = false
+                        updatedBy = userPreferenceHandler.getUserEmail() ?: ""
+                        updatedAt = System.currentTimeMillis()
+                    }
+                }
                 val pdf = generateInvoicePdfUseCase.generatePdf(invoice)
                 _state.update {
                     it.copy(
