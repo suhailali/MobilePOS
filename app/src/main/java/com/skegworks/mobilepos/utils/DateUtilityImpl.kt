@@ -3,6 +3,8 @@ package com.skegworks.mobilepos.utils
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 import java.util.Calendar
 
 class DateUtilityImpl : DateUtility {
@@ -24,8 +26,13 @@ class DateUtilityImpl : DateUtility {
         inputPattern: String,
         outputPattern: String
     ): String {
-        val inputFormatter = DateTimeFormatter.ofPattern(inputPattern)
+        val inputFormatter = DateTimeFormatterBuilder()
+            .appendPattern(inputPattern)
+            .appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true) // optional .SSS...
+            .toFormatter()
+
         val outputFormatter = DateTimeFormatter.ofPattern(outputPattern)
+
         val dateTime = LocalDateTime.parse(date, inputFormatter)
         return dateTime.format(outputFormatter)
     }
