@@ -28,9 +28,9 @@ data class InvoiceItem(
     val isActive: Boolean,
     var isSynced: Boolean,
     val createdAt: Long,
-    val updatedAt: Long,
+    var updatedAt: Long,
     val createdBy: String,
-    val updatedBy: String,
+    var updatedBy: String,
     val discountPercentage: Double,
     var discountAmount: Double,
 

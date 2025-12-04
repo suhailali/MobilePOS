@@ -13,11 +13,8 @@ import com.skegworks.mobilepos.data.remote.firestore.CashCounterFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CategoryFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CouponFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.CustomerFireStoreDto
-import com.skegworks.mobilepos.data.remote.firestore.InvoiceFireStoreDto
-import com.skegworks.mobilepos.data.remote.firestore.InvoiceItemFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.ProductFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.VendorFireStoreDto
-import com.skegworks.mobilepos.invoice.InvoiceRepository
 import com.skegworks.mobilepos.product.ProductRepository
 import com.skegworks.mobilepos.utils.Constants
 import com.skegworks.mobilepos.vendors.VendorRepository
@@ -31,7 +28,7 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class LoadAllDataFromFireStoreUseCase @Inject constructor(
+open class LoadAllDataFromFireStoreUseCase @Inject constructor(
     private val syncDataWithFireStore: SyncData,
     private val categoryRepository: CategoryRepository,
     private val customerRepository: CustomerRepository,
@@ -40,8 +37,7 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
     private val couponRepository: CouponRepository,
     private val appSettingsRepository: AppSettingsRepository,
     private val cashCounterRepository: CashCounterRepository,
-    private val businessRepository: BusinessRepository,
-    private val invoiceRepository: InvoiceRepository
+    private val businessRepository: BusinessRepository
 ) {
     private val supervisor = SupervisorJob()
     private val scope = CoroutineScope(supervisor + Dispatchers.IO)
@@ -106,20 +102,6 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
                             // Log or handle the exception as needed
                         }
                     },
-                    async {
-                        try {
-                            getInvoices()
-                        } catch (ex: Exception) {
-                            // Log or handle the exception as needed
-                        }
-                    },
-                    async {
-                        try {
-                            getInvoiceItems()
-                        } catch (ex: Exception) {
-                            // Log or handle the exception as needed
-                        }
-                    }
                 )
                 tasks.awaitAll()
                 withContext(Dispatchers.Main) {
@@ -240,40 +222,6 @@ class LoadAllDataFromFireStoreUseCase @Inject constructor(
             }
         } else {
             throw result.exceptionOrNull() ?: Exception("Unknown error while loading cashCounter")
-        }
-    }
-
-    private suspend fun getInvoices() {
-        val result = syncDataWithFireStore.downloadAll(
-            Constants.FirebaseDocument.INVOICES,
-            InvoiceFireStoreDto::class.java
-        )
-        if (result.isSuccess) {
-            for (invoice in result.getOrNull().orEmpty()) {
-                val customer = customerRepository.getCustomerById(invoice.customerId)
-                val business = businessRepository.getBusiness()
-                val coupon = couponRepository.getCouponById(invoice.couponId)
-
-                if(customer != null && business != null) {
-                    invoiceRepository.insertInvoice(invoice.toDomain(customer, business, coupon, listOf()))
-                }
-            }
-        } else {
-            throw result.exceptionOrNull() ?: Exception("Unknown error while loading invoices")
-        }
-    }
-
-    private suspend fun getInvoiceItems() {
-        val result = syncDataWithFireStore.downloadAll(
-            Constants.FirebaseDocument.INVOICE_ITEMS,
-            InvoiceItemFireStoreDto::class.java
-        )
-        if (result.isSuccess) {
-            for (invoiceItem in result.getOrNull().orEmpty()) {
-                invoiceRepository.insertInvoiceItem(invoiceItem.toDomain())
-            }
-        } else {
-            throw result.exceptionOrNull() ?: Exception("Unknown error while loading invoice items")
         }
     }
 }

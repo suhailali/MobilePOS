@@ -11,16 +11,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skegworks.mobilepos.data.domain.Invoice
+import com.skegworks.mobilepos.ui.component.SpacerLarge
 import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
@@ -30,9 +31,31 @@ fun InvoiceListScreen(modifier: Modifier, viewModel: InvoiceViewModel) {
         viewModel.handleIntent(InvoiceIntent.LoadInvoices)
     }
     Column(modifier = modifier) {
-        Text("Invoices", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
-        InvoiceList(state.invoices) { id ->
-            viewModel.handleIntent(InvoiceIntent.SelectInvoice(id))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Dimens.MEDIUM_PADDING.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Invoices", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
+            TextButton(onClick = {
+                viewModel.handleIntent(InvoiceIntent.SyncInvoices)
+            }) {
+                Text("Sync Invoices")
+            }
+        }
+
+        if (state.isLoading.not()) {
+            InvoiceList(state.invoices) { id ->
+                viewModel.handleIntent(InvoiceIntent.SelectInvoice(id))
+            }
+        } else {
+            SpacerLarge()
+            SpacerLarge()
+            SpacerLarge()
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Text("Loading Invoices...")
+            }
         }
     }
 }
