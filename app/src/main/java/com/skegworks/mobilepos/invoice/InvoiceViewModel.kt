@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.invoice
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.sync.LoadAllDataFromFireStoreUseCase
+import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class InvoiceViewModel @Inject constructor(
     private val getInvoicesUseCase: GetInvoicesUseCase,
-    private val loadAllDataFromFireStoreUseCase: LoadAllDataFromFireStoreUseCase
+    private val loadInvoicesFromFireStoreUseCase: LoadInvoicesFromFireStoreUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(InvoiceState())
@@ -38,7 +39,7 @@ class InvoiceViewModel @Inject constructor(
     }
 
     private fun syncInvoices() {
-        loadAllDataFromFireStoreUseCase.invoke {
+        loadInvoicesFromFireStoreUseCase.invoke {
             _state.update {
                 it.copy(
                     isLoading = false,

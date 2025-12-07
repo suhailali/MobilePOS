@@ -29,7 +29,7 @@ class LoadInvoicesFromFireStoreUseCaseImpl(
     private val supervisor = SupervisorJob()
     private val scope = CoroutineScope(supervisor + Dispatchers.IO)
 
-    override suspend operator fun invoke(onCompletion: () -> Unit) {
+    override operator fun invoke(onCompletion: () -> Unit) {
         scope.launch {
             supervisorScope {
                 val tasks = listOf(
