@@ -10,7 +10,7 @@ class Constants {
             const val CUSTOMERS = "customers"
             const val VENDORS = "vendors"
             const val INVOICES = "invoices"
-            const val INVOICE_ITEMS = "invoice_items"
+            const val INVOICE_ITEMS = "invoices_items"
             const val COUPONS = "coupons"
             const val CASH_COUNTER = "cash_counter"
         }
