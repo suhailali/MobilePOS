@@ -9,6 +9,7 @@ import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
 import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCaseImpl
 import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCase
 import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCaseImpl
+import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.coupon.CouponRepository
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.FetchCustomerUseCase
@@ -36,6 +37,9 @@ import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCaseImpl
 import com.skegworks.mobilepos.product.ProductRepository
 import com.skegworks.mobilepos.product.SyncProductUseCase
+import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
+import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCaseImpl
+import com.skegworks.mobilepos.sync.SyncData
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.Module
@@ -148,9 +152,26 @@ class UseCaseModule {
     }
 
     @Provides
-    fun providesGetInvoicesUseCase (
+    fun providesGetInvoicesUseCase(
         invoiceRepository: InvoiceRepository
     ): GetInvoicesUseCase {
         return GetInvoicesUseCaseImpl(invoiceRepository)
+    }
+
+    @Provides
+    fun providesLoadInvoicesFromFireStoreUseCase(
+        syncData: SyncData,
+        invoiceRepository: InvoiceRepository,
+        customerRepository: CustomerRepository,
+        businessRepository: BusinessRepository,
+        couponRepository: CouponRepository
+    ): LoadInvoicesFromFireStoreUseCase {
+        return LoadInvoicesFromFireStoreUseCaseImpl(
+            syncData,
+            invoiceRepository,
+            customerRepository,
+            businessRepository,
+            couponRepository
+        )
     }
 }
