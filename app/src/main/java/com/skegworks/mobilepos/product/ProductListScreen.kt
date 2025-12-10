@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,17 +46,17 @@ fun ProductListScreen(
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
         // UI components to display the list of products
         SpacerLarge()
-        ProductFilter(state.value.textStateProductSearchTerm, { text ->
-            viewModel.handleIntent(AddProductIntent.UpdateSearchTerm(text))
-        }) {
-            viewModel.handleIntent(AddProductIntent.SearchItem)
-        }
         SpacerMedium()
         ProductHeading(state.value.isUserStaff.not()) {
             viewModel.handleIntent(AddProductIntent.NavigateToAddProduct)
             onNavigateToAddProduct()
         }
         SpacerMedium()
+        ProductFilter(state.value.textStateProductSearchTerm, { text ->
+            viewModel.handleIntent(AddProductIntent.UpdateSearchTerm(text))
+        }) {
+            viewModel.handleIntent(AddProductIntent.SearchItem)
+        }
         ProductList(state.value.products) { id ->
             if (state.value.isUserStaff.not()) {
                 onNavigateToProductDetail(id)
@@ -96,6 +97,9 @@ fun ProductHeading(enableAddProduct: Boolean, navigate: () -> Unit) {
             enabled = enableAddProduct,
             onClick = { navigate() }) {
             Text("Add Product")
+        }
+        TextButton(onClick = {  }) {
+            Text("Sync Product")
         }
     }
 }
