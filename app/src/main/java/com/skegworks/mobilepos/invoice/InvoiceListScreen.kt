@@ -25,7 +25,7 @@ import com.skegworks.mobilepos.ui.component.SpacerLarge
 import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
-fun InvoiceListScreen(modifier: Modifier, viewModel: InvoiceViewModel) {
+fun InvoiceListScreen(modifier: Modifier, viewModel: InvoiceViewModel, onInvoiceSelected:(id:String) -> Unit) {
     val state by viewModel.state.collectAsState()
     LaunchedEffect(Unit) {
         viewModel.handleIntent(InvoiceIntent.LoadInvoices)
