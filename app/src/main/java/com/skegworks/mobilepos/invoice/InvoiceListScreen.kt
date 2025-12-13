@@ -47,7 +47,7 @@ fun InvoiceListScreen(modifier: Modifier, viewModel: InvoiceViewModel, onInvoice
 
         if (state.isLoading.not()) {
             InvoiceList(state.invoices) { id ->
-                viewModel.handleIntent(InvoiceIntent.SelectInvoice(id))
+                onInvoiceSelected(id)
             }
         } else {
             SpacerLarge()
