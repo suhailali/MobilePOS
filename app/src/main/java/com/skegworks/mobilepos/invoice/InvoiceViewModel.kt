@@ -35,6 +35,10 @@ class InvoiceViewModel @Inject constructor(
                 }
                 syncInvoices()
             }
+
+            InvoiceIntent.CreditNoteInvoiceItem -> {
+
+            }
         }
     }
 

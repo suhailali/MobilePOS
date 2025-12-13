@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.invoice
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,13 +16,16 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skegworks.mobilepos.data.domain.InvoiceItem
@@ -33,23 +37,33 @@ import com.skegworks.mobilepos.utils.Dimens
 @Composable
 fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoiceId: String, navigateBack: () -> Unit) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.handleIntent(InvoiceIntent.SelectInvoice(invoiceId))
+    }
     var openCreditNoteConfirmationDialog by remember { mutableStateOf(false) }
-    Column {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         SpacerLarge()
-        state.selectedInvoice?.let {
-            InvoiceListRow(index = 0, invoice = it) {
-                //ignore
+        Text("Invoice", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
+        Box(Modifier.background(MaterialTheme.colorScheme.onPrimary).padding(2.dp)) {
+            state.selectedInvoice?.let {
+                InvoiceListRow(index = 1, invoice = it) {
+                    //ignore
+                }
             }
         }
         SpacerLarge()
-        state.invoiceItems?.let {
+        Text("Invoice Items", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
+        state.selectedInvoiceItems?.let {
             InvoiceItemList(it)
         }
         SpacerMedium()
-        Button(onClick = {
+        Button(
+            enabled = !state.creditNoteInvoiceItem.isNullOrEmpty(),
+            onClick = {
             openCreditNoteConfirmationDialog = true
         }) {
-            Text("Add to Credit Note")
+            Text("Mark Product Return")
         }
     }
 
@@ -58,10 +72,10 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
             onDismissRequest = { openCreditNoteConfirmationDialog = false },
             onConfirmation = {
                 openCreditNoteConfirmationDialog = false
-
+                viewModel.handleIntent(InvoiceIntent.CreditNoteInvoiceItem)
             },
-            dialogTitle = "Delete Product",
-            dialogText = "Are you sure you want to delete this product?",
+            dialogTitle = "Return Product",
+            dialogText = "Are you sure you want to return product(s)?",
             icon = Icons.Default.Info
         )
     }
