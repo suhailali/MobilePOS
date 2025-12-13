@@ -8,6 +8,6 @@ data class InvoiceState(
     val selectedInvoice: Invoice? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val invoiceItems: List<InvoiceItem>? = null,
-    val selectedInvoiceItem: List<InvoiceItem>? = null
+    val selectedInvoiceItems: List<InvoiceItem>? = null,
+    val creditNoteInvoiceItem: List<InvoiceItem>? = null
 )

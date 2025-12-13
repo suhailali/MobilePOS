@@ -2,7 +2,6 @@ package com.skegworks.mobilepos.invoice
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.skegworks.mobilepos.sync.LoadAllDataFromFireStoreUseCase
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class InvoiceViewModel @Inject constructor(
     private val getInvoicesUseCase: GetInvoicesUseCase,
+    private val getInvoiceDetailUseCase: GetInvoiceDetailUseCase,
     private val loadInvoicesFromFireStoreUseCase: LoadInvoicesFromFireStoreUseCase
 ) : ViewModel() {
 
@@ -52,7 +52,15 @@ class InvoiceViewModel @Inject constructor(
 
 
     private fun selectInvoice(id: String) {
-
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = getInvoiceDetailUseCase.invoke(id)
+            _state.update {
+                it.copy(
+                    selectedInvoice = result,
+                    selectedInvoiceItems = result?.items
+                )
+            }
+        }
     }
 
     private fun loadInvoices() {
