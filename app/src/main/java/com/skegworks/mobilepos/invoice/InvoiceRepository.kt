@@ -24,4 +24,6 @@ interface InvoiceRepository {
 
     suspend fun getAllInvoices(): List<Invoice>
 
+    suspend fun getInvoiceById(id: String): Invoice?
+
 }
