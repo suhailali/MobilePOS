@@ -13,7 +13,7 @@ import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class InvoicesActivity: ComponentActivity() {
+class InvoicesActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +22,7 @@ class InvoicesActivity: ComponentActivity() {
             MobilePOSTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val viewModel: InvoiceViewModel by viewModels<InvoiceViewModel>()
-                    InvoiceListScreen(
+                    InvoiceScreenNavigation(
                         viewModel = viewModel,
                         modifier = Modifier.padding(innerPadding)
                     )
