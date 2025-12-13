@@ -20,6 +20,8 @@ import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCaseImpl
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCaseImpl
+import com.skegworks.mobilepos.invoice.GetInvoiceDetailUseCase
+import com.skegworks.mobilepos.invoice.GetInvoiceDetailUseCaseImpl
 import com.skegworks.mobilepos.invoice.GetInvoicesUseCase
 import com.skegworks.mobilepos.invoice.GetInvoicesUseCaseImpl
 import com.skegworks.mobilepos.invoice.InvoiceRepository
@@ -173,5 +175,12 @@ class UseCaseModule {
             businessRepository,
             couponRepository
         )
+    }
+
+    @Provides
+    fun providesGetInvoiceDetailsUseCase(
+        invoiceRepository: InvoiceRepository
+    ): GetInvoiceDetailUseCase {
+        return GetInvoiceDetailUseCaseImpl(invoiceRepository)
     }
 }
