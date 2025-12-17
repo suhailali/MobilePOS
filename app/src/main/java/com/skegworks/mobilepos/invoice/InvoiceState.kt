@@ -9,5 +9,5 @@ data class InvoiceState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val selectedInvoiceItems: List<InvoiceItem>? = null,
-    val creditNoteInvoiceItem: List<InvoiceItem>? = null
+    val creditNoteInvoiceItems: List<InvoiceItem>? = null
 )
