@@ -36,8 +36,31 @@ class InvoiceViewModel @Inject constructor(
                 syncInvoices()
             }
 
-            InvoiceIntent.CreditNoteInvoiceItem -> {
+            is InvoiceIntent.CreditNoteInvoiceItem -> {
+                var creditNoteInvoiceItems = _state.value.creditNoteInvoiceItems?.toMutableList()
+                val invoiceItem = creditNoteInvoiceItems?.find { it.id == intent.invoiceItem.id }
+                if (creditNoteInvoiceItems == null) {
+                    creditNoteInvoiceItems = mutableListOf()
+                }
+                //TODO Handle partial quantity returned
+                if (intent.addItem) {
+                    if (invoiceItem == null) {
+                        creditNoteInvoiceItems.add(intent.invoiceItem)
+                    }
+                } else {
+                    creditNoteInvoiceItems.remove(intent.invoiceItem)
+                }
+                _state.update {
+                    it.copy(
+                        creditNoteInvoiceItems = creditNoteInvoiceItems
+                    )
+                }
+            }
 
+            InvoiceIntent.ConfirmCreditNote -> {
+                viewModelScope.launch(Dispatchers.IO) {
+
+                }
             }
         }
     }
@@ -61,7 +84,8 @@ class InvoiceViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     selectedInvoice = result,
-                    selectedInvoiceItems = result?.items
+                    selectedInvoiceItems = result?.items,
+                    creditNoteInvoiceItems = null
                 )
             }
         }
