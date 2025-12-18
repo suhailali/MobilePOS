@@ -26,8 +26,8 @@ interface ProductDao {
     @Update
     suspend fun updateProduct(product: ProductEntity)
 
-    @Query("UPDATE products SET quantity = quantity - :quantity, is_synced = 0 WHERE id = :productId")
-    suspend fun subtractFromQuantity(productId: String, quantity: Int)
+    @Query("UPDATE products SET quantity = quantity - :amount, is_synced = false, updated_at = :updatedAt WHERE id = :productId")
+    suspend fun subtractFromQuantity(productId: String, amount: Int, updatedAt: Long = System.currentTimeMillis())
 
     @Delete
     suspend fun deleteProduct(product: ProductEntity)

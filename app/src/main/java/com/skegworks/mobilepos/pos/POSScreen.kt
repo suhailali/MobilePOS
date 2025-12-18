@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,7 +48,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
     LaunchedEffect(state.pdfGenerated) {
         if (state.pdfGenerated) {
             state.invoicePDF?.let {
-                viewModel.printPdf(context, it, "Invoice")
+                viewModel.printPdf(context, it, state.invoiceNumber)
             }
         }
     }
@@ -63,7 +62,6 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
         }
     }
 
-    val scrollState = rememberScrollState()
     Column(modifier = Modifier.fillMaxWidth()) {
         Spacer(modifier.height(3.dp))
         Column(

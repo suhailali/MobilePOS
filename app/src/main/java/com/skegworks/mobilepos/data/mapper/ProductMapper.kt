@@ -165,9 +165,9 @@ fun Product.toEntity(): ProductEntity {
     )
 }
 
-fun Product.toInvoiceItem(id: String): InvoiceItem {
+fun Product.toInvoiceItem(invoiceItemId: String): InvoiceItem {
     return InvoiceItem(
-        id = id,
+        id = invoiceItemId,
         vendorId = vendorId,
         vendorName = vendorName,
         hsnCode = hsnCode,
