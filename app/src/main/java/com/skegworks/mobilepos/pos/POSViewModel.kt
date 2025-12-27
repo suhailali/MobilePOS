@@ -16,9 +16,7 @@ import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
 import com.skegworks.mobilepos.business.BusinessRepository
-import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.customer.CustomerRepository
-import com.skegworks.mobilepos.data.domain.Business
 import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
@@ -27,6 +25,7 @@ import com.skegworks.mobilepos.data.domain.PriceInput
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.mapper.toInvoiceItem
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
+import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.invoice.UpdateInvoiceNumberUseCase
 import com.skegworks.mobilepos.print.SeznikPrinterManager
@@ -113,7 +112,7 @@ class POSViewModel @Inject constructor(
         val existingItems = state.value.invoiceItems.toMutableList()
         val newItem = product.toInvoiceItem(uuidGenerator.generateUUID())
         if (product.quantity != 0) {
-            val existingIndex = existingItems.indexOfFirst { it.sku == newItem.sku }
+            val existingIndex = existingItems.indexOfFirst { it.productId == newItem.productId }
 
             // -1 means, it is an existing item
             if (existingIndex != -1) {
