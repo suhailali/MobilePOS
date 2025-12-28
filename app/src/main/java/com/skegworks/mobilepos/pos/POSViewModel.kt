@@ -194,6 +194,13 @@ class POSViewModel @Inject constructor(
 
     fun handleIntent(intent: POSIntent) {
         when (intent) {
+            POSIntent.ClearBarcode -> {
+                _state.update {
+                    it.copy(
+                        searchResultProduct = emptyList()
+                    )
+                }
+            }
             is POSIntent.ResetError -> {
                 _state.update {
                     it.copy(
