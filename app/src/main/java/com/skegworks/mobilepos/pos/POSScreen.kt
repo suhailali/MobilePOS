@@ -57,6 +57,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
         if (state.paymentComplete) {
             val intent = Intent(context, HomeActivity::class.java)
             Toast.makeText(context, "Payment Complete", Toast.LENGTH_SHORT).show()
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             context.startActivity(intent)
             context.findActivity()?.finish()
         }
