@@ -57,8 +57,10 @@ fun AddProductScreen(modifier: Modifier, viewModel: ProductViewModel) {
     }
 
     LaunchedEffect(state.value.textStateSku) {
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        clipboard.setPrimaryClip(ClipData.newPlainText("SKU", state.value.textStateSku))
+        if (state.value.textStateSku.isNotEmpty()) {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            clipboard.setPrimaryClip(ClipData.newPlainText("SKU", state.value.textStateSku))
+        }
     }
 
     Column(
