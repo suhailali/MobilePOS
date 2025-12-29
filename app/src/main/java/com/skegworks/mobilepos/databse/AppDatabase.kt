@@ -7,12 +7,16 @@ import com.skegworks.mobilepos.business.BusinessDao
 import com.skegworks.mobilepos.cashcounter.CashCounterDao
 import com.skegworks.mobilepos.category.CategoryDao
 import com.skegworks.mobilepos.coupon.CouponDao
+import com.skegworks.mobilepos.creditnote.CreditNoteDao
+import com.skegworks.mobilepos.creditnote.CreditNoteItemDao
 import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.data.local.AppSettingsEntity
 import com.skegworks.mobilepos.data.local.BusinessEntity
 import com.skegworks.mobilepos.data.local.CashCounterEntity
 import com.skegworks.mobilepos.data.local.CategoryEntity
 import com.skegworks.mobilepos.data.local.CouponEntity
+import com.skegworks.mobilepos.data.local.CreditNoteEntity
+import com.skegworks.mobilepos.data.local.CreditNoteItemEntity
 import com.skegworks.mobilepos.data.local.CustomerEntity
 import com.skegworks.mobilepos.data.local.InvoiceEntity
 import com.skegworks.mobilepos.data.local.InvoiceItemEntity
@@ -34,7 +38,9 @@ import com.skegworks.mobilepos.vendors.VendorDao
         InvoiceItemEntity::class,
         CashCounterEntity::class,
         AppSettingsEntity::class,
-        CouponEntity::class
+        CouponEntity::class,
+        CreditNoteEntity::class,
+        CreditNoteItemEntity::class
     ], version = 24
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -48,4 +54,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun appSettingsDao(): AppSettingsDao
     abstract fun couponDao(): CouponDao
     abstract fun businessDao(): BusinessDao
+    abstract fun creditNoteDao(): CreditNoteDao
+    abstract fun creditNoteItemDao(): CreditNoteItemDao
 }

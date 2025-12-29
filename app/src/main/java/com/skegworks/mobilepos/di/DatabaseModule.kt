@@ -7,6 +7,8 @@ import com.skegworks.mobilepos.business.BusinessDao
 import com.skegworks.mobilepos.cashcounter.CashCounterDao
 import com.skegworks.mobilepos.category.CategoryDao
 import com.skegworks.mobilepos.coupon.CouponDao
+import com.skegworks.mobilepos.creditnote.CreditNoteDao
+import com.skegworks.mobilepos.creditnote.CreditNoteItemDao
 import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.databse.AppDatabase
 import com.skegworks.mobilepos.invoice.InvoiceDao
@@ -83,5 +85,15 @@ class DatabaseModule {
     @Provides
     fun providesBusinessDao(db: AppDatabase): BusinessDao {
         return db.businessDao()
+    }
+
+    @Provides
+    fun providesCreditNoteDao(db: AppDatabase): CreditNoteDao {
+        return db.creditNoteDao()
+    }
+
+    @Provides
+    fun providesCreditNoteItemDao(db: AppDatabase): CreditNoteItemDao {
+        return db.creditNoteItemDao()
     }
 }

@@ -13,6 +13,14 @@ class Constants {
             const val INVOICE_ITEMS = "invoices_items"
             const val COUPONS = "coupons"
             const val CASH_COUNTER = "cash_counter"
+            const val CREDIT_NOTES = "credit_notes"
+            const val CREDIT_NOTE_ITEMS = "credit_note_items"
+        }
+    }
+
+    class FirebaseCollection {
+        companion object {
+            const val APP = "cash_counter"
         }
     }
 

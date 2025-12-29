@@ -15,6 +15,10 @@ import com.skegworks.mobilepos.category.CategoryRepositoryImpl
 import com.skegworks.mobilepos.coupon.CouponDao
 import com.skegworks.mobilepos.coupon.CouponRepository
 import com.skegworks.mobilepos.coupon.CouponRepositoryImpl
+import com.skegworks.mobilepos.creditnote.CreditNoteDao
+import com.skegworks.mobilepos.creditnote.CreditNoteItemDao
+import com.skegworks.mobilepos.creditnote.CreditNoteRepository
+import com.skegworks.mobilepos.creditnote.CreditNoteRepositoryImpl
 import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.CustomerRepositoryImpl
@@ -120,6 +124,16 @@ class AppModule {
         businessDao: BusinessDao,
     ): BusinessRepository {
         return BusinessRepositoryImpl(businessDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providesCreditNoteRepository(
+        creditNoteDao: CreditNoteDao,
+        creditNoteItemDao: CreditNoteItemDao,
+        syncData: SyncData
+    ): CreditNoteRepository {
+        return CreditNoteRepositoryImpl(creditNoteDao, creditNoteItemDao, syncData)
     }
 
 //    @Provides
