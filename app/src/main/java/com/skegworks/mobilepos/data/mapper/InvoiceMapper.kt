@@ -2,6 +2,8 @@ package com.skegworks.mobilepos.data.mapper
 
 import com.skegworks.mobilepos.data.domain.Business
 import com.skegworks.mobilepos.data.domain.Coupon
+import com.skegworks.mobilepos.data.domain.CreditNote
+import com.skegworks.mobilepos.data.domain.CreditNoteItem
 import com.skegworks.mobilepos.data.domain.Customer
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
@@ -99,5 +101,26 @@ fun InvoiceFireStoreDto.toDomain(customer: Customer, business: Business, coupon:
         invoiceState = InvoiceState.fromState(invoiceState) ?: InvoiceState.PRINT,
         items = items,
         coupon = coupon
+    )
+}
+
+fun Invoice.toCreditNote(creditNoteId: String,
+                         creditNoteItems: List<CreditNoteItem>?): CreditNote {
+    return CreditNote(
+        id = creditNoteId,
+        invoiceId = id,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        totalPrice = totalPrice,
+        totalDiscount = totalDiscount,
+        finalPrice = finalPrice,
+        isSynced = isSynced,
+        customer = customer,
+        business = business,
+        cashDiscount = cashDiscount,
+        coupon = coupon,
+        items = creditNoteItems ?: listOf(),
+        description = "",
+        creditNoteDate = ""
     )
 }
