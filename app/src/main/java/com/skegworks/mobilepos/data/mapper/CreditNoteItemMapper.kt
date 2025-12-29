@@ -1,0 +1,173 @@
+package com.skegworks.mobilepos.data.mapper
+
+import com.skegworks.mobilepos.data.domain.CreditNoteItem
+import com.skegworks.mobilepos.data.local.CreditNoteItemEntity
+import com.skegworks.mobilepos.data.remote.firestore.CreditNoteItemFireStoreDto
+
+// --- Firestore DTO -> Domain ---
+fun CreditNoteItemFireStoreDto.toDomain(): CreditNoteItem {
+    return CreditNoteItem(
+        id = id,
+        vendorId = vendorId,
+        vendorName = vendorName,
+        hsnCode = hsnCode,
+        title = title,
+        categoryId = categoryId,
+        categoryName = categoryName,
+        sku = sku,
+        size = size,
+        color = color,
+        itemPrice = itemPrice,
+        inputGstPercentage = inputGstPercentage,
+        inputGst = inputGst,
+        outputGstPercentage = outputGstPercentage,
+        outputGst = outputGst,
+        saleMargin = saleMargin,
+        cost = cost,
+        salePriceWithoutGst = salePriceWithoutGst,
+        salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
+        finalRoundedOffPrice = finalRoundedOffPrice,
+        quantity = quantity,
+        isActive = isActive,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy,
+        productId = productId,
+        invoiceId = invoiceId,
+        invoiceItemId = invoiceItemId,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        creditNoteId = creditNoteId
+    )
+}
+
+// --- Domain -> Firestore DTO ---
+fun CreditNoteItem.toFirestoreDto(): CreditNoteItemFireStoreDto {
+    return CreditNoteItemFireStoreDto(
+        id = id,
+        vendorId = vendorId,
+        vendorName = vendorName,
+        hsnCode = hsnCode,
+        title = title,
+        categoryId = categoryId,
+        categoryName = categoryName,
+        sku = sku,
+        size = size,
+        color = color,
+        itemPrice = itemPrice,
+        inputGstPercentage = inputGstPercentage,
+        inputGst = inputGst,
+        outputGstPercentage = outputGstPercentage,
+        outputGst = outputGst,
+        saleMargin = saleMargin,
+        cost = cost,
+        salePriceWithoutGst = salePriceWithoutGst,
+        salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
+        finalRoundedOffPrice = finalRoundedOffPrice,
+        quantity = quantity,
+        isActive = isActive,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy,
+        productId = productId,
+        invoiceId = invoiceId,
+        invoiceItemId = invoiceItemId,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        creditNoteId = creditNoteId
+    )
+}
+
+// --- Room Entity -> Domain ---
+fun CreditNoteItemEntity.toDomain(): CreditNoteItem {
+    return CreditNoteItem(
+        id = id,
+        vendorId = vendorId,
+        vendorName = vendorName,
+        hsnCode = hsnCode,
+        title = title,
+        categoryId = categoryId,
+        categoryName = categoryName,
+        sku = sku,
+        size = size,
+        color = color,
+        itemPrice = itemPrice,
+        inputGstPercentage = inputGstPercentage,
+        inputGst = inputGst,
+        outputGstPercentage = outputGstPercentage,
+        outputGst = outputGst,
+        saleMargin = saleMargin,
+        cost = cost,
+        salePriceWithoutGst = salePriceWithoutGst,
+        salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
+        finalRoundedOffPrice = finalRoundedOffPrice,
+        quantity = quantity,
+        isActive = isActive,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy,
+        productId = productId,
+        invoiceId = invoiceId,
+        invoiceItemId = invoiceItemId,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        creditNoteId = creditNoteId
+    )
+}
+
+// --- Domain -> Room Entity ---
+fun CreditNoteItem.toEntity(): CreditNoteItemEntity {
+    return CreditNoteItemEntity(
+        id = id,
+        vendorId = vendorId,
+        vendorName = vendorName,
+        hsnCode = hsnCode,
+        title = title,
+        categoryId = categoryId,
+        categoryName = categoryName,
+        sku = sku,
+        size = size,
+        color = color,
+        itemPrice = itemPrice,
+        inputGstPercentage = inputGstPercentage,
+        inputGst = inputGst,
+        outputGstPercentage = outputGstPercentage,
+        outputGst = outputGst,
+        saleMargin = saleMargin,
+        cost = cost,
+        salePriceWithoutGst = salePriceWithoutGst,
+        salePrice = salePrice,
+        salePriceWithoutDiscount = salePriceWithoutDiscount,
+        finalRoundedOffPrice = finalRoundedOffPrice,
+        quantity = quantity,
+        isActive = isActive,
+        isSynced = isSynced,
+        createdAt = createdAt,
+        updatedAt = updatedAt,
+        discountPercentage = discountPercentage,
+        discountAmount = discountAmount,
+        createdBy = createdBy,
+        updatedBy = updatedBy,
+        productId = productId,
+        invoiceId = invoiceId,
+        invoiceItemId = invoiceItemId,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        creditNoteId = creditNoteId
+    )
+}
