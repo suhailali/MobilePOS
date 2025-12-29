@@ -11,6 +11,7 @@ import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCase
 import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCaseImpl
 import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.coupon.CouponRepository
+import com.skegworks.mobilepos.creditnote.CreditNoteRepository
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.FetchCustomerUseCase
 import com.skegworks.mobilepos.customer.FetchCustomerUseCaseImpl
@@ -18,6 +19,8 @@ import com.skegworks.mobilepos.dashboard.GetDashboardDataUseCase
 import com.skegworks.mobilepos.dashboard.GetDashboardDataUseCaseImpl
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCaseImpl
+import com.skegworks.mobilepos.invoice.GenerateNewCreditNoteUseCase
+import com.skegworks.mobilepos.invoice.GenerateNewCreditNoteUseCaseImpl
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCaseImpl
 import com.skegworks.mobilepos.invoice.GetInvoiceDetailUseCase
@@ -43,6 +46,7 @@ import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCaseImpl
 import com.skegworks.mobilepos.sync.SyncData
 import com.skegworks.mobilepos.utils.DateUtility
+import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.Module
 import dagger.Provides
@@ -182,5 +186,14 @@ class UseCaseModule {
         invoiceRepository: InvoiceRepository
     ): GetInvoiceDetailUseCase {
         return GetInvoiceDetailUseCaseImpl(invoiceRepository)
+    }
+
+    @Provides
+    fun providesGenerateCreditNoteUseCase(
+        dateUtility: DateUtility,
+        uuidGenerator: UUIDGenerator,
+        creditNoteRepository: CreditNoteRepository
+    ): GenerateNewCreditNoteUseCase {
+        return GenerateNewCreditNoteUseCaseImpl(dateUtility, uuidGenerator, creditNoteRepository)
     }
 }
