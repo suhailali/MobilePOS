@@ -1,0 +1,43 @@
+package com.skegworks.mobilepos.data.domain
+
+data class CreditNoteItem(
+    val id: String,
+    val vendorId: String,
+    val vendorName: String,
+    val hsnCode: String,
+    val title: String,
+    val categoryId: String,
+    val categoryName: String,
+    val sku: String,
+    val size: String,
+    val color: String,
+
+    val itemPrice: Double,
+    val inputGstPercentage: Double,
+    var inputGst: Double,
+    val outputGstPercentage: Double,
+    var outputGst: Double,
+    val saleMargin: Int,
+    var cost: Double,
+    var salePriceWithoutGst: Double,
+    var salePrice: Double,
+    var salePriceWithoutDiscount: Int,
+    var finalRoundedOffPrice: Int,
+
+    val quantity: Int,
+    val isActive: Boolean,
+    var isSynced: Boolean,
+    val createdAt: Long,
+    var updatedAt: Long,
+    val createdBy: String,
+    var updatedBy: String,
+    val discountPercentage: Double,
+    var discountAmount: Double,
+
+    val productId: String,
+    var invoiceId: String,
+    var invoiceItemId: String,
+    var invoiceNumber: String,
+    var invoiceDate: Long,
+    val creditNoteId: String,
+)
