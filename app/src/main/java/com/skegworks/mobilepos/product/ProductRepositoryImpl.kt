@@ -19,7 +19,11 @@ class ProductRepositoryImpl @Inject constructor(
         productDao.updateProduct(product.toEntity())
     }
 
-    override suspend fun updateProductQuantity(productId: String, quantity: Int){
+    override suspend fun increaseProductQuantity(productId: String, quantity: Int){
+        productDao.addQuantity(productId, quantity)
+    }
+
+    override suspend fun decreaseProductQuantity(productId: String, quantity: Int){
         productDao.subtractFromQuantity(productId, quantity)
     }
 

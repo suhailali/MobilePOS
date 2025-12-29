@@ -30,6 +30,8 @@ import com.skegworks.mobilepos.invoice.GetInvoicesUseCaseImpl
 import com.skegworks.mobilepos.invoice.InvoiceRepository
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCaseImpl
+import com.skegworks.mobilepos.invoice.UpdateInventoryAfterCreditNoteUseCase
+import com.skegworks.mobilepos.invoice.UpdateInventoryAfterCreditNoteUseCaseImpl
 import com.skegworks.mobilepos.invoice.UpdateInvoiceNumberUseCase
 import com.skegworks.mobilepos.invoice.UpdateInvoiceNumberUseCaseImpl
 import com.skegworks.mobilepos.pos.GetCouponFromBarCodeUseCaseImpl
@@ -195,5 +197,13 @@ class UseCaseModule {
         creditNoteRepository: CreditNoteRepository
     ): GenerateNewCreditNoteUseCase {
         return GenerateNewCreditNoteUseCaseImpl(dateUtility, uuidGenerator, creditNoteRepository)
+    }
+
+    @Provides
+    fun providesUpdateInventoryAfterCreditNoteUseCase(
+        productRepository: ProductRepository,
+        syncProductUseCase: SyncProductUseCase
+    ): UpdateInventoryAfterCreditNoteUseCase {
+        return UpdateInventoryAfterCreditNoteUseCaseImpl(productRepository, syncProductUseCase)
     }
 }
