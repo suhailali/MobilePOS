@@ -16,7 +16,9 @@ import javax.inject.Inject
 class InvoiceViewModel @Inject constructor(
     private val getInvoicesUseCase: GetInvoicesUseCase,
     private val getInvoiceDetailUseCase: GetInvoiceDetailUseCase,
-    private val loadInvoicesFromFireStoreUseCase: LoadInvoicesFromFireStoreUseCase
+    private val loadInvoicesFromFireStoreUseCase: LoadInvoicesFromFireStoreUseCase,
+    private val generateNewCreditNoteUseCase: GenerateNewCreditNoteUseCase,
+    private val updateInventoryAfterCreditNoteUseCase: UpdateInventoryAfterCreditNoteUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(InvoiceState())
@@ -36,19 +38,29 @@ class InvoiceViewModel @Inject constructor(
                 syncInvoices()
             }
 
+            is InvoiceIntent.ItemForPartialQuantityUpdate -> {
+                _state.update {
+                    it.copy(
+                        invoiceItemForPartialQuantityUpdate = intent.invoiceItem
+                    )
+                }
+            }
+
             is InvoiceIntent.CreditNoteInvoiceItem -> {
                 var creditNoteInvoiceItems = _state.value.creditNoteInvoiceItems?.toMutableList()
                 val invoiceItem = creditNoteInvoiceItems?.find { it.id == intent.invoiceItem.id }
                 if (creditNoteInvoiceItems == null) {
                     creditNoteInvoiceItems = mutableListOf()
                 }
-                //TODO Handle partial quantity returned
                 if (intent.addItem) {
+                    // Didn't find the item in list - add to the list
                     if (invoiceItem == null) {
-                        creditNoteInvoiceItems.add(intent.invoiceItem)
+                        creditNoteInvoiceItems.add(intent.invoiceItem.copy(
+                            quantity = intent.quantity
+                        ))
                     }
                 } else {
-                    creditNoteInvoiceItems.remove(intent.invoiceItem)
+                    creditNoteInvoiceItems.remove(invoiceItem)
                 }
                 _state.update {
                     it.copy(
@@ -57,9 +69,18 @@ class InvoiceViewModel @Inject constructor(
                 }
             }
 
-            InvoiceIntent.ConfirmCreditNote -> {
+            is InvoiceIntent.ConfirmCreditNote -> {
                 viewModelScope.launch(Dispatchers.IO) {
-
+                    state.value.selectedInvoice?.let { invoice ->
+                        state.value.creditNoteInvoiceItems?.let { items ->
+                            generateNewCreditNoteUseCase.invoke(
+                                invoice,
+                                items,
+                                intent.returnDescription
+                            )
+                            updateInventoryAfterCreditNoteUseCase.invoke(items)
+                        }
+                    }
                 }
             }
         }

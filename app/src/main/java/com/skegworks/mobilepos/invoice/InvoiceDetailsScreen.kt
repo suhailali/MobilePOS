@@ -1,5 +1,6 @@
 package com.skegworks.mobilepos.invoice
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,23 +26,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import com.skegworks.mobilepos.data.domain.InvoiceItem
-import com.skegworks.mobilepos.ui.component.SimpleAlertDialog
+import com.skegworks.mobilepos.ui.component.AlertDialogWithTextInput
 import com.skegworks.mobilepos.ui.component.SpacerLarge
 import com.skegworks.mobilepos.ui.component.SpacerMedium
+import com.skegworks.mobilepos.ui.component.TextFieldBottomSheet
 import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
 fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoiceId: String, navigateBack: () -> Unit) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(InvoiceIntent.SelectInvoice(invoiceId))
     }
     var openCreditNoteConfirmationDialog by remember { mutableStateOf(false) }
+    var isQuantitySheetOpen by remember { mutableStateOf(false) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         SpacerLarge()
         Text("Invoice", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
@@ -56,7 +62,33 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
         Text("Invoice Items", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
         state.selectedInvoiceItems?.let {
             InvoiceItemList(it) { invoiceItem, checked ->
-                viewModel.handleIntent(InvoiceIntent.CreditNoteInvoiceItem(invoiceItem, checked))
+                if (!checked) {
+                    viewModel.handleIntent(
+                        InvoiceIntent.CreditNoteInvoiceItem(
+                            invoiceItem,
+                            invoiceItem.quantity,
+                            false
+                        )
+                    )
+                }
+                else {
+                    if (invoiceItem.quantity < 2) {
+                        viewModel.handleIntent(
+                            InvoiceIntent.CreditNoteInvoiceItem(
+                                invoiceItem,
+                                invoiceItem.quantity,
+                                true
+                            )
+                        )
+                    } else {
+                        viewModel.handleIntent(
+                            InvoiceIntent.ItemForPartialQuantityUpdate(
+                                invoiceItem
+                            )
+                        )
+                        isQuantitySheetOpen = true
+                    }
+                }
             }
         }
         SpacerMedium()
@@ -70,15 +102,45 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
     }
 
     if (openCreditNoteConfirmationDialog) {
-        SimpleAlertDialog(
+        AlertDialogWithTextInput(
             onDismissRequest = { openCreditNoteConfirmationDialog = false },
-            onConfirmation = {
+            onConfirmation = { returnDescription ->
                 openCreditNoteConfirmationDialog = false
-                viewModel.handleIntent(InvoiceIntent.ConfirmCreditNote)
+                viewModel.handleIntent(InvoiceIntent.ConfirmCreditNote(returnDescription))
             },
             dialogTitle = "Return Product",
             dialogText = "Are you sure you want to return product(s)?",
-            icon = Icons.Default.Info
+            icon = Icons.Default.Info,
+            placeholderText = "Enter Reason"
+        )
+    }
+
+    if (isQuantitySheetOpen) {
+        TextFieldBottomSheet(
+            label = "Enter Return Quantity",
+            onItemSelected = {
+                if (it.isNotEmpty() && it.isDigitsOnly()) {
+                    state.invoiceItemForPartialQuantityUpdate?.let { item ->
+                        if (it.toInt() >0 && it.toInt() <= item.quantity) {
+                            viewModel.handleIntent(
+                                InvoiceIntent.CreditNoteInvoiceItem(
+                                    item,
+                                    it.toInt(),
+                                    true
+                                )
+                            )
+                            isQuantitySheetOpen = false
+                        } else {
+                            Toast.makeText(context, "Invalid Quantity", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    Toast.makeText(context, "Invalid Quantity", Toast.LENGTH_SHORT).show()
+                }
+            },
+            onDismiss = {
+                isQuantitySheetOpen = false
+            }
         )
     }
 }
