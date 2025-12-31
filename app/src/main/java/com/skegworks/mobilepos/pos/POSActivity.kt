@@ -51,7 +51,9 @@ class POSActivity : ComponentActivity() {
                     POSScreenNavigation(
                         modifier = Modifier.padding(innerPadding),
                         viewmodel = viewModel
-                    )
+                    ) {
+                        finish()
+                    }
                 }
             }
         }
