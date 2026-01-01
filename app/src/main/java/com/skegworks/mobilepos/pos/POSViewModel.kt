@@ -3,20 +3,10 @@ package com.skegworks.mobilepos.pos
 import android.app.Application
 import android.content.Context
 import android.graphics.pdf.PdfDocument
-import android.os.Bundle
-import android.os.CancellationSignal
-import android.os.ParcelFileDescriptor
-import android.print.PageRange
-import android.print.PrintAttributes
-import android.print.PrintDocumentAdapter
-import android.print.PrintDocumentInfo
-import android.print.PrintManager
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.application
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
 import com.skegworks.mobilepos.business.BusinessRepository
-import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
@@ -28,11 +18,10 @@ import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.invoice.UpdateInvoiceNumberUseCase
-import com.skegworks.mobilepos.print.SeznikPrinterManager
+import com.skegworks.mobilepos.print.PrintPdfUseCase
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
-import com.skegworks.mobilepos.utils.files.FileHandler
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -42,8 +31,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.FileOutputStream
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -52,8 +39,7 @@ class POSViewModel @Inject constructor(
     private val getProductFromBarcodeUseCase: GetProductFromBarcodeUseCase,
     private val getCouponFromBarcodeUseCase: GetCouponFromBarcodeUseCase,
     private val generateInvoicePdfUseCase: GenerateInvoicePdfUseCase,
-    private val customerRepository: CustomerRepository,
-    private val fileHandler: FileHandler,
+    private val printPdfUseCase: PrintPdfUseCase,
     private val uuidGenerator: UUIDGenerator,
     private val syncInvoiceUseCase: SyncInvoiceUseCase,
     private val syncAppSettingsUseCase: SyncAppSettingsUseCase,
@@ -64,20 +50,20 @@ class POSViewModel @Inject constructor(
     private val businessRepository: BusinessRepository,
     private val updateInventoryAfterSaleUseCase: UpdateInventoryAfterSaleUseCase,
     private val userPreferenceHandler: UserPreferenceHandler
-) : AndroidViewModel(application) {
+) : ViewModel() {
 
     private val _state = MutableStateFlow(POSState())
     val state: StateFlow<POSState> = _state.asStateFlow()
 
 
-    fun printLabel() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val printerManager = SeznikPrinterManager(application.baseContext)
-//                printerManager.printLabel("B8:50:44:10:3A:27", "nadhika")
-            printerManager.connectAndPrintUsingSDK()
-
-        }
-    }
+//    fun printLabel() {
+//        viewModelScope.launch(Dispatchers.IO) {
+//            val printerManager = SeznikPrinterManager(application.baseContext)
+////                printerManager.printLabel("B8:50:44:10:3A:27", "nadhika")
+//            printerManager.connectAndPrintUsingSDK()
+//
+//        }
+//    }
 
     fun getProductForBarcode(barcode: String) {
         println("get Product for barcode $barcode")
@@ -197,7 +183,8 @@ class POSViewModel @Inject constructor(
             POSIntent.ClearBarcode -> {
                 _state.update {
                     it.copy(
-                        searchResultProduct = emptyList()
+                        searchResultProduct = emptyList(),
+                        searchTerm = ""
                     )
                 }
             }
@@ -354,7 +341,8 @@ class POSViewModel @Inject constructor(
                     finalPrice = state.value.finalPriceToPay,
                     isSynced = false,
                     cashDiscount = state.value.cashDiscount,
-                    invoiceState = InvoiceState.PRINT
+                    invoiceState = InvoiceState.PRINT,
+                    updatedAt = System.currentTimeMillis()
                 )
                 invoice.items.forEach { invoiceItem ->
                     invoiceItem.apply {
@@ -387,61 +375,7 @@ class POSViewModel @Inject constructor(
                 pdfGenerated = false
             )
         }
-        // Convert PdfDocument to ByteArray
-        val outStream = java.io.ByteArrayOutputStream()
-        try {
-            pdfDocument.writeTo(outStream)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
-            pdfDocument.close()
-        }
-
-        val pdfBytes = outStream.toByteArray()
-
-        val printManager = context.getSystemService(Context.PRINT_SERVICE) as PrintManager
-
-        val printAttributes = PrintAttributes.Builder()
-            .setMediaSize(PrintAttributes.MediaSize.ISO_A5)      // ✅ Page size
-            .setColorMode(PrintAttributes.COLOR_MODE_MONOCHROME)  // ✅ Black & white
-            .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
-            .build()
-        val adapter = object : PrintDocumentAdapter() {
-            override fun onLayout(
-                oldAttributes: PrintAttributes?,
-                newAttributes: PrintAttributes?,
-                cancellationSignal: CancellationSignal?,
-                callback: LayoutResultCallback?,
-                extras: Bundle?
-            ) {
-// Respond that layout is finished
-                val info = PrintDocumentInfo
-                    .Builder("$jobName.pdf")
-                    .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
-                    .build()
-                callback?.onLayoutFinished(info, true)
-            }
-
-            override fun onWrite(
-                pages: Array<out PageRange>?,
-                destination: ParcelFileDescriptor?,
-                cancellationSignal: CancellationSignal?,
-                callback: WriteResultCallback?
-            ) {
-                try {
-                    destination?.let { pfd ->
-                        FileOutputStream(pfd.fileDescriptor).use { out ->
-                            out.write(pdfBytes)
-                        }
-                    }
-                    callback?.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
-                } catch (e: Exception) {
-                    callback?.onWriteFailed(e.message)
-                }
-            }
-        }
-
-        printManager.print(jobName, adapter, printAttributes)
+        printPdfUseCase.invoke(context, pdfDocument, jobName)
     }
 
     fun getInvoiceNumber() {

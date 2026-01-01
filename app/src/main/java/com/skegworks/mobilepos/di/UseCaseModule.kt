@@ -40,6 +40,8 @@ import com.skegworks.mobilepos.pos.GetProductFromBarCodeUseCaseImpl
 import com.skegworks.mobilepos.pos.GetProductFromBarcodeUseCase
 import com.skegworks.mobilepos.pos.UpdateInventoryAfterSaleUseCase
 import com.skegworks.mobilepos.pos.UpdateInventoryAfterSaleUseCaseImpl
+import com.skegworks.mobilepos.print.PrintPdfUseCase
+import com.skegworks.mobilepos.print.PrintPdfUseCaseImpl
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCaseImpl
 import com.skegworks.mobilepos.product.ProductRepository
@@ -47,6 +49,8 @@ import com.skegworks.mobilepos.product.SyncProductUseCase
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCaseImpl
 import com.skegworks.mobilepos.sync.SyncData
+import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCase
+import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCaseImpl
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
@@ -205,5 +209,17 @@ class UseCaseModule {
         syncProductUseCase: SyncProductUseCase
     ): UpdateInventoryAfterCreditNoteUseCase {
         return UpdateInventoryAfterCreditNoteUseCaseImpl(productRepository, syncProductUseCase)
+    }
+
+    @Provides
+    fun providesPrintPdfUseCase(): PrintPdfUseCase {
+        return PrintPdfUseCaseImpl()
+    }
+
+    @Provides
+    fun providesSyncPendingInvoiceUseCase(
+        invoiceRepository: InvoiceRepository
+    ): SyncPendingInvoicesUseCase {
+        return SyncPendingInvoicesUseCaseImpl(invoiceRepository)
     }
 }
