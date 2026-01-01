@@ -25,8 +25,9 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
                 isAntiAlias = true
                 textSize = 14f
             }
-            val bold = Paint(paint).apply { textSize = 9f; isFakeBoldText = true }
+            val bold = Paint(paint).apply { textSize = 9f; isUnderlineText = true; isFakeBoldText = true }
             val small = Paint(paint).apply { textSize = 7f }
+            val medium = Paint(paint).apply { textSize = 8f; isFakeBoldText =  true }
 
             var y = 30f
 
@@ -121,15 +122,34 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
 
             canvas.drawText("Total:", labelX, y + 12f, small)
             canvas.drawText(formatAmount(total), rightX - 50f, y + 12f, small)
-            y += 14f
-            canvas.drawText("Discount:", labelX, y + 12f, small)
-            canvas.drawText(formatAmount(totalDiscount), rightX - 50f, y + 12f, small)
-             y += 14f
-            canvas.drawText("Cash Discount:", labelX, y + 12f, small)
-            canvas.drawText(formatAmount(cashDiscount), rightX - 50f, y + 12f, small)
-            y += 14f
+            if (totalDiscount > 0) {
+                y += 14f
+                canvas.drawText("Discount:", labelX, y + 12f, small)
+                canvas.drawText(formatAmount(totalDiscount), rightX - 50f, y + 12f, small)
+            }
+            if(cashDiscount > 0) {
+                y += 14f
+                canvas.drawText("Cash Discount:", labelX, y + 12f, small)
+                canvas.drawText(formatAmount(cashDiscount), rightX - 50f, y + 12f, medium)
+            }
+            y += 30f
             canvas.drawText("Final Price:", labelX, y + 12f, bold)
-            canvas.drawText(formatAmount(finalPrice), rightX - 50f, y + 12f, bold)
+            canvas.drawText("Rs. " + formatAmount(finalPrice), rightX - 50f, y + 12f, bold)
+
+            // TODO Change this to input param
+            y += 130f
+            canvas.drawText(" - Thank you for shopping with us!", 10f, y, small)
+            y += 14f
+            canvas.drawText(" - വിറ്റ സാധനങ്ങൾ 5 ദിവസത്തിനകം മാറ്റിയെടുക്കാവുന്നതാണ്, പണം തിരികെ നൽകുന്നതല്ല.", 10f, y, medium)
+            y += 14f
+            canvas.drawText(" - സാധനം കേടുപാട് കൂടാതെയും ഒറിജിനൽ ടാഗുമായും കൊണ്ടുവരണം.", 10f, y, medium)
+            y += 14f
+            canvas.drawText(" - വസ്ത്രങ്ങൾ ആദ്യപ്രാവശ്യം ഡ്രൈ വാഷ് ചെയുക.", 10f, y, medium)
+            y += 14f
+            canvas.drawText(" - കോട്ടൺ വസ്ത്രങ്ങൾ ചെറിയ രീതിയിൽ ചുരുങ്ങാനും കളർ മാങ്ങാനും സാധ്യതയുണ്ട്.", 10f, y, medium)
+            y += 14f
+            canvas.drawText(" - ഫാൻസി ഐറ്റംസ്, ചപ്പൽസ്, ഡിസ്കൗണ്ട് ഐറ്റംസ് തിരിച്ചെടുക്കുന്നതല്ല.", 10f, y, medium)
+
 
             document.finishPage(page)
 
