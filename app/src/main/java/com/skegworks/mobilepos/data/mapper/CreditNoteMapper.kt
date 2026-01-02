@@ -25,7 +25,8 @@ fun CreditNoteFireStoreDto.toEntity(): CreditNoteEntity {
         cashDiscount = cashDiscount,
         couponId = couponId,
         creditNoteDate = creditNoteDate,
-        description = description
+        description = description,
+        updatedAt = updatedAt
     )
 }
 
@@ -67,7 +68,8 @@ fun CreditNote.toEntity(): CreditNoteEntity {
         cashDiscount = cashDiscount,
         couponId = coupon?.id ?: "",
         creditNoteDate = creditNoteDate,
-        description = description
+        description = description,
+        updatedAt = updatedAt
     )
 }
 
@@ -87,7 +89,8 @@ fun CreditNoteEntity.toDomain(customer: Customer, business: Business, coupon: Co
         items = items,
         coupon = coupon,
         creditNoteDate = creditNoteDate,
-        description = description
+        description = description,
+        updatedAt = updatedAt
     )
 }
 
@@ -107,6 +110,7 @@ fun CreditNoteFireStoreDto.toDomain(customer: Customer, business: Business, coup
         items = items,
         coupon = coupon,
         creditNoteDate = creditNoteDate,
-        description = description
+        description = description,
+        updatedAt = updatedAt
     )
 }

@@ -18,4 +18,5 @@ data class CreditNoteFireStoreDto(
     val isSynced: Boolean = false,
     val description: String = "",
     val creditNoteDate: String = "",
+    val updatedAt: Long = 0L
 )

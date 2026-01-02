@@ -15,5 +15,6 @@ data class CreditNote(
     val coupon: Coupon? = null,
     val cashDiscount: Double,
     var description: String,
-    var creditNoteDate: String
+    var creditNoteDate: String,
+    val updatedAt: Long,
 )

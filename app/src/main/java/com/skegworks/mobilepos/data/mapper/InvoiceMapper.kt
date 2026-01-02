@@ -26,7 +26,8 @@ fun InvoiceFireStoreDto.toEntity(): InvoiceEntity {
         isSynced = isSynced,
         cashDiscount = cashDiscount,
         couponId = couponId,
-        invoiceState = invoiceState
+        invoiceState = invoiceState,
+        updatedAt = updatedAt
     )
 }
 
@@ -45,7 +46,8 @@ fun Invoice.toFirestoreDto(): InvoiceFireStoreDto {
         isSynced = isSynced,
         cashDiscount = cashDiscount,
         couponId = coupon?.id ?: "",
-        invoiceState = invoiceState.name
+        invoiceState = invoiceState.name,
+        updatedAt = updatedAt
     )
 }
 
@@ -64,7 +66,8 @@ fun Invoice.toEntity(): InvoiceEntity {
         isSynced = isSynced,
         cashDiscount = cashDiscount,
         couponId = coupon?.id ?: "",
-        invoiceState = invoiceState.name
+        invoiceState = invoiceState.name,
+        updatedAt = updatedAt
     )
 }
 
@@ -82,7 +85,8 @@ fun InvoiceEntity.toDomain(customer: Customer, business: Business, coupon: Coupo
         cashDiscount = cashDiscount,
         invoiceState = InvoiceState.fromState(invoiceState) ?: InvoiceState.PRINT,
         items = items,
-        coupon = coupon
+        coupon = coupon,
+        updatedAt = updatedAt
     )
 }
 
@@ -100,7 +104,8 @@ fun InvoiceFireStoreDto.toDomain(customer: Customer, business: Business, coupon:
         cashDiscount = cashDiscount,
         invoiceState = InvoiceState.fromState(invoiceState) ?: InvoiceState.PRINT,
         items = items,
-        coupon = coupon
+        coupon = coupon,
+        updatedAt = updatedAt
     )
 }
 
@@ -121,6 +126,7 @@ fun Invoice.toCreditNote(creditNoteId: String,
         coupon = coupon,
         items = creditNoteItems ?: listOf(),
         description = "",
-        creditNoteDate = ""
+        creditNoteDate = "",
+        updatedAt = System.currentTimeMillis()
     )
 }

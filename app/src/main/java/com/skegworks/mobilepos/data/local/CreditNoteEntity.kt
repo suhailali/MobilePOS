@@ -22,4 +22,5 @@ data class CreditNoteEntity(
     @ColumnInfo(name = "is_synced") var isSynced: Boolean,
     @ColumnInfo(name = "credit_note_date") val creditNoteDate: String,
     @ColumnInfo(name = "description") var description: String,
+    @ColumnInfo(name = "updated_at") var updatedAt: Long,
 )
