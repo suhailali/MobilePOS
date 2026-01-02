@@ -1,5 +1,6 @@
 package com.skegworks.mobilepos.invoice
 
+import com.skegworks.mobilepos.data.domain.ChartPoint
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 
@@ -23,6 +24,9 @@ interface InvoiceRepository {
     )
 
     suspend fun getAllInvoices(): List<Invoice>
+    suspend fun getUnsyncedInvoices(): List<Invoice>
+
+    suspend fun getInvoicesAmountByDate(): List<ChartPoint>
 
     suspend fun getInvoiceById(id: String): Invoice?
 

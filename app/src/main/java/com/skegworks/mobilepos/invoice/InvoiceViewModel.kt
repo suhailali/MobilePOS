@@ -1,12 +1,18 @@
 package com.skegworks.mobilepos.invoice
 
+import android.content.Context
+import android.graphics.pdf.PdfDocument
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.print.PrintPdfUseCase
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
+import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -18,14 +24,33 @@ class InvoiceViewModel @Inject constructor(
     private val getInvoiceDetailUseCase: GetInvoiceDetailUseCase,
     private val loadInvoicesFromFireStoreUseCase: LoadInvoicesFromFireStoreUseCase,
     private val generateNewCreditNoteUseCase: GenerateNewCreditNoteUseCase,
-    private val updateInventoryAfterCreditNoteUseCase: UpdateInventoryAfterCreditNoteUseCase
+    private val updateInventoryAfterCreditNoteUseCase: UpdateInventoryAfterCreditNoteUseCase,
+    private val printPdfUseCase: PrintPdfUseCase,
+    private val generateInvoicePdfUseCase: GenerateInvoicePdfUseCase,
+    private val syncPendingInvoicesUseCase: SyncPendingInvoicesUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(InvoiceState())
     val state: StateFlow<InvoiceState> = _state.asStateFlow()
 
+    private val _events = MutableSharedFlow<InvoiceEvents>()
+    val events = _events.asSharedFlow()
+
     fun handleIntent(intent: InvoiceIntent) {
         when (intent) {
+            InvoiceIntent.PrintInvoice -> {
+                state.value.selectedInvoice?.let {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val pdfDocument = generateInvoicePdfUseCase.generatePdf(it)
+                        _state.update { invoiceState ->
+                            invoiceState.copy(
+                                invoicePDF = pdfDocument,
+                                pdfGenerated = true
+                            )
+                        }
+                    }
+                }
+            }
             InvoiceIntent.LoadInvoices -> loadInvoices()
             is InvoiceIntent.SelectInvoice -> selectInvoice(intent.id)
             InvoiceIntent.SyncInvoices -> {
@@ -81,12 +106,24 @@ class InvoiceViewModel @Inject constructor(
                             updateInventoryAfterCreditNoteUseCase.invoke(items)
                         }
                     }
+                    _state.update {
+                        it.copy(
+                            creditNoteInvoiceItems = null,
+                            invoiceItemForPartialQuantityUpdate = null,
+                        )
+                    }
+                    _events.emit(InvoiceEvents.NAVIGATE_BACK)
                 }
             }
         }
     }
 
     private fun syncInvoices() {
+        if (state.value.unsyncedInvoices > 0) {
+            viewModelScope.launch(Dispatchers.IO) {
+                syncPendingInvoicesUseCase.invoke()
+            }
+        }
         loadInvoicesFromFireStoreUseCase.invoke {
             _state.update {
                 it.copy(
@@ -121,5 +158,14 @@ class InvoiceViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun printPdf(context: Context, pdfDocument: PdfDocument, jobName: String) {
+        _state.update {
+            it.copy(
+                pdfGenerated = false
+            )
+        }
+        printPdfUseCase.invoke(context, pdfDocument, jobName)
     }
 }

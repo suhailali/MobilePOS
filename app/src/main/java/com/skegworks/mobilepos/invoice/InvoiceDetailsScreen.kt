@@ -17,6 +17,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,11 +47,41 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
     LaunchedEffect(Unit) {
         viewModel.handleIntent(InvoiceIntent.SelectInvoice(invoiceId))
     }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                InvoiceEvents.NAVIGATE_BACK -> navigateBack()
+            }
+        }
+    }
+
+    LaunchedEffect(state.pdfGenerated) {
+        if (state.pdfGenerated) {
+            state.invoicePDF?.let {
+                viewModel.printPdf(context, it, state.selectedInvoice?.invoiceNumber ?: "Invoice")
+            }
+        }
+    }
+
     var openCreditNoteConfirmationDialog by remember { mutableStateOf(false) }
     var isQuantitySheetOpen by remember { mutableStateOf(false) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         SpacerLarge()
-        Text("Invoice", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(Dimens.MEDIUM_PADDING.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Invoice", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
+            TextButton(onClick = {
+                viewModel.handleIntent(InvoiceIntent.PrintInvoice)
+            }) {
+                Text("Print Invoice")
+            }
+        }
+
         Box(Modifier.background(MaterialTheme.colorScheme.onPrimary).padding(2.dp)) {
             state.selectedInvoice?.let {
                 InvoiceListRow(index = 1, invoice = it) {

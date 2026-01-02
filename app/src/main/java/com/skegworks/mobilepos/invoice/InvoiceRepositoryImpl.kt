@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.invoice
 import com.skegworks.mobilepos.business.BusinessDao
 import com.skegworks.mobilepos.coupon.CouponDao
 import com.skegworks.mobilepos.customer.CustomerDao
+import com.skegworks.mobilepos.data.domain.ChartPoint
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.data.mapper.toDomain
@@ -82,6 +83,34 @@ class InvoiceRepositoryImpl @Inject constructor(
             return emptyList()
         }
         return newInvoices.filterNotNull()
+    }
+
+    override suspend fun getUnsyncedInvoices(): List<Invoice> {
+        val invoices = invoiceDao.getUnsyncedInvoices()
+        val newInvoices = invoices.map { invoice ->
+            val invoiceItems = invoiceItemDao.getAllInvoiceItems(invoice.id).map {
+                it.toDomain()
+            }
+            val customer = customerDao.getCustomerById(invoice.customerId)
+            val business = businessDao.getBusiness()
+            val coupon = couponDao.getCouponById(invoice.couponId)?.toDomain()
+            if (customer == null || business == null) {
+                return@map null
+            }
+            invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
+        }
+        if (newInvoices.isEmpty()) {
+            return emptyList()
+        }
+        return newInvoices.filterNotNull()
+    }
+
+    override suspend fun getInvoicesAmountByDate(): List<ChartPoint> {
+        val invoiceAmountByDate = invoiceDao.getInvoiceAmountByDay()
+        val chartPoints = invoiceAmountByDate.map { invoiceAmount ->
+            ChartPoint(invoiceAmount.date, invoiceAmount.totalAmount)
+        }
+        return chartPoints
     }
 
     override suspend fun getInvoiceById(id: String): Invoice? {

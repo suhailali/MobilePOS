@@ -42,6 +42,9 @@ fun InvoiceListScreen(modifier: Modifier, viewModel: InvoiceViewModel, onInvoice
                 viewModel.handleIntent(InvoiceIntent.SyncInvoices)
             }) {
                 Text("Sync Invoices")
+                if (state.unsyncedInvoices > 0) {
+                    Text("" + state.unsyncedInvoices)
+                }
             }
         }
 
