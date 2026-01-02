@@ -20,4 +20,5 @@ data class InvoiceEntity(
     @ColumnInfo(name = "invoice_state") val invoiceState: String,
     @ColumnInfo(name = "cash_discount") val cashDiscount: Double,
     @ColumnInfo(name = "is_synced") var isSynced: Boolean,
+    @ColumnInfo(name = "updated_at") var updatedAt: Long,
 )

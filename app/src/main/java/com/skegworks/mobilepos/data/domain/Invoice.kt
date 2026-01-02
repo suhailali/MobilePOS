@@ -1,5 +1,7 @@
 package com.skegworks.mobilepos.data.domain
 
+import com.skegworks.mobilepos.invoice.InvoiceIntent
+
 data class Invoice(
     val id: String,
     val invoiceNumber: String,
@@ -13,7 +15,8 @@ data class Invoice(
     var isSynced: Boolean,
     var coupon: Coupon? = null,
     val cashDiscount: Double,
-    val invoiceState: InvoiceState
+    val invoiceState: InvoiceState,
+    val updatedAt: Long
 )
 
 enum class InvoiceState(val value:String) {
