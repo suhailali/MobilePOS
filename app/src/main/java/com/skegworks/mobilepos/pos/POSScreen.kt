@@ -42,6 +42,16 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        viewModel.events.collect {
+            when (it) {
+                POSEvents.ERROR_INVOICE_NOT_GENERATED -> {
+                    Toast.makeText(context, "Print Invoice", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
         viewModel.getInvoiceNumber()
         viewModel.getBusiness()
     }

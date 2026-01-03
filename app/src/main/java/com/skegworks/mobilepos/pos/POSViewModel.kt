@@ -25,8 +25,10 @@ import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -54,6 +56,9 @@ class POSViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(POSState())
     val state: StateFlow<POSState> = _state.asStateFlow()
+
+    private val _events = MutableSharedFlow<POSEvents>()
+    val events = _events.asSharedFlow()
 
 
 //    fun printLabel() {
@@ -232,21 +237,20 @@ class POSViewModel @Inject constructor(
 
             is POSIntent.Payment -> {
                 viewModelScope.launch(Dispatchers.IO) {
+                    if (state.value.invoice == null) {
+                        _events.emit(POSEvents.ERROR_INVOICE_NOT_GENERATED)
+                        return@launch
+                    }
                     state.value.invoice?.let {
                         syncInvoiceUseCase.invoke(it)
-                    }
-                }
-                //update invoice counter and date
-                viewModelScope.launch(Dispatchers.IO) {
-                    state.value.invoice?.let {
                         updateInventoryAfterSaleUseCase.invoke(it)
-                    }
-                    updateInvoiceNumberUseCase.invoke()
-                    syncAppSettingsUseCase.invoke()
-                    _state.update {
-                        it.copy(
-                            paymentComplete = true
-                        )
+                        updateInvoiceNumberUseCase.invoke()
+                        syncAppSettingsUseCase.invoke()
+                        _state.update { posState ->
+                            posState.copy(
+                                paymentComplete = true
+                            )
+                        }
                     }
                 }
             }
