@@ -4,7 +4,7 @@ data class CashCounterFireStoreDto(
     val id: String = "",
     val date: String = "",
     val status: String = "",
-    val isSynced: Boolean = false,
+    val synced: Boolean = false,
     val openingBalance: Double = 0.0,
     val closingBalance: Double = 0.0,
     val openedAt: Long = 0L,

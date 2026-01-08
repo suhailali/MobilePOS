@@ -6,8 +6,8 @@ data class CustomerFireStoreDto(
     val email: String = "",
     val phone: String = "",
     val address: String = "",
-    val isActive: Boolean = true,
-    var isSynced: Boolean = false,
+    val active: Boolean = true,
+    var synced: Boolean = false,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L,
 )

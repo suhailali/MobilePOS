@@ -13,8 +13,8 @@ fun CustomerFireStoreDto.toDomain(): Customer {
         email = email,
         phone = phone,
         address = address,
-        isActive = isActive,
-        isSynced = isSynced,
+        isActive = active,
+        isSynced = synced,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
@@ -28,8 +28,8 @@ fun Customer.toFirestoreDto(): CustomerFireStoreDto {
         email = email,
         phone = phone,
         address = address,
-        isActive = isActive,
-        isSynced = isSynced,
+        active = isActive,
+        synced = isSynced,
         createdAt = createdAt,
         updatedAt = updatedAt
     )

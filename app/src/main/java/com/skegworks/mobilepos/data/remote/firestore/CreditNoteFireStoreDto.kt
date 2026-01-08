@@ -15,7 +15,7 @@ data class CreditNoteFireStoreDto(
     val businessId: String = "",
     val invoiceState: String = "",
     val couponId: String = "",
-    val isSynced: Boolean = false,
+    val synced: Boolean = false,
     val description: String = "",
     val creditNoteDate: String = "",
     val updatedAt: Long = 0L

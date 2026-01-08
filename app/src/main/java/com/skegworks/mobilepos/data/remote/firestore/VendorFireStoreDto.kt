@@ -13,8 +13,8 @@ data class VendorFireStoreDto(
     val gst: String = "",
     val gstPercentage: String = "",
     val currency: String = "",
-    val isActive: Boolean = false,
-    val isSynced: Boolean = false,
+    val active: Boolean = false,
+    val synced: Boolean = false,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L
 )

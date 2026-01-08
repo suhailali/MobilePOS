@@ -20,8 +20,8 @@ fun VendorFireStoreDto.toDomain(): Vendor {
         gst = gst,
         gstPercentage = gstPercentage,
         currency = currency,
-        isActive = isActive,
-        isSynced = isSynced,
+        isActive = active,
+        isSynced = synced,
         createdAt = createdAt,
         updatedAt = updatedAt
     )
@@ -42,8 +42,8 @@ fun Vendor.toFirestoreDto(): VendorFireStoreDto {
         gst = gst,
         gstPercentage = gstPercentage,
         currency = currency,
-        isActive = isActive,
-        isSynced = isSynced,
+        active = isActive,
+        synced = isSynced,
         createdAt = createdAt,
         updatedAt = updatedAt
     )

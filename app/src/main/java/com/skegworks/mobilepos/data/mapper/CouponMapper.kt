@@ -15,14 +15,21 @@ fun CouponFireStoreDto.toDomain(): Coupon {
         discountCode = discountCode,
         discountType = discountType,
         discountPercentage = discountPercentage,
-        discountGivenTo = discountGivenTo,
+        discountGivenToName = discountGivenToName,
+        discountGivenToId = discountGivenToId,
         discountValidTill = discountValidTill,
         discountAvailedBy = discountAvailedBy,
+        discountAvailedOn = discountAvailedOn,
+        discountedAmount = discountedAmount,
         invoiceNumber = invoiceNumber,
+        invoiceId = invoiceId,
         updatedAt = updatedAt,
-        isSynced = isSynced,
-        isActive = isActive,
-        createdAt = createdAt
+        updatedBy = updatedBy,
+        isSynced =  synced,
+        isDeleted = deleted,
+        isActive = active,
+        createdAt = createdAt,
+        createdBy = createdBy
     )
 }
 
@@ -35,14 +42,21 @@ fun Coupon.toFirestoreDto(): CouponFireStoreDto {
         discountCode = discountCode,
         discountType = discountType,
         discountPercentage = discountPercentage,
-        discountGivenTo = discountGivenTo,
+        discountGivenToName = discountGivenToName,
+        discountGivenToId = discountGivenToId,
         discountValidTill = discountValidTill,
         discountAvailedBy = discountAvailedBy,
+        discountAvailedOn = discountAvailedOn,
+        discountedAmount = discountedAmount,
         invoiceNumber = invoiceNumber,
+        invoiceId = invoiceId,
         updatedAt = updatedAt,
-        isSynced = isSynced,
-        isActive = isActive,
-        createdAt = createdAt
+        updatedBy = updatedBy,
+        synced = isSynced,
+        deleted = isDeleted,
+        active = isActive,
+        createdAt = createdAt,
+        createdBy = createdBy
     )
 }
 
@@ -55,14 +69,21 @@ fun CouponEntity.toDomain(): Coupon {
         discountCode = discountCode,
         discountType = discountType,
         discountPercentage = discountPercentage,
-        discountGivenTo = discountGivenTo,
+        discountGivenToName = discountGivenToName,
+        discountGivenToId = discountGivenToId,
         discountValidTill = discountValidTill,
         discountAvailedBy = discountAvailedBy,
+        discountAvailedOn = discountAvailedOn,
+        discountedAmount = discountedAmount,
         invoiceNumber = invoiceNumber,
+        invoiceId = invoiceId,
         updatedAt = updatedAt,
+        updatedBy = updatedBy,
         isSynced = isSynced,
+        isDeleted = isDeleted,
         isActive = isActive,
-        createdAt = createdAt
+        createdAt = createdAt,
+        createdBy = createdBy
     )
 }
 
@@ -75,13 +96,20 @@ fun Coupon.toEntity(): CouponEntity {
         discountCode = discountCode,
         discountType = discountType,
         discountPercentage = discountPercentage,
-        discountGivenTo = discountGivenTo,
+        discountGivenToName = discountGivenToName,
+        discountGivenToId = discountGivenToId,
         discountValidTill = discountValidTill,
         discountAvailedBy = discountAvailedBy,
+        discountAvailedOn = discountAvailedOn,
+        discountedAmount = discountedAmount,
         invoiceNumber = invoiceNumber,
+        invoiceId = invoiceId,
         updatedAt = updatedAt,
+        updatedBy = updatedBy,
         isSynced = isSynced,
+        isDeleted = isDeleted,
         isActive = isActive,
-        createdAt = createdAt
+        createdAt = createdAt,
+        createdBy = createdBy
     )
 }

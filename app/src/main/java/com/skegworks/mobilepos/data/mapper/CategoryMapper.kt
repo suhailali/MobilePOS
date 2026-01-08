@@ -12,8 +12,8 @@ fun CategoryFireStoreDto.toDomain(): Category {
         name = name,
         description = description,
         updatedAt = updatedAt,
-        isSynced = isSynced,
-        isActive = isActive,
+        isSynced = synced,
+        isActive = active,
         createdAt = createdAt
     )
 }
@@ -25,8 +25,8 @@ fun Category.toFirestoreDto(): CategoryFireStoreDto {
         name = name,
         description = description,
         updatedAt = updatedAt,
-        isSynced = isSynced,
-        isActive = isActive,
+        synced = isSynced,
+        active = isActive,
         createdAt = createdAt
     )
 }

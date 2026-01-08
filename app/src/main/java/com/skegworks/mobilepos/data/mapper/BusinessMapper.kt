@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.data.mapper
 import com.skegworks.mobilepos.data.domain.Business
 import com.skegworks.mobilepos.data.local.BusinessEntity
 import com.skegworks.mobilepos.data.remote.firestore.BusinessFireStoreDto
+import org.checkerframework.checker.units.qual.s
 
 
 // Firestore DTO → Domain
@@ -14,7 +15,7 @@ fun BusinessFireStoreDto.toDomain(): Business {
         email = email,
         address = address,
         gstNumber = gstNumber,
-        isSynced = isSynced
+        isSynced = synced
     )
 }
 
@@ -27,7 +28,7 @@ fun Business.toFirestoreDto(): BusinessFireStoreDto {
         email = email,
         address = address,
         gstNumber = gstNumber,
-        isSynced = isSynced
+        synced = isSynced
     )
 }
 

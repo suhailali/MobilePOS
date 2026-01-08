@@ -7,7 +7,7 @@ data class AppSettingsFireStoreDto(
     val invoiceCounter: Long = 0,
     val invoiceYear: Int = 0,
     val productSkuCounter: Long = 0,
-    val isSynced: Boolean = false,
+    val synced: Boolean = false,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
     val updatedBy: String = ""

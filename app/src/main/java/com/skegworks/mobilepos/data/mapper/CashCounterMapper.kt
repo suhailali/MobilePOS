@@ -18,7 +18,7 @@ fun CashCounterFireStoreDto.toDomain(): CashCounter {
         openedBy = openedBy,
         closedAt = closedAt,
         closedBy = closedBy,
-        isSynced = isSynced
+        isSynced = synced
     )
 }
 
@@ -34,7 +34,7 @@ fun CashCounter.toFirestoreDto(): CashCounterFireStoreDto {
         openedBy = openedBy,
         closedAt = closedAt,
         closedBy = closedBy,
-        isSynced = isSynced
+        synced = isSynced
     )
 }
 

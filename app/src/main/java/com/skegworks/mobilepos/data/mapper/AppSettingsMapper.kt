@@ -12,7 +12,7 @@ fun AppSettingsFireStoreDto.toDomain(): AppSettings {
         invoiceCounter = invoiceCounter,
         invoiceYear = invoiceYear,
         productSkuCounter = productSkuCounter,
-        isSynced = isSynced,
+        isSynced = synced,
         createdAt = createdAt,
         updatedAt = updatedAt,
         updatedBy = updatedBy
@@ -26,7 +26,7 @@ fun AppSettings.toFirestoreDto(): AppSettingsFireStoreDto {
         invoiceCounter = invoiceCounter,
         invoiceYear = invoiceYear,
         productSkuCounter = productSkuCounter,
-        isSynced = isSynced,
+        synced  = isSynced,
         createdAt = createdAt,
         updatedAt = updatedAt,
         updatedBy = updatedBy
