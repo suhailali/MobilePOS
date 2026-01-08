@@ -7,6 +7,7 @@ import com.skegworks.mobilepos.data.mapper.toDomain
 import com.skegworks.mobilepos.data.mapper.toEntity
 import com.skegworks.mobilepos.data.mapper.toFirestoreDto
 import com.skegworks.mobilepos.sync.SyncData
+import com.skegworks.mobilepos.utils.Constants
 import javax.inject.Inject
 
 class CouponRepositoryImpl @Inject constructor(private val couponDao: CouponDao, private val syncData: SyncData): CouponRepository {
@@ -38,7 +39,7 @@ class CouponRepositoryImpl @Inject constructor(private val couponDao: CouponDao,
 
     override suspend fun syncCoupon(coupon: Coupon, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
         syncData.uploadData(
-            name = "coupons",
+            name = Constants.FirebaseDocument.COUPONS,
             id = coupon.id,
             data = coupon.toFirestoreDto(),
             onSuccess = onSuccess,
@@ -54,7 +55,7 @@ class CouponRepositoryImpl @Inject constructor(private val couponDao: CouponDao,
         val coupons = couponDao.getAllCoupons()
         for (coupon in coupons) {
             syncData.uploadData(
-                name = "coupons",
+                name = Constants.FirebaseDocument.COUPONS,
                 id = coupon.id,
                 data = coupon,
                 onSuccess = onSuccess,
@@ -63,25 +64,8 @@ class CouponRepositoryImpl @Inject constructor(private val couponDao: CouponDao,
         }
     }
     override suspend fun getCouponFromCode(barcode: String): List<Coupon>? {
-        val coupon = Coupon(
-            id = "abc",
-            title = "Coupon",
-            discountPercentage = 10.0,
-            discountCode = "DISC0001",
-            createdAt = 1L,
-            updatedAt = 1L,
-            isActive = true,
-            isSynced = true,
-            description = "",
-            discountValidTill = 1L,
-            discountAvailedBy = "",
-            discountGivenTo = "",
-            discountType = "",
-            invoiceNumber = ""
-        )
-//        return couponDao.getCouponByCode(barcode)?.map {
-//            it.toDomain()
-//        }
-        return listOf(coupon)
+        return couponDao.getCouponByCode(barcode)?.map {
+            it.toDomain()
+        }
     }
 }
