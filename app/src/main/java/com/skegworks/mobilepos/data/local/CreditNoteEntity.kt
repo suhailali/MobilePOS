@@ -19,6 +19,7 @@ data class CreditNoteEntity(
     @ColumnInfo(name = "business_id") val businessId: String,
     @ColumnInfo(name = "coupon_id") val couponId: String,
     @ColumnInfo(name = "cash_discount") val cashDiscount: Double,
+    @ColumnInfo(name = "coupon_discount") val couponDiscount: Double,
     @ColumnInfo(name = "is_synced") var isSynced: Boolean,
     @ColumnInfo(name = "credit_note_date") val creditNoteDate: String,
     @ColumnInfo(name = "description") var description: String,

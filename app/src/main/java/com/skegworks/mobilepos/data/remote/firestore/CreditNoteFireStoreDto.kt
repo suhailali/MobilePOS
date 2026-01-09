@@ -9,6 +9,7 @@ data class CreditNoteFireStoreDto(
     val totalDiscount: Double = 0.0,
     val finalPrice: Double = 0.0,
     val cashDiscount: Double = 0.0,
+    val couponDiscount: Double = 0.0,
     val customerId: String = "",
     val customerName: String = "",
     val customerPhone: String = "",

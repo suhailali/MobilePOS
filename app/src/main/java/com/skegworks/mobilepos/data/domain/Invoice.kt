@@ -1,13 +1,12 @@
 package com.skegworks.mobilepos.data.domain
 
-import com.skegworks.mobilepos.invoice.InvoiceIntent
-
 data class Invoice(
     val id: String,
     val invoiceNumber: String,
     val invoiceDate: String,
     val totalPrice: Double,
     val items: List<InvoiceItem>,
+    // this field is for the total pre applied discount on products
     val totalDiscount: Double,
     val finalPrice: Double,
     val customer: Customer,
@@ -15,6 +14,8 @@ data class Invoice(
     var isSynced: Boolean,
     var coupon: Coupon? = null,
     val cashDiscount: Double,
+    // this field is for coupon discounted amount
+    val couponDiscount: Double,
     val invoiceState: InvoiceState,
     val updatedAt: Long
 )

@@ -14,6 +14,7 @@ data class CreditNote(
     var isSynced: Boolean,
     val coupon: Coupon? = null,
     val cashDiscount: Double,
+    val couponDiscount: Double,
     var description: String,
     var creditNoteDate: String,
     val updatedAt: Long,
