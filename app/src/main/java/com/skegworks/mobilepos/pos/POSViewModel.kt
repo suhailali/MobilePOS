@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
 import com.skegworks.mobilepos.business.BusinessRepository
+import com.skegworks.mobilepos.coupon.CouponType
 import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
@@ -152,6 +153,7 @@ class POSViewModel @Inject constructor(
     }
 
     private fun addOrUpdateCoupon(coupon: Coupon) {
+        // coupon should be applied to the total amount not on each invoice item
         applyCouponToInvoiceItems(coupon)
         calculateTotalPrice()
         _state.update {
@@ -166,13 +168,12 @@ class POSViewModel @Inject constructor(
         var totalPrice = 0
         var totalPriceBeforeDiscount = 0.0
         state.value.invoiceItems.forEach { item ->
-            totalPrice = totalPrice + (item.finalRoundedOffPrice * item.quantity)
-            totalPriceBeforeDiscount =
-                totalPriceBeforeDiscount + (item.salePriceWithoutDiscount * item.quantity)
+            totalPrice += (item.finalRoundedOffPrice * item.quantity)
+            totalPriceBeforeDiscount += (item.salePriceWithoutDiscount * item.quantity)
         }
 
         val discount = totalPriceBeforeDiscount - totalPrice
-        val toPay = totalPrice - state.value.cashDiscount
+        val toPay = totalPrice - state.value.cashDiscount - state.value.couponDiscount
 
         _state.update {
             it.copy(
@@ -193,6 +194,7 @@ class POSViewModel @Inject constructor(
                     )
                 }
             }
+
             is POSIntent.ResetError -> {
                 _state.update {
                     it.copy(
@@ -200,6 +202,7 @@ class POSViewModel @Inject constructor(
                     )
                 }
             }
+
             is POSIntent.RemoveCashDiscount -> {
                 _state.update {
                     it.copy(
@@ -209,7 +212,7 @@ class POSViewModel @Inject constructor(
                 calculateTotalPrice()
             }
 
-            is POSIntent.RemoveCoupon -> {
+            POSIntent.RemoveCoupon -> {
                 removeCouponForInvoiceItems()
                 _state.update {
                     it.copy(
@@ -345,6 +348,7 @@ class POSViewModel @Inject constructor(
                     finalPrice = state.value.finalPriceToPay,
                     isSynced = false,
                     cashDiscount = state.value.cashDiscount,
+                    couponDiscount = state.value.couponDiscount,
                     invoiceState = InvoiceState.PRINT,
                     updatedAt = System.currentTimeMillis()
                 )
@@ -428,6 +432,8 @@ class POSViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 _state.update {
                     it.copy(
+                        coupon = null,
+                        couponDiscount = 0.0,
                         invoiceItems = newList
                     )
                 }
@@ -437,17 +443,39 @@ class POSViewModel @Inject constructor(
     }
 
     private fun applyCouponToInvoiceItems(coupon: Coupon) {
-        val existingItems = state.value.invoiceItems.toMutableList()
-        for (invoiceItem in existingItems) {
-            val inputPrice = PriceInput(
-                itemPrice = invoiceItem.itemPrice,
-                inputGstPercentage = invoiceItem.inputGstPercentage,
-                outputGstPercentage = invoiceItem.outputGstPercentage,
-                saleMargin = invoiceItem.saleMargin,
-                discountPercentage = invoiceItem.discountPercentage,
-                additionalDiscountPercentage = coupon.discountPercentage
-            )
-            setOutputPriceForInvoiceItem(invoiceItem, inputPrice)
+
+        val couponType = CouponType.fromType(coupon.discountType)
+
+        couponType?.let {
+            when (it) {
+                CouponType.FLAT_PERCENTAGE -> {
+                    val totalPrice = state.value.totalPrice
+                    val discount = (totalPrice * coupon.discountPercentage) / 100
+                    _state.update { state ->
+                        state.copy(
+                            couponDiscount = discount
+                        )
+                    }
+                    calculateTotalPrice()
+                }
+
+                CouponType.SELECTED_ITEM_PERCENTAGE -> {
+                    val existingItems = state.value.invoiceItems.toMutableList()
+                    for (invoiceItem in existingItems) {
+                        val inputPrice = PriceInput(
+                            itemPrice = invoiceItem.itemPrice,
+                            inputGstPercentage = invoiceItem.inputGstPercentage,
+                            outputGstPercentage = invoiceItem.outputGstPercentage,
+                            saleMargin = invoiceItem.saleMargin,
+                            discountPercentage = invoiceItem.discountPercentage,
+                            additionalDiscountPercentage = coupon.discountPercentage
+                        )
+                        setOutputPriceForInvoiceItem(invoiceItem, inputPrice)
+                    }
+                }
+
+                else -> {}
+            }
         }
     }
 

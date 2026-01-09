@@ -24,6 +24,7 @@ data class POSState(
     val invoice: Invoice? = null,
     val customer: Customer? = null,
     val cashDiscount: Double = 0.0,
+    val couponDiscount: Double = 0.0,
     val searchTerm: String = "",
     val searchResultProduct: List<Product> = emptyList(),
     val searchResultCoupon: List<Coupon> = emptyList(),

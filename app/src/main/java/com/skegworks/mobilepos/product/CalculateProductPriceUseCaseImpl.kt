@@ -13,14 +13,18 @@ class CalculateProductPriceUseCaseImpl : CalculateProductPriceUseCase {
         val salePriceBeforeGst = cost + (cost * input.saleMargin / 100)
 
         //once margin added we need to deduct the discount before calculation output gst
-        var priceAfterDiscount =
+        val priceAfterDiscount =
             salePriceBeforeGst - (salePriceBeforeGst * input.discountPercentage / 100)
 
+        var discountAmount: Double
+        // This is for the coupon discount, and no need to capture for single item, it has
+        // to be deducted from total bill
         if (input.additionalDiscountPercentage > 0.0) {
-            priceAfterDiscount =
-                priceAfterDiscount - (priceAfterDiscount * input.additionalDiscountPercentage / 100)
+            val priceAfterAdditionalDiscount = (priceAfterDiscount * input.additionalDiscountPercentage / 100)
+            discountAmount = salePriceBeforeGst - priceAfterAdditionalDiscount
+        } else {
+            discountAmount = salePriceBeforeGst - priceAfterDiscount
         }
-        val discountAmount = salePriceBeforeGst - priceAfterDiscount
 
         // if discount not applied what would be the price. This is for billing purpose and display tag
         // this includes output gst as well

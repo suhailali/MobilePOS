@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,8 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -176,11 +177,22 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
 
         if (state.coupon != null) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.primaryFixed)
+                    .padding(Dimens.MEDIUM_PADDING.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text("Coupon: ${state.coupon?.title}")
-                Text("Discount: ${state.coupon?.discountPercentage}%")
+                Column {
+                    Text("Coupon: ${state.coupon?.title}")
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Amount: ${state.couponDiscount}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text("   |   Percentage: ${state.coupon?.discountPercentage}%")
+                    }
+                    Text("Code: ${state.coupon?.discountCode}")
+                }
                 DeleteButton {
                     viewModel.handleIntent(POSIntent.RemoveCoupon)
                 }
@@ -217,7 +229,8 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
 
 @Composable
 fun POSListRow(index: Int, invoiceItem: InvoiceItem, onDelete: () -> Unit) {
-    val backgroundColor = if (index % 2 == 0) Color.White else Color.LightGray
+    val backgroundColor =
+        if (index % 2 == 0) MaterialTheme.colorScheme.tertiaryFixed else MaterialTheme.colorScheme.primaryFixedDim
     Column(
         modifier = Modifier
             .fillMaxWidth()
