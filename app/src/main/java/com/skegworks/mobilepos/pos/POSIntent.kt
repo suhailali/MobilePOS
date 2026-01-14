@@ -20,4 +20,6 @@ sealed class POSIntent {
     object RemoveCashDiscount : POSIntent()
     object ResetError : POSIntent()
     object ClearBarcode : POSIntent()
+    object SendInvoice : POSIntent()
+    object ClearCouponError : POSIntent()
 }

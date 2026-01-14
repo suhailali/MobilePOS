@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.pos
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,7 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.home.HomeActivity
+import com.skegworks.mobilepos.product.ProductDetailIntent
 import com.skegworks.mobilepos.ui.component.DeleteButton
+import com.skegworks.mobilepos.ui.component.SimpleAlertDialog
+import com.skegworks.mobilepos.ui.component.SpacerSmall
 import com.skegworks.mobilepos.ui.component.TextFieldBottomSheet
 import com.skegworks.mobilepos.utils.Dimens
 import com.skegworks.mobilepos.utils.findActivity
@@ -39,6 +45,7 @@ import com.skegworks.mobilepos.utils.findActivity
 fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigator) {
     val state by viewModel.state.collectAsState()
     var isDiscountSheetOpen by remember { mutableStateOf(false) }
+    var isErrorCouponDialogOpen by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -74,8 +81,14 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
         }
     }
 
+    LaunchedEffect(state.errorCoupon) {
+        if (state.errorCoupon != null) {
+            isErrorCouponDialogOpen = true
+        }
+    }
+
     Column(modifier = Modifier.fillMaxWidth()) {
-        Spacer(modifier.height(3.dp))
+        SpacerSmall()
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,14 +122,29 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     }) {
                     Text("Print")
                 }
-
+            }
+            SpacerSmall()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Button(
                     enabled = state.invoiceItems.isNotEmpty(),
                     onClick = { viewModel.handleIntent(POSIntent.Payment) }) {
                     Text("Pay")
                 }
+
+                Button(
+                    enabled = state.invoiceItems.isNotEmpty(),
+                    onClick = {
+                        viewModel.handleIntent(POSIntent.SendInvoice)
+                    }) {
+                    Text("Send")
+                }
             }
-            Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+            SpacerSmall()
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -124,7 +152,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 Text("Invoice No. ${state.invoiceNumber}")
                 Text("Date: ${state.invoiceDate}")
             }
-            Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+            SpacerSmall()
             if (state.customer != null) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -142,7 +170,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     Text("Add Customer")
                 }
             }
-            Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+            SpacerSmall()
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -150,12 +178,16 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 Text("Total Amount ${state.totalPrice}")
                 Text("Discount ${state.totalDiscount}")
             }
-            Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+            SpacerSmall()
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("To Pay ${state.finalPriceToPay}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    "To Pay ${state.finalPriceToPay}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
                 if (state.invoiceItems.isNotEmpty()) {
                     if (state.cashDiscount > 0.0) {
                         Row {
@@ -177,8 +209,9 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
 
         if (state.coupon != null) {
             Row(
-                modifier = Modifier.fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primaryFixed)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.inversePrimary)
                     .padding(Dimens.MEDIUM_PADDING.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
@@ -188,7 +221,11 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Amount: ${state.couponDiscount}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                        Text(
+                            "Amount: ${state.couponDiscount}",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                         Text("   |   Percentage: ${state.coupon?.discountPercentage}%")
                     }
                     Text("Code: ${state.coupon?.discountCode}")
@@ -199,7 +236,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
             }
         }
 
-        Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
+        SpacerSmall()
 
         Column {
             LazyColumn {
@@ -222,6 +259,24 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                 onDismiss = {
                     isDiscountSheetOpen = false
                 }
+            )
+        }
+
+        if (isErrorCouponDialogOpen) {
+            SimpleAlertDialog(
+                onDismissRequest = {
+                    isErrorCouponDialogOpen = false
+                    viewModel.handleIntent(POSIntent.ClearCouponError)
+                },
+                onConfirmation = {
+                    isErrorCouponDialogOpen = false
+                    viewModel.handleIntent(POSIntent.ClearCouponError)
+                },
+                dialogTitle = "Coupon Invalid",
+                dialogText = state.errorCoupon.toString(),
+                icon = Icons.Default.Info,
+                positiveButtonText = "",
+                negativeButtonText = "Okay"
             )
         }
     }

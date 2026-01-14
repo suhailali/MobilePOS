@@ -13,6 +13,8 @@ fun SimpleAlertDialog(
     onConfirmation: () -> Unit,
     dialogTitle: String,
     dialogText: String,
+    positiveButtonText: String? = "Confirm",
+    negativeButtonText: String? = "Dismiss",
     icon: ImageVector,
 ) {
     AlertDialog(
@@ -34,7 +36,7 @@ fun SimpleAlertDialog(
                     onConfirmation()
                 }
             ) {
-                Text("Confirm")
+                Text(positiveButtonText ?: "")
             }
         },
         dismissButton = {
@@ -43,7 +45,7 @@ fun SimpleAlertDialog(
                     onDismissRequest()
                 }
             ) {
-                Text("Dismiss")
+                Text(negativeButtonText ?: "")
             }
         }
     )

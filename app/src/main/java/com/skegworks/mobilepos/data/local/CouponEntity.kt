@@ -16,6 +16,8 @@ data class CouponEntity(
     val discountGivenToName: String,
     @ColumnInfo(name = "discount_given_to_id")
     val discountGivenToId: String,
+    @ColumnInfo(name = "discount_given_to_number")
+    val discountGivenToNumber: String,
     @ColumnInfo(name = "discount_code")
     val discountCode: String,
     @ColumnInfo(name = "discount_percentage")

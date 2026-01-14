@@ -11,6 +11,8 @@ import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCase
 import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCaseImpl
 import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.coupon.CouponRepository
+import com.skegworks.mobilepos.coupon.UpdateCouponPostInvoice
+import com.skegworks.mobilepos.coupon.UpdateCouponPostInvoiceImpl
 import com.skegworks.mobilepos.creditnote.CreditNoteRepository
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.FetchCustomerUseCase
@@ -221,5 +223,14 @@ class UseCaseModule {
         invoiceRepository: InvoiceRepository
     ): SyncPendingInvoicesUseCase {
         return SyncPendingInvoicesUseCaseImpl(invoiceRepository)
+    }
+
+    @Provides
+    fun providesUpdateCouponPostInvoiceUseCase(
+        couponRepository: CouponRepository,
+        userPreferenceHandler: UserPreferenceHandler,
+        dateUtility: DateUtility
+    ): UpdateCouponPostInvoice {
+        return UpdateCouponPostInvoiceImpl(couponRepository, userPreferenceHandler, dateUtility)
     }
 }

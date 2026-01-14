@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,8 +53,11 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
+import com.skegworks.mobilepos.data.domain.Coupon
+import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.product.ProductListRow
 import com.skegworks.mobilepos.ui.component.SimpleTextField
+import com.skegworks.mobilepos.ui.component.SpacerSmall
 import com.skegworks.mobilepos.utils.Dimens
 import java.util.concurrent.Executors
 
@@ -213,10 +217,13 @@ fun BarcodeScannerScreen(
         }
         Spacer(modifier = Modifier.padding(Dimens.SMALL_PADDING.dp))
         if (scanCode.scanType == BarcodeScanType.PRODUCT) {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .padding(Dimens.SMALL_PADDING.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(Dimens.SMALL_PADDING.dp)
+            ) {
                 Text("Products", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
+                SpacerSmall()
                 LazyColumn {
                     itemsIndexed(
                         items = state.value.searchResultProduct,
@@ -238,18 +245,19 @@ fun BarcodeScannerScreen(
         if (scanCode.scanType == BarcodeScanType.COUPON) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text("Coupons", fontWeight = FontWeight.Bold, fontSize = Dimens.MEDIUM_PADDING.sp)
+                SpacerSmall()
                 LazyColumn {
-                    items(state.value.searchResultCoupon) {
+                    itemsIndexed(
+                        items = state.value.searchResultCoupon,
+                        key = { _, item -> item.id }) { index, coupon ->
                         Row(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    viewModel.handleIntent(POSIntent.AddCoupon(it))
-                                },
+                                .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(it.title)
-                            Text(it.discountCode)
+                            CouponListRow(index, coupon) {
+                                viewModel.handleIntent(POSIntent.AddCoupon(coupon))
+                            }
                         }
                     }
                 }
@@ -271,6 +279,36 @@ fun BarcodeScannerScreen(
 //                contentDescription = "Toggle Flash"
 //            )
 //        }
+    }
+}
+
+@Composable
+fun CouponListRow(index: Int, coupon: Coupon, onClick: () -> Unit) {
+    val backgroundColor =
+        if (index % 2 == 0) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.inversePrimary
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(backgroundColor)
+            .padding(Dimens.MEDIUM_PADDING.dp)
+            .clickable(onClick = onClick)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(coupon.title, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Discount Code: ${coupon.discountCode}", modifier = Modifier.weight(1f))
+//            Text("Quantity: ${product.quantity}", modifier = Modifier.weight(1f))
+        }
+        Text("Customer Name: ${coupon.discountGivenToName}")
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Mobile: ${coupon.discountGivenToNumber}", modifier = Modifier.weight(1f))
+            Text("Used: ${coupon.isActive}", modifier = Modifier.weight(1f))
+        }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Discount %: ${coupon.discountPercentage}", modifier = Modifier.weight(1f))
+            Text("Expired: ${coupon.isDeleted}", modifier = Modifier.weight(1f))
+        }
     }
 }
 

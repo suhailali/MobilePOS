@@ -30,7 +30,7 @@ class FileHandlerImpl @Inject constructor(private val context: Context): FileHan
             e.printStackTrace()
 
         } finally {
-            pdfDocument.close()
+            // pdfDocument.close()
         }
         return true
     }

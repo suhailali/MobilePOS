@@ -8,6 +8,7 @@ data class CouponFireStoreDto(
     val discountPercentage: Double = 0.0,
     val discountGivenToName: String = "",
     val discountGivenToId: String = "",
+    val discountGivenToNumber: String = "",
     val discountType: String = "",
     val discountValidTill: Long = 0L,
     val discountAvailedBy: String = "",

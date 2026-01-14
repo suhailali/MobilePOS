@@ -8,6 +8,7 @@ data class Coupon(
     val discountPercentage: Double,
     val discountGivenToName: String,
     val discountGivenToId: String,
+    val discountGivenToNumber: String,
     val discountType: String,
     val discountValidTill: Long,
     val discountAvailedBy: String,
@@ -21,5 +22,5 @@ data class Coupon(
     val createdBy: String,
     val updatedAt: Long,
     val updatedBy: String,
-    val isSynced: Boolean
+    var isSynced: Boolean
 )

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
 import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.coupon.CouponType
+import com.skegworks.mobilepos.coupon.UpdateCouponPostInvoice
 import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
@@ -21,8 +22,10 @@ import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.invoice.UpdateInvoiceNumberUseCase
 import com.skegworks.mobilepos.print.PrintPdfUseCase
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
+import com.skegworks.mobilepos.utils.Constants
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
+import com.skegworks.mobilepos.utils.files.FileHandler
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +55,9 @@ class POSViewModel @Inject constructor(
     private val calculatePriceUseCase: CalculateProductPriceUseCase,
     private val businessRepository: BusinessRepository,
     private val updateInventoryAfterSaleUseCase: UpdateInventoryAfterSaleUseCase,
-    private val userPreferenceHandler: UserPreferenceHandler
+    private val userPreferenceHandler: UserPreferenceHandler,
+    private val fileHandler: FileHandler,
+    private val updateCouponPostInvoice: UpdateCouponPostInvoice
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(POSState())
@@ -153,14 +158,46 @@ class POSViewModel @Inject constructor(
     }
 
     private fun addOrUpdateCoupon(coupon: Coupon) {
+        val isCouponValid = isValidCoupon(coupon)
         // coupon should be applied to the total amount not on each invoice item
-        applyCouponToInvoiceItems(coupon)
-        calculateTotalPrice()
-        _state.update {
-            it.copy(
-                coupon = coupon,
-                productFound = true
-            )
+
+        if (isCouponValid) {
+            applyCouponToInvoiceItems(coupon)
+            calculateTotalPrice()
+            _state.update {
+                it.copy(
+                    coupon = coupon,
+                    productFound = true
+                )
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    productFound = true
+                )
+            }
+        }
+    }
+
+    private fun isValidCoupon(coupon: Coupon): Boolean {
+        if (coupon.discountGivenToNumber == state.value.customer?.phone) {
+            if (coupon.discountValidTill > System.currentTimeMillis()) {
+                return true
+            } else {
+                _state.update {
+                    it.copy(
+                        errorCoupon = "Coupon expired. Please check coupon date."
+                    )
+                }
+                return false
+            }
+        } else {
+            _state.update {
+                it.copy(
+                    errorCoupon = "Phone number not matching with coupon!"
+                )
+            }
+            return false
         }
     }
 
@@ -244,11 +281,14 @@ class POSViewModel @Inject constructor(
                         _events.emit(POSEvents.ERROR_INVOICE_NOT_GENERATED)
                         return@launch
                     }
-                    state.value.invoice?.let {
-                        syncInvoiceUseCase.invoke(it)
-                        updateInventoryAfterSaleUseCase.invoke(it)
+                    state.value.invoice?.let { invoice ->
+                        syncInvoiceUseCase.invoke(invoice)
+                        updateInventoryAfterSaleUseCase.invoke(invoice)
                         updateInvoiceNumberUseCase.invoke()
                         syncAppSettingsUseCase.invoke()
+                        state.value.coupon?.let { coupon ->
+                            updateCouponPostInvoice.invoke(coupon, invoice)
+                        }
                         _state.update { posState ->
                             posState.copy(
                                 paymentComplete = true
@@ -306,6 +346,18 @@ class POSViewModel @Inject constructor(
                 }
                 calculateTotalPrice()
             }
+
+            POSIntent.SendInvoice -> {
+
+            }
+
+            POSIntent.ClearCouponError -> {
+                _state.update {
+                    it.copy(
+                        errorCoupon = null
+                    )
+                }
+            }
         }
     }
 
@@ -362,7 +414,11 @@ class POSViewModel @Inject constructor(
                         updatedAt = System.currentTimeMillis()
                     }
                 }
-                val pdf = generateInvoicePdfUseCase.generatePdf(invoice)
+                val pdf = generateInvoicePdfUseCase.generatePdf(
+                    invoice,
+                    Constants.Invoice.infoForCustomer
+                )
+                fileHandler.writePdfDocument(pdf, invoice.invoiceNumber)
                 _state.update {
                     it.copy(
                         invoicePDF = pdf,
@@ -372,7 +428,6 @@ class POSViewModel @Inject constructor(
                 }
             }
             //printPdf(application, pdf, "Invoice")
-            //fileHandler.writePdfDocument(pdf)
         }
     }
 

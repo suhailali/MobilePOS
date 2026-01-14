@@ -32,5 +32,6 @@ data class POSState(
     val business: Business? = null,
     val errorBarcodeScreen: String? = null,
     val paymentComplete: Boolean = false,
-    val errorInvoiceNotGenerated: Boolean = false
+    val errorInvoiceNotGenerated: Boolean = false,
+    val errorCoupon: String? = null
 )
