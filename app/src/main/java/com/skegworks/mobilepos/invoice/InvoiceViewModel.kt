@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.print.PrintPdfUseCase
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
 import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCase
+import com.skegworks.mobilepos.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,7 +42,7 @@ class InvoiceViewModel @Inject constructor(
             InvoiceIntent.PrintInvoice -> {
                 state.value.selectedInvoice?.let {
                     viewModelScope.launch(Dispatchers.IO) {
-                        val pdfDocument = generateInvoicePdfUseCase.generatePdf(it)
+                        val pdfDocument = generateInvoicePdfUseCase.generatePdf(it, Constants.Invoice.infoForCustomer)
                         _state.update { invoiceState ->
                             invoiceState.copy(
                                 invoicePDF = pdfDocument,

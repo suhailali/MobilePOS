@@ -112,7 +112,7 @@ class HomeActivity : ComponentActivity() {
                                     val pdf = pdfGenerator.generatePdf(listOfBitmaps)
                                     println("PDF File generated")
                                     val fileHandler = FileHandlerImpl(context)
-                                    val pdfFile = fileHandler.writePdfDocument(pdf)
+                                    val pdfFile = fileHandler.writePdfDocument(pdf, "FileNameSample")
                                     println("PDF File written at: $pdfFile")
                                 }
                             }

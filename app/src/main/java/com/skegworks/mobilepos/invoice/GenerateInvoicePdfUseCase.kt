@@ -4,5 +4,5 @@ import android.graphics.pdf.PdfDocument
 import com.skegworks.mobilepos.data.domain.Invoice
 
 interface GenerateInvoicePdfUseCase {
-    suspend fun generatePdf(invoice: Invoice): PdfDocument
+    suspend fun generatePdf(invoice: Invoice, infoForCustomer: Array<String>): PdfDocument
 }
