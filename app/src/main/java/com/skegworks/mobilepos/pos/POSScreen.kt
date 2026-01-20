@@ -1,15 +1,14 @@
 package com.skegworks.mobilepos.pos
 
 import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -31,9 +30,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.home.HomeActivity
-import com.skegworks.mobilepos.product.ProductDetailIntent
 import com.skegworks.mobilepos.ui.component.DeleteButton
 import com.skegworks.mobilepos.ui.component.SimpleAlertDialog
 import com.skegworks.mobilepos.ui.component.SpacerSmall
@@ -140,6 +139,23 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     enabled = state.invoiceItems.isNotEmpty(),
                     onClick = {
                         viewModel.handleIntent(POSIntent.SendInvoice)
+                        val phoneNumber =
+                            ("91" + state.customer?.phone) // Country code + number
+                        val message = "Hello, This is your invoice. Thanks for shopping with us!."
+
+                        val url = "https://api.whatsapp.com/send?phone=$phoneNumber&text=${Uri.encode(message)}"
+                        val intent = Intent(Intent.ACTION_VIEW).apply {
+                            data = url.toUri()
+                            setPackage("com.whatsapp.w4b") // WhatsApp Business
+                        }
+
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            // Fallback to normal WhatsApp
+                            val fallbackIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                            context.startActivity(fallbackIntent)
+                        }
                     }) {
                     Text("Send")
                 }
@@ -211,7 +227,7 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.inversePrimary)
+                    .background(MaterialTheme.colorScheme.tertiaryContainer)
                     .padding(Dimens.MEDIUM_PADDING.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
