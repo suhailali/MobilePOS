@@ -7,7 +7,7 @@ import com.skegworks.mobilepos.product.SyncProductUseCase
 class UpdateInventoryAfterSaleUseCaseImpl(private val productRepository: ProductRepository, private val syncProductUseCase: SyncProductUseCase): UpdateInventoryAfterSaleUseCase {
     override suspend fun invoke(invoice: Invoice) {
         invoice.items.forEach { item ->
-            productRepository.increaseProductQuantity(item.productId, item.quantity)
+            productRepository.decreaseProductQuantity(item.productId, item.quantity)
             productRepository.getProductById(item.productId)?.let {
                 syncProductUseCase.invoke(it)
             }
