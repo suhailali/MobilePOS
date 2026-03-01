@@ -20,5 +20,8 @@ interface CustomerDao {
     suspend fun deleteCustomer(customer: CustomerEntity)
 
     @Query("SELECT * FROM customers WHERE phone LIKE '%' || :phone || '%' ORDER BY updated_at DESC")
-    suspend fun getCustomersByPhone(phone: String): List<CustomerEntity>?
+    suspend fun getCustomersByPhone(phone: String): List<CustomerEntity>
+
+    @Query("SELECT * FROM customers WHERE phone LIKE '%' || :value || '%' OR name LIKE '%' || :value || '%' ORDER BY updated_at DESC")
+    suspend fun getCustomersByPhoneOrName(value: String): List<CustomerEntity>
 }

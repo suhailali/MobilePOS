@@ -38,8 +38,8 @@ class CustomerViewModel @Inject constructor(
                 it.textStatePhone
             }.debounce(400)
                 .distinctUntilChanged()
-                .collectLatest { phone ->
-                    fetchCustomers(phone)
+                .collectLatest { value ->
+                    fetchCustomers(value)
                 }
         }
     }
@@ -170,9 +170,9 @@ class CustomerViewModel @Inject constructor(
         return state.value.textStatePhone.isNotEmpty() && state.value.textStatePhone.length == 10
     }
 
-    fun fetchCustomers(phone: String) {
+    fun fetchCustomers(value: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val list = fetchCustomerUseCase.invoke(phone)
+            val list = fetchCustomerUseCase.invoke(value)
             if (list == null) {
                 _stateSearch.update {
                     it.copy(
