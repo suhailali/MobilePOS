@@ -2,17 +2,18 @@ package com.skegworks.mobilepos.utils.files
 
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.pdf.PdfDocument
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
-import kotlinx.io.IOException
+import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.IOException
 import javax.inject.Inject
 
-class FileHandlerImpl @Inject constructor(private val context: Context) : FileHandler {
-    override suspend fun writePdfDocument(pdfDocument: PdfDocument, fileName: String): Boolean {
+class CouponFileHandler @Inject constructor(@param:ApplicationContext private val context: Context) : FileHandler<Bitmap> {
+    override suspend fun writeDocument(document: Bitmap, fileName: String): Boolean {
         val resolver = context.contentResolver
-        val relativePath = "Download/POSMobile/"
-        val displayName = "$fileName.pdf"
+        val relativePath = "Download/POSMobile/Coupon/"
+        val displayName = "$fileName.png"
 
         // Check if file already exists and delete it
         val projection = arrayOf(MediaStore.Downloads._ID)
@@ -35,7 +36,7 @@ class FileHandlerImpl @Inject constructor(private val context: Context) : FileHa
 
         val contentValues = ContentValues().apply {
             put(MediaStore.Downloads.DISPLAY_NAME, displayName)
-            put(MediaStore.Downloads.MIME_TYPE, "application/pdf")
+            put(MediaStore.Downloads.MIME_TYPE, "image/png")
             put(MediaStore.Downloads.RELATIVE_PATH, relativePath)
         }
 
@@ -44,7 +45,7 @@ class FileHandlerImpl @Inject constructor(private val context: Context) : FileHa
         return try {
             uri?.let {
                 resolver.openOutputStream(it)?.use { outputStream ->
-                    pdfDocument.writeTo(outputStream)
+                    document.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
                 }
                 true
             } ?: false
