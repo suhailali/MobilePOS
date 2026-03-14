@@ -15,7 +15,9 @@ class CustomerRepositoryImpl(
     }
 
     override suspend fun getCustomerById(id: String): Customer? {
-        return customerDao.getCustomerById(id)?.toDomain()
+        val cus = customerDao.getCustomerById(id)
+        println("Jaggu " + cus?.name)
+        return cus?.toDomain()
     }
 
     override suspend fun getAllCustomers(): List<Customer> {

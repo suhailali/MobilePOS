@@ -30,17 +30,17 @@ class CustomerActivity : ComponentActivity() {
                     val viewModel: CustomerViewModel by viewModels<CustomerViewModel>()
                     CustomerScreenNavigation(
                         viewModel,
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        isFromLandingScreen = intent.getBooleanExtra("isFromLandingScreen", false)
+                            .not()
                     ) { customer ->
-                        if (intent.getBooleanExtra("isFromLandingScreen", false).not()) {
-                            val intent = Intent(context, POSActivity::class.java)
-                            val json = Json.encodeToString(customer)
-                            val bundle = bundleOf()
-                            bundle.putSerializable("customer", json)
-                            intent.putExtras(bundle)
-                            context.startActivity(intent)
-                            context.findActivity()?.finish()
-                        }
+                        val intent = Intent(context, POSActivity::class.java)
+                        val json = Json.encodeToString(customer)
+                        val bundle = bundleOf()
+                        bundle.putSerializable("customer", json)
+                        intent.putExtras(bundle)
+                        context.startActivity(intent)
+                        context.findActivity()?.finish()
                     }
                 }
             }

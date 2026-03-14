@@ -14,11 +14,14 @@ object CustomerList
 
 @Serializable
 object AddCustomer
+@Serializable
+class CustomerDetails(val customerId: String)
 
 @Composable
 fun CustomerScreenNavigation(
     viewModel: CustomerViewModel,
     modifier: Modifier,
+    isFromLandingScreen: Boolean,
     onCustomerSelected: (customer: Customer) -> Unit
 ) {
     val navController = rememberNavController()
@@ -31,7 +34,11 @@ fun CustomerScreenNavigation(
                 modifier = modifier,
                 viewModel = viewModel,
                 onSelect = {
-                    onCustomerSelected(it)
+                    if (isFromLandingScreen) {
+                        onCustomerSelected(it)
+                    } else {
+                        navController.navigate(CustomerDetails(customerId = it.id))
+                    }
                 }) {
                 navController.navigate(AddCustomer)
             }
@@ -41,7 +48,13 @@ fun CustomerScreenNavigation(
                 navController.popBackStack()
             }
         }
-
+        composable<CustomerDetails> { backStackEntry ->
+            val customerId: String? = backStackEntry.arguments?.getString("customerId")
+            customerId?.let {
+                CustomerDetailsScreen(modifier = modifier, viewModel = viewModel, customerId = it) {
+                    navController.popBackStack()
+                }
+            }
+        }
     }
-
 }

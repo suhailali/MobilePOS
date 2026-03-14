@@ -54,7 +54,7 @@ fun CustomerSearchScreen(
             Text("Add Customer")
         }
         SpacerLarge()
-        SimpleTextField(textState = state.value.textStatePhone, "Search Phone Number") {
+        SimpleTextField(textState = state.value.textStatePhone, "Search Phone Number / Name") {
             viewModel.handleSearchIntent(SearchCustomerIntent.SearchPhone(it))
         }
         SpacerMedium()

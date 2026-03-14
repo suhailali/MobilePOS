@@ -2,8 +2,6 @@ package com.skegworks.mobilepos.customer
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,17 +16,22 @@ import com.skegworks.mobilepos.ui.component.SpacerLarge
 import com.skegworks.mobilepos.ui.component.SpacerMedium
 
 @Composable
-fun AddCustomerScreen(modifier: Modifier, viewModel: CustomerViewModel, onSuccess: () -> Unit) {
+fun AddCustomerScreen(
+    modifier: Modifier,
+    viewModel: CustomerViewModel,
+    isUpdate: Boolean = false,
+    onSuccess: () -> Unit
+) {
     val state = viewModel.state.collectAsState()
-    val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
-        viewModel.handleIntent(AddCustomerIntent.SetData)
+        if (!isUpdate) {
+            viewModel.handleIntent(AddCustomerIntent.SetData)
+        }
     }
 
     Column(
         modifier = modifier
-            .verticalScroll(scrollState)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -49,9 +52,14 @@ fun AddCustomerScreen(modifier: Modifier, viewModel: CustomerViewModel, onSucces
         }
         SpacerLarge()
         Button(onClick = {
-            viewModel.handleIntent(AddCustomerIntent.Save)
+            if (isUpdate) {
+                viewModel.handleCustomerDetailsIntent(CustomerDetailsIntent.Update)
+            } else {
+                viewModel.handleIntent(AddCustomerIntent.Save)
+            }
+
         }) {
-            Text("Save")
+            Text(if (isUpdate) "Update" else "Save")
         }
         SpacerMedium()
         if (state.value.isSaved) {
