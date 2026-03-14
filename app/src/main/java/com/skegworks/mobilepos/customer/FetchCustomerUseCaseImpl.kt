@@ -7,4 +7,10 @@ class FetchCustomerUseCaseImpl @Inject constructor(private val repository: Custo
     override suspend fun invoke(value: String): List<Customer>? {
         return repository.getCustomersByPhoneOrName(value)
     }
+
+    override suspend fun getById(value: String): Customer? {
+        val cus = repository.getCustomerById(value)
+        println(cus?.name)
+        return cus
+    }
 }
