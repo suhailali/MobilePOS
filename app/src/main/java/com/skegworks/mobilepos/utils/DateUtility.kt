@@ -7,4 +7,8 @@ interface DateUtility {
     fun getDateTime(): String
     fun getCurrentTimeStamp(): Long
     fun isDateToday(date: String): Boolean
+    fun dateToMillis(date: String): Long
+    fun millisToDateString(millis: Long): String?
+    fun daysAfterInMillis(days: Int): Long
+    fun daysAfterInDateString(days: Int, format: String = "yyyy-MM-dd HH:mm:ss"): String
 }
