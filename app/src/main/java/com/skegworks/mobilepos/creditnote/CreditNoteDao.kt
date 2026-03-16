@@ -21,6 +21,9 @@ interface CreditNoteDao {
     @Query("SELECT * FROM creditNote ORDER BY credit_note_date DESC")
     suspend fun getAllCreditNotes(): List<CreditNoteEntity>
 
+    @Query("SELECT invoice_id FROM creditNote ORDER BY credit_note_date DESC")
+    suspend fun getAllInvoiceId(): List<String>
+
     @Update
     suspend fun updateCreditNote(creditNote: CreditNoteEntity)
 
