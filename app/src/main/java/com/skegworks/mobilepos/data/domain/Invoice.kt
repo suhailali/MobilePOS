@@ -17,7 +17,8 @@ data class Invoice(
     // this field is for coupon discounted amount
     val couponDiscount: Double,
     val invoiceState: InvoiceState,
-    val updatedAt: Long
+    val updatedAt: Long,
+    var isCreditNote: Boolean = false
 )
 
 enum class InvoiceState(val value:String) {
