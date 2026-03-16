@@ -2,6 +2,7 @@ package com.skegworks.mobilepos.invoice
 
 import com.skegworks.mobilepos.business.BusinessDao
 import com.skegworks.mobilepos.coupon.CouponDao
+import com.skegworks.mobilepos.creditnote.CreditNoteDao
 import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.data.domain.ChartPoint
 import com.skegworks.mobilepos.data.domain.Invoice
@@ -18,7 +19,8 @@ class InvoiceRepositoryImpl @Inject constructor(
     private val customerDao: CustomerDao,
     private val businessDao: BusinessDao,
     private val couponDao: CouponDao,
-    private val syncData: SyncData
+    private val syncData: SyncData,
+    private val creditNoteDao: CreditNoteDao
 ) :
     InvoiceRepository {
     override suspend fun insertInvoice(invoice: Invoice) {
@@ -66,7 +68,32 @@ class InvoiceRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllInvoices(): List<Invoice> {
+        val creditNoteInvoices = creditNoteDao.getAllInvoiceId().toSet()
         val invoices = invoiceDao.getAllInvoices()
+        val newInvoices = invoices.map { invoice ->
+            val invoiceItems = invoiceItemDao.getAllInvoiceItems(invoice.id).map {
+                it.toDomain()
+            }
+            val customer = customerDao.getCustomerById(invoice.customerId)
+            val business = businessDao.getBusiness()
+            val coupon = couponDao.getCouponById(invoice.couponId)?.toDomain()
+            if (customer == null || business == null) {
+                return@map null
+            }
+            val invoice = invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
+            if (creditNoteInvoices.contains(invoice.id)) {
+                invoice.isCreditNote = true
+            }
+            invoice
+        }
+        if (newInvoices.isEmpty()) {
+            return emptyList()
+        }
+        return newInvoices.filterNotNull()
+    }
+
+    override suspend fun getInvoicesByCustomer(customerId: String): List<Invoice> {
+        val invoices = invoiceDao.getInvoicesByCustomer(customerId)
         val newInvoices = invoices.map { invoice ->
             val invoiceItems = invoiceItemDao.getAllInvoiceItems(invoice.id).map {
                 it.toDomain()
