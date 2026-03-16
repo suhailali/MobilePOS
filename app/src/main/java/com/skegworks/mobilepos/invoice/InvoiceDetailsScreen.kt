@@ -35,7 +35,7 @@ import androidx.core.text.isDigitsOnly
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.ui.component.AlertDialogWithTextInput
 import com.skegworks.mobilepos.ui.component.SpacerLarge
-import com.skegworks.mobilepos.ui.component.SpacerMedium
+import com.skegworks.mobilepos.ui.component.SpacerSmall
 import com.skegworks.mobilepos.ui.component.TextFieldBottomSheet
 import com.skegworks.mobilepos.utils.Dimens
 
@@ -89,8 +89,17 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
                 }
             }
         }
-        SpacerLarge()
+        SpacerSmall()
+        Button(
+            enabled = !state.creditNoteInvoiceItems.isNullOrEmpty(),
+            onClick = {
+                openCreditNoteConfirmationDialog = true
+            }) {
+            Text("Mark Product Return")
+        }
+        SpacerSmall()
         Text("Invoice Items", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
+        SpacerSmall()
         state.selectedInvoiceItems?.let {
             InvoiceItemList(it) { invoiceItem, checked ->
                 if (!checked) {
@@ -121,14 +130,6 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
                     }
                 }
             }
-        }
-        SpacerMedium()
-        Button(
-            enabled = !state.creditNoteInvoiceItems.isNullOrEmpty(),
-            onClick = {
-            openCreditNoteConfirmationDialog = true
-        }) {
-            Text("Mark Product Return")
         }
     }
 

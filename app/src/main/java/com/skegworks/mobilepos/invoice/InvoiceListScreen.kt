@@ -87,11 +87,19 @@ fun InvoiceListRow(index: Int, invoice: Invoice, onClick: () -> Unit) {
             .padding(Dimens.MEDIUM_PADDING.dp)
             .clickable(onClick = onClick)
     ) {
-        Text(
-            "Invoice Number: ${invoice.invoiceNumber}",
-            fontSize = 16.sp,
-            fontWeight = Bold
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                "Invoice Number: ${invoice.invoiceNumber}",
+                fontSize = 16.sp,
+                fontWeight = Bold
+            )
+            if (invoice.isCreditNote) {
+                Text("Credit Note", fontSize = 16.sp, fontWeight = Bold)
+            }
+        }
         Text(
             "Invoice Date: ${invoice.invoiceDate}",
             fontSize = 16.sp,
