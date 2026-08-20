@@ -34,4 +34,7 @@ interface InvoiceRepository {
 
     suspend fun getInvoiceById(id: String): Invoice?
 
+    suspend fun getInvoiceForLastSevenDays(): List<Invoice>
+
+    suspend fun getInvoiceForToday(): List<Invoice>
 }

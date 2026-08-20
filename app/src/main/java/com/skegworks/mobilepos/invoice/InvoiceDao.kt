@@ -37,4 +37,7 @@ interface InvoiceDao {
 
     @Query("SELECT * FROM invoices WHERE customer_id = :customerId ORDER BY invoice_number DESC")
     fun getInvoicesByCustomer(customerId: String): List<InvoiceEntity>
+
+    @Query("SELECT * FROM invoices WHERE updated_at > :time ORDER BY invoice_date DESC")
+    fun getInvoicesForLastSevenDays(time: Long): List<InvoiceEntity>
 }

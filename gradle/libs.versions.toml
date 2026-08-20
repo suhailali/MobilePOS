@@ -26,6 +26,7 @@ camera = "1.5.3"
 security-crypto = "1.1.0"
 datastore-preferences = "1.2.0"
 material-icons-extended = "1.7.8"
+cmpcharts = "2.0.6"
 
 
 [libraries]
@@ -75,6 +76,10 @@ androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.r
 androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "camera"}
 androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camera"}
 androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "camera"}
+
+#CMP_CHARTS
+cmpcharts = { group = "network.chaintech", name = "cmpcharts", version.ref = "cmpcharts"}
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

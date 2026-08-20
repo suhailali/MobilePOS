@@ -22,6 +22,8 @@ import com.skegworks.mobilepos.creditnote.CreditNoteRepositoryImpl
 import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.customer.CustomerRepositoryImpl
+import com.skegworks.mobilepos.dashboard.DashboardRepository
+import com.skegworks.mobilepos.dashboard.DashboardRepositoryImpl
 import com.skegworks.mobilepos.invoice.InvoiceDao
 import com.skegworks.mobilepos.invoice.InvoiceItemDao
 import com.skegworks.mobilepos.invoice.InvoiceRepository
@@ -30,6 +32,7 @@ import com.skegworks.mobilepos.product.ProductDao
 import com.skegworks.mobilepos.product.ProductRepository
 import com.skegworks.mobilepos.product.ProductRepositoryImpl
 import com.skegworks.mobilepos.sync.SyncData
+import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.vendors.VendorDao
 import com.skegworks.mobilepos.vendors.VendorRepository
 import com.skegworks.mobilepos.vendors.VendorRepositoryImpl
@@ -88,7 +91,8 @@ class AppModule {
         businessDao: BusinessDao,
         couponDao: CouponDao,
         syncData: SyncData,
-        creditNoteDao: CreditNoteDao
+        creditNoteDao: CreditNoteDao,
+        dateUtility: DateUtility
     ): InvoiceRepository {
         return InvoiceRepositoryImpl(
             invoiceDao,
@@ -97,7 +101,8 @@ class AppModule {
             businessDao,
             couponDao,
             syncData,
-            creditNoteDao
+            creditNoteDao,
+            dateUtility
         )
     }
 
@@ -145,16 +150,12 @@ class AppModule {
         return CreditNoteRepositoryImpl(creditNoteDao, creditNoteItemDao, syncData)
     }
 
-//    @Provides
-//    @Singleton
-//    fun providesDashboardRepository(
-//        productDao: ProductDao,
-//        customerDao: CustomerDao,
-//        invoiceDao: InvoiceDao,
-//    ): DashboardRepository {
-//        return DashboardRepositoryImpl(productDao, customerDao, invoiceDao)
-//    }
-//}
-
-
+    @Provides
+    @Singleton
+    fun providesDashboardRepository(
+        invoiceRepository: InvoiceRepository,
+        dateUtility: DateUtility
+    ): DashboardRepository {
+        return DashboardRepositoryImpl(invoiceRepository, dateUtility)
+    }
 }

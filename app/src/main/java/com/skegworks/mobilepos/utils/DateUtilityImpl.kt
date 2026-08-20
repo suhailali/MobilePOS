@@ -106,9 +106,17 @@ class DateUtilityImpl : DateUtility {
         // Get the end of that day (23:59:59.999) and its milliseconds
         // Note: The generally recommended approach is to use the start of the *next* day for an exclusive end boundary.
         val endOfDay10DaysExclusive = dateLater.plusDays(1).atStartOfDay()
-        val endOfDayMillisExclusive = endOfDay10DaysExclusive.atZone(zoneId).toInstant().toEpochMilli()
+        val endOfDayMillisExclusive =
+            endOfDay10DaysExclusive.atZone(zoneId).toInstant().toEpochMilli()
 
         return endOfDayMillisExclusive
+    }
+
+    override fun daysBeforeInMillis(days: Int, today: LocalDate): Long {
+        return today.minusDays(7)
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
     }
 
     override fun daysAfterInDateString(days: Int, format: String): String {

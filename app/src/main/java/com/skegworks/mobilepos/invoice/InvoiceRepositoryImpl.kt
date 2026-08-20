@@ -7,10 +7,13 @@ import com.skegworks.mobilepos.customer.CustomerDao
 import com.skegworks.mobilepos.data.domain.ChartPoint
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
+import com.skegworks.mobilepos.data.local.InvoiceEntity
 import com.skegworks.mobilepos.data.mapper.toDomain
 import com.skegworks.mobilepos.data.mapper.toEntity
 import com.skegworks.mobilepos.data.mapper.toFirestoreDto
 import com.skegworks.mobilepos.sync.SyncData
+import com.skegworks.mobilepos.utils.DateUtility
+import java.time.LocalDate
 import javax.inject.Inject
 
 class InvoiceRepositoryImpl @Inject constructor(
@@ -20,7 +23,8 @@ class InvoiceRepositoryImpl @Inject constructor(
     private val businessDao: BusinessDao,
     private val couponDao: CouponDao,
     private val syncData: SyncData,
-    private val creditNoteDao: CreditNoteDao
+    private val creditNoteDao: CreditNoteDao,
+    private val dateUtility: DateUtility
 ) :
     InvoiceRepository {
     override suspend fun insertInvoice(invoice: Invoice) {
@@ -80,7 +84,8 @@ class InvoiceRepositoryImpl @Inject constructor(
             if (customer == null || business == null) {
                 return@map null
             }
-            val invoiceDomain = invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
+            val invoiceDomain =
+                invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
             if (creditNoteInvoices.contains(invoiceDomain.id)) {
                 invoiceDomain.isCreditNote = true
             }
@@ -105,7 +110,8 @@ class InvoiceRepositoryImpl @Inject constructor(
             if (customer == null || business == null) {
                 return@map null
             }
-            val invoiceDomain = invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
+            val invoiceDomain =
+                invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
             if (creditNoteInvoices.contains(invoiceDomain.id)) {
                 invoiceDomain.isCreditNote = true
             }
@@ -136,26 +142,11 @@ class InvoiceRepositoryImpl @Inject constructor(
 
     override suspend fun getUnsyncedInvoices(): List<Invoice> {
         val invoices = invoiceDao.getUnsyncedInvoices()
-        val newInvoices = invoices.map { invoice ->
-            val invoiceItems = invoiceItemDao.getAllInvoiceItems(invoice.id).map {
-                it.toDomain()
-            }
-            val customer = customerDao.getCustomerById(invoice.customerId)
-            val business = businessDao.getBusiness()
-            val coupon = couponDao.getCouponById(invoice.couponId)?.toDomain()
-            if (customer == null || business == null) {
-                return@map null
-            }
-            invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
-        }
-        if (newInvoices.isEmpty()) {
-            return emptyList()
-        }
-        return newInvoices.filterNotNull()
+        return getInvoiceDetails(invoices)
     }
 
     override suspend fun getInvoicesAmountByDate(): List<ChartPoint> {
-        val invoiceAmountByDate = invoiceDao.getInvoiceAmountByDay()
+        val invoiceAmountByDate = invoiceDao.getInvoiceAmountByDay().take(7)
         val chartPoints = invoiceAmountByDate.map { invoiceAmount ->
             ChartPoint(invoiceAmount.date, invoiceAmount.totalAmount)
         }
@@ -173,7 +164,41 @@ class InvoiceRepositoryImpl @Inject constructor(
         if (customer == null || business == null) {
             return null
         }
-        val invoiceDomain = invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
+        val invoiceDomain =
+            invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
         return invoiceDomain
+    }
+
+    override suspend fun getInvoiceForLastSevenDays(): List<Invoice> {
+        val invoices = invoiceDao.getInvoicesForLastSevenDays(
+            dateUtility.daysBeforeInMillis(
+                7,
+                LocalDate.now()
+            )
+        )
+        return getInvoiceDetails(invoices)
+    }
+
+    override suspend fun getInvoiceForToday(): List<Invoice> {
+        return listOf()
+    }
+
+    suspend fun getInvoiceDetails(invoices: List<InvoiceEntity>): List<Invoice> {
+        val newInvoices = invoices.map { invoice ->
+            val invoiceItems = invoiceItemDao.getAllInvoiceItems(invoice.id).map {
+                it.toDomain()
+            }
+            val customer = customerDao.getCustomerById(invoice.customerId)
+            val business = businessDao.getBusiness()
+            val coupon = couponDao.getCouponById(invoice.couponId)?.toDomain()
+            if (customer == null || business == null) {
+                return@map null
+            }
+            invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
+        }
+        if (newInvoices.isEmpty()) {
+            return emptyList()
+        }
+        return newInvoices.filterNotNull()
     }
 }

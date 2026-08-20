@@ -1,9 +1,7 @@
 package com.skegworks.mobilepos.dashboard
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,13 +10,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import com.skegworks.mobilepos.ui.component.SpacerLarge
 import com.skegworks.mobilepos.ui.component.SpacerMedium
-import com.skegworks.mobilepos.ui.component.SpacerSmall
-import com.skegworks.mobilepos.ui.component.chart.SalesLineChart
-import com.skegworks.mobilepos.ui.component.chart.SalesLineChartWithAxis
+import network.chaintech.cmpcharts.axis.AxisProperties
+import network.chaintech.cmpcharts.ui.barchart.BarChart
+import network.chaintech.cmpcharts.ui.barchart.config.BarChartConfig
+import network.chaintech.cmpcharts.ui.barchart.config.BarChartStyle
+import network.chaintech.cmpcharts.ui.barchart.config.SelectionHighlightData
 
 @Composable
 fun DashboardScreen(modifier: Modifier, viewModel: DashboardViewModel) {
@@ -26,58 +27,59 @@ fun DashboardScreen(modifier: Modifier, viewModel: DashboardViewModel) {
     LaunchedEffect(Unit) {
         viewModel.loadDashboardData()
     }
-//    state.dashboardValue?.let {
-//        Column(modifier = Modifier.fillMaxWidth()) {
-//            SpacerLarge()
-//            SpacerLarge()
-//            Row(
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                HeaderAndLabel( modifier = Modifier.weight(1f),"Total Number of Products", it.totalNoOfProducts.toString())
-//                SpacerSmall()
-//                HeaderAndLabel( modifier = Modifier.weight(1f),"Total Quantity of Products", it.totalQuantityOfProducts.toString())
-//            }
-//            SpacerMedium()
-//            Row(
-//                modifier = Modifier.fillMaxWidth()
-//            ) {
-//                HeaderAndLabel( modifier = Modifier.weight(1f),"Out of Stock Products", it.outOfStockProducts.toString())
-//                SpacerSmall()
-//                HeaderAndLabel( modifier = Modifier.weight(1f),"Dead Stock Products", it.totalInactiveProduct.toString())
-//            }
-//            SpacerMedium()
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.SpaceAround
-//            ) {
-//                HeaderAndLabel( modifier = Modifier.weight(1f),"Total Cost of Products in Stock", it.totalCostOfProductsInStockWithOutGST.toString())
-//                SpacerSmall()
-//                HeaderAndLabel( modifier = Modifier.weight(1f),"Total Input GST of Products in Stock", it.totalInputGSTOfProductsInStock.toString())
-//            }
-//            SpacerMedium()
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.Absolute.SpaceEvenly
-//            ) {
-//                HeaderAndLabel( modifier = Modifier.weight(1f),"Total Cost of All Products", it.totalCostOfProductsWithOutGST.toString())
-//                SpacerSmall()
-//                HeaderAndLabel( modifier = Modifier.weight(1f),"Total Input GST of All Products", it.totalInputGSTOfProducts.toString())
-//            }
-//            SpacerMedium()
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.Absolute.SpaceEvenly
-//            ) {
-//                HeaderAndLabel( modifier = Modifier.weight(1f),"Total Price of Products in Stock", it.totalPriceOfProductsInStockWithOutGST.toString())
-//                SpacerSmall()
-//                HeaderAndLabel( modifier = Modifier.weight(1f),"Total Output GST of Products in Stock", it.totalOutputGSTOfProductsInStock.toString())
-//            }
-//        }
-//    }
-    state.salesPerDay?.let {
-        Column {
-            SpacerLarge()
-            SalesLineChartWithAxis(it.subList(0, 4))
+    Column {
+
+        when (state.isLoading) {
+            true -> {
+                Text(text = "Loading")
+            }
+
+            false -> {
+                val barData = state.salesPerDay ?: listOf()
+
+                val xAxisData = AxisProperties(
+                    stepSize = 30.dp,
+                    stepCount = barData.size - 1,
+                    bottomPadding = 40.dp,
+                    labelRotationAngle = 20f,
+                    initialDrawPadding = 48.dp,
+                    labelFormatter = { index -> barData[index].label }
+
+                )
+
+                val yAxisData = AxisProperties(
+                    stepCount = state.yStepSize,
+                    labelPadding = 20.dp,
+                    offset = 20.dp,
+                    labelFormatter = { index -> (index * (state.maxRange / state.yStepSize)).toString() }
+                )
+
+                val barChartData = BarChartConfig(
+                    chartData = barData,
+                    xAxisData = xAxisData,
+                    yAxisData = yAxisData,
+                    barStyle = BarChartStyle(
+                        cornerRadius = 5.dp,
+                        paddingBetweenBars = 20.dp,
+                        barWidth = 25.dp,
+                        selectionHighlightData = SelectionHighlightData(
+                            highlightBarColor = Color.Gray,
+                            highlightTextColor = Color.White,
+                            highlightTextTypeface = FontWeight.Bold,
+                            highlightTextBackgroundColor = Color.Magenta,
+                            popUpLabel = { _, y -> " Value : $y " }
+                        )
+                    ),
+                    horizontalExtraSpace = 10.dp,
+                )
+
+                SpacerLarge()
+                Text("Total sales this week : ${state.totalSales}")
+                SpacerMedium()
+                Text("Average sales this week : ${state.averageSales}")
+                SpacerLarge()
+                BarChart(modifier = Modifier.height(350.dp), barChartData = barChartData)
+            }
         }
     }
 }
@@ -85,7 +87,11 @@ fun DashboardScreen(modifier: Modifier, viewModel: DashboardViewModel) {
 @Composable
 fun HeaderAndLabel(modifier: Modifier, header: String, label: String) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = header, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+        Text(
+            text = header,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold
+        )
         Text(text = label)
     }
 }

@@ -129,5 +129,6 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
 
     implementation(files("libs/lpapi.jar"))
+    implementation(libs.cmpcharts)
 
 }

@@ -1,5 +1,7 @@
 package com.skegworks.mobilepos.dashboard
 
-interface DashboardRepository {
+import com.skegworks.mobilepos.data.local.InvoiceByDay
 
+interface DashboardRepository {
+    suspend fun getInvoicesGroupByDateForWeek(): List<InvoiceByDay>
 }

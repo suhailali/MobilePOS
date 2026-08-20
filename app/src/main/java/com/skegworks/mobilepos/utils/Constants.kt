@@ -43,6 +43,8 @@ class Constants {
     class DateFormat {
         companion object {
             const val DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+            const val INVOICE_DATE_TIME_FORMAT = "dd/M/yyyy HH:mm"
+            const val DATE_ONLY_FORMAT = "dd/M/yyyy"
         }
     }
 }

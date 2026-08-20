@@ -1,5 +1,7 @@
 package com.skegworks.mobilepos.utils
 
+import java.time.LocalDate
+
 interface DateUtility {
     fun getYear(): Int
     fun getDateForToday(): String
@@ -10,5 +12,6 @@ interface DateUtility {
     fun dateToMillis(date: String): Long
     fun millisToDateString(millis: Long): String?
     fun daysAfterInMillis(days: Int): Long
+    fun daysBeforeInMillis(days: Int, today : LocalDate): Long
     fun daysAfterInDateString(days: Int, format: String = "yyyy-MM-dd HH:mm:ss"): String
 }
