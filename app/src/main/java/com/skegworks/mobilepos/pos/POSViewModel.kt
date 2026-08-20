@@ -1,10 +1,10 @@
 package com.skegworks.mobilepos.pos
 
-import android.app.Application
 import android.content.Context
 import android.graphics.pdf.PdfDocument
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.BuildConfig
 import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
 import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.coupon.CouponType
@@ -41,7 +41,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class POSViewModel @Inject constructor(
-    application: Application,
     private val getProductFromBarcodeUseCase: GetProductFromBarcodeUseCase,
     private val getCouponFromBarcodeUseCase: GetCouponFromBarcodeUseCase,
     private val generateInvoicePdfUseCase: GenerateInvoicePdfUseCase,
@@ -56,7 +55,7 @@ class POSViewModel @Inject constructor(
     private val businessRepository: BusinessRepository,
     private val updateInventoryAfterSaleUseCase: UpdateInventoryAfterSaleUseCase,
     private val userPreferenceHandler: UserPreferenceHandler,
-    private val fileHandler: FileHandler,
+    private val fileHandler: FileHandler<PdfDocument>,
     private val updateCouponPostInvoice: UpdateCouponPostInvoice
 ) : ViewModel() {
 
@@ -66,15 +65,6 @@ class POSViewModel @Inject constructor(
     private val _events = MutableSharedFlow<POSEvents>()
     val events = _events.asSharedFlow()
 
-
-//    fun printLabel() {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val printerManager = SeznikPrinterManager(application.baseContext)
-////                printerManager.printLabel("B8:50:44:10:3A:27", "nadhika")
-//            printerManager.connectAndPrintUsingSDK()
-//
-//        }
-//    }
 
     fun getProductForBarcode(barcode: String) {
         println("get Product for barcode $barcode")
@@ -414,11 +404,16 @@ class POSViewModel @Inject constructor(
                         updatedAt = System.currentTimeMillis()
                     }
                 }
+                val customerInfo = if (BuildConfig.VENDOR_NAME == "Salwariya") {
+                    Constants.Invoice.infoForCustomerPremium
+                } else {
+                    Constants.Invoice.infoForCustomerDefault
+                }
                 val pdf = generateInvoicePdfUseCase.generatePdf(
                     invoice,
-                    Constants.Invoice.infoForCustomer
+                    customerInfo
                 )
-                fileHandler.writePdfDocument(pdf, invoice.invoiceNumber)
+                fileHandler.writeDocument(pdf, invoice.invoiceNumber)
                 _state.update {
                     it.copy(
                         invoicePDF = pdf,

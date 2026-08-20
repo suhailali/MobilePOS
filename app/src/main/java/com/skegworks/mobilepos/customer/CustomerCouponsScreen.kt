@@ -55,7 +55,8 @@ fun CustomerCouponsScreen(modifier: Modifier, viewModel: CustomerViewModel) {
                 val phoneNumber =
                     ("91" + state.customer?.phone) // Country code + number
                 val message = "Hi " + state.customer?.name?.uppercase(getDefault()) + ",\n" +
-                "Celebrate the upcoming Eid in style – here’s a special coupon just for you! ✨"
+                "Thanks for being a valued part of the NADHIKA family. As a token of appreciation, enjoy 10% OFF your next purchase with us!✨\n" +
+                        "Follow us on instagram for updates on new collection.\n https://www.instagram.com/nadhika.attire/"
 
                 val url = "https://api.whatsapp.com/send?phone=$phoneNumber&text=${Uri.encode(message)}"
                 val intent = Intent(Intent.ACTION_VIEW).apply {

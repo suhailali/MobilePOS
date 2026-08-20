@@ -9,6 +9,7 @@ data class InvoiceState(
     val invoices: List<Invoice> = emptyList(),
     // invoice that is open now/displayed on screen
     val selectedInvoice: Invoice? = null,
+    val isSyncing: Boolean = false,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     // this is the list of item currently displaying under the invoice selected
@@ -20,4 +21,6 @@ data class InvoiceState(
     val unsyncedInvoices: Int = 0,
     val invoicePDF: PdfDocument? = null,
     val pdfGenerated: Boolean = false,
+    val isLastPage: Boolean = false,
+    val currentPage: Int = 0
     )

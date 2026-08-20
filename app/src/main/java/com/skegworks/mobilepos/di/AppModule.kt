@@ -87,9 +87,18 @@ class AppModule {
         customerDao: CustomerDao,
         businessDao: BusinessDao,
         couponDao: CouponDao,
-        syncData: SyncData
+        syncData: SyncData,
+        creditNoteDao: CreditNoteDao
     ): InvoiceRepository {
-        return InvoiceRepositoryImpl(invoiceDao, invoiceItemDao, customerDao, businessDao, couponDao, syncData)
+        return InvoiceRepositoryImpl(
+            invoiceDao,
+            invoiceItemDao,
+            customerDao,
+            businessDao,
+            couponDao,
+            syncData,
+            creditNoteDao
+        )
     }
 
     @Provides

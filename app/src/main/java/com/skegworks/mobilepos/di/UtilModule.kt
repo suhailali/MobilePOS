@@ -16,6 +16,8 @@ import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.UUIDGeneratorImpl
 import com.skegworks.mobilepos.utils.bitmap.LoadBitmap
 import com.skegworks.mobilepos.utils.bitmap.LoadBitmapFromAssets
+import com.skegworks.mobilepos.utils.preferences.AppPreferenceHandler
+import com.skegworks.mobilepos.utils.preferences.AppPreferenceHandlerImpl
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandlerImpl
 import dagger.Module
@@ -61,6 +63,13 @@ class UtilModule {
     fun providesUserPreferenceHandler(@ApplicationContext context: Context): UserPreferenceHandler {
         return UserPreferenceHandlerImpl(context)
     }
+
+    @Singleton
+    @Provides
+    fun providesAppPreferenceHandler(@ApplicationContext context: Context): AppPreferenceHandler {
+        return AppPreferenceHandlerImpl(context)
+    }
+
 
     @Singleton
     @Provides

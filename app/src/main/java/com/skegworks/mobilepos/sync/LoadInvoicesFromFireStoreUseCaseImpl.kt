@@ -58,8 +58,9 @@ class LoadInvoicesFromFireStoreUseCaseImpl(
 
 
     private suspend fun getInvoices() {
-        val result = syncDataWithFireStore.downloadAll(
+        val result = syncDataWithFireStore.downloadLatest(
             Constants.FirebaseDocument.INVOICES,
+            1781891638294,
             InvoiceFireStoreDto::class.java
         )
         if (result.isSuccess) {
@@ -85,8 +86,9 @@ class LoadInvoicesFromFireStoreUseCaseImpl(
     }
 
     private suspend fun getInvoiceItems() {
-        val result = syncDataWithFireStore.downloadAll(
+        val result = syncDataWithFireStore.downloadLatest(
             Constants.FirebaseDocument.INVOICE_ITEMS,
+            1781891638294,
             InvoiceItemFireStoreDto::class.java
         )
         if (result.isSuccess) {

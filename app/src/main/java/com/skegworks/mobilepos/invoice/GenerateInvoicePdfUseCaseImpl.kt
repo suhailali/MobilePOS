@@ -20,6 +20,8 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
             val page = document.startPage(pageInfo)
             val canvas: Canvas = page.canvas
 
+            val hasGST = invoice.business.gstNumber.isNotEmpty()
+
 // Painting setup
             val paint = Paint().apply {
                 isAntiAlias = true
@@ -49,10 +51,12 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
             canvas.drawText("Contact: ${invoice.business.mobile}", 10f, y, small)
             canvas.drawText("Customer: ${invoice.customer.name}", rightIndex, y, small)
             y += 12f
-            canvas.drawText("GSTIN: ${invoice.business.gstNumber}", 10f, y, small)
+            canvas.drawText("Email: ${invoice.business.email}", 10f, y, small)
             canvas.drawText("Phone: ${invoice.customer.phone}", rightIndex, y, small)
             y += 12f
-            canvas.drawText("Email: ${invoice.business.email}", 10f, y, small)
+            if (hasGST) {
+                canvas.drawText("GSTIN: ${invoice.business.gstNumber}", 10f, y, small)
+            }
             y += 18f
 
 // Customer
@@ -77,10 +81,19 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
             val headerY = y
             canvas.drawText("S.No", startX + 4, headerY + 12, small)
             canvas.drawText("Item", startX + colSnoW + 4, headerY + 12, small)
-            canvas.drawText("HSN", startX + colSnoW + colItemW + 4, headerY + 12, small)
+            if (hasGST) {
+                canvas.drawText("HSN", startX + colSnoW + colItemW + 4, headerY + 12, small)
+            }
             canvas.drawText("MRP", startX + colSnoW + colItemW + colHsnW + 4, headerY + 12, small)
             canvas.drawText("Disc.%", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + 4, headerY + 12, small)
-            canvas.drawText("Tax%", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + 4, headerY + 12, small)
+            if (hasGST) {
+                canvas.drawText(
+                    "Tax%",
+                    startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + 4,
+                    headerY + 12,
+                    small
+                )
+            }
             canvas.drawText("Qty", startX + colSnoW + colItemW + colHsnW + colRateW + 4, headerY + 12, small)
             canvas.drawText("Amount", startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + colGstW + 4, headerY + 12, small)
 
@@ -96,10 +109,19 @@ class GenerateInvoicePdfUseCaseImpl : GenerateInvoicePdfUseCase {
                 val itemName = item.title
 //                canvas.drawText(itemName + "afcgh uuytff jjuy", startX + colSnoW + 4, rowY + 12, small)
                 drawMultilineText(canvas, itemName, startX + colSnoW + 4, rowY + 12, small, pageWidthPt/4  )
-                canvas.drawText(item.hsnCode, startX + colSnoW + colItemW + 4, rowY + 12, small)
+                if (hasGST) {
+                    canvas.drawText(item.hsnCode, startX + colSnoW + colItemW + 4, rowY + 12, small)
+                }
                 canvas.drawText(formatAmount(item.salePriceWithoutDiscount), startX + colSnoW + colItemW + colHsnW + 4, rowY + 12, small)
                 canvas.drawText(formatAmount(item.discountPercentage), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW +4, rowY + 12, small)
-                canvas.drawText(formatAmount(item.outputGstPercentage), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW +4, rowY + 12, small)
+                if (hasGST) {
+                    canvas.drawText(
+                        formatAmount(item.outputGstPercentage),
+                        startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + 4,
+                        rowY + 12,
+                        small
+                    )
+                }
                 canvas.drawText(item.quantity.toString(), startX + colSnoW + colItemW + colHsnW + colRateW + 4, rowY + 12, small)
                 canvas.drawText(formatAmount(item.quantity * item.finalRoundedOffPrice), startX + colSnoW + colItemW + colHsnW + colRateW + colQtyW + colDiscW + colGstW + 4, rowY + 12, small)
 

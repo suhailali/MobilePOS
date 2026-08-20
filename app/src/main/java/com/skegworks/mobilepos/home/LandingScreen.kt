@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.skegworks.mobilepos.ui.component.SpacerLarge
 import com.skegworks.mobilepos.ui.component.clock.Clock
 import com.skegworks.mobilepos.utils.Dimens
 
@@ -35,6 +36,8 @@ fun LandingScreen(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        SpacerLarge()
+        Text(state.value.businessName, fontSize = 32.sp)
         Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
         Spacer(modifier = Modifier.padding(Dimens.LARGE_PADDING.dp))
         Text("Hi ${state.value.userEmail}")

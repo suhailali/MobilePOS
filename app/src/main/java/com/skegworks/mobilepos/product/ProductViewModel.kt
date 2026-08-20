@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.appsettings.GenerateNewProductCounterUseCase
 import com.skegworks.mobilepos.appsettings.SyncAppSettingsUseCase
 import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCase
+import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.category.CategoryRepository
 import com.skegworks.mobilepos.data.domain.PriceInput
 import com.skegworks.mobilepos.data.domain.PriceOutput
@@ -38,7 +39,8 @@ class ProductViewModel @Inject constructor(
     private val userPreferenceHandler: UserPreferenceHandler,
     private val productCounterUseCase: GenerateNewProductCounterUseCase,
     private val updateProductCounterUseCase: UpdateProductCounterUseCase,
-    private val syncAppSettingsUseCase: SyncAppSettingsUseCase
+    private val syncAppSettingsUseCase: SyncAppSettingsUseCase,
+    private val businessRepository: BusinessRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProductState())
@@ -619,12 +621,22 @@ class ProductViewModel @Inject constructor(
     }
 
     private fun haveFieldForPriceCalculationValid(): Boolean {
+
+        var gst: String? = ""
+        viewModelScope.launch {
+            gst = businessRepository.getBusiness()?.gstNumber
+        }
+
         val itemPrice = state.value.textStateItemPrice
         val outputGstPercentage = state.value.textStateOutputGstPercentage
 
         val saleMargin = state.value.textStateSaleMargin
 
-        val isValid = itemPrice != 0.0 && outputGstPercentage != 0.0 && saleMargin != 0
+        val isValid = if (gst.isNullOrEmpty()) {
+            itemPrice != 0.0 && saleMargin != 0
+        } else {
+            itemPrice != 0.0 && outputGstPercentage != 0.0 && saleMargin != 0
+        }
 
         return isValid
     }

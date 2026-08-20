@@ -19,4 +19,10 @@ interface SyncData {
         name: String,
         clazz: Class<T>
     ): Result<List<T>>
+
+    suspend fun <T> downloadLatest(
+        name: String,
+        lastUpdateTimeInLong: Long,
+        clazz: Class<T>
+    ): Result<List<T>>
 }

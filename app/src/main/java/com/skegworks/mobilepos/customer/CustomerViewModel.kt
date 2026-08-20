@@ -306,15 +306,15 @@ class CustomerViewModel @Inject constructor(
             val couponCode = generateRandomLetterString(12).toUpperCase(Locale.current)
             val coupon = Coupon(
                 id = uuidGenerator.generateUUID(),
-                title = "Eid Coupon",
+                title = "Thank You Coupon",
                 discountCode = couponCode,
-                description = "Eid Coupon",
+                description = "Coupon for Purchase",
                 discountPercentage = 10.0,
                 discountGivenToName = customer.name,
                 discountGivenToId = customer.id,
                 discountGivenToNumber = customer.phone,
                 discountType = "PERCENTAGE",
-                discountValidTill = dateUtility.dateToMillis("19-03-2026"),
+                discountValidTill = dateUtility.daysAfterInMillis(30),
                 discountAvailedBy = "",
                 discountAvailedOn = "",
                 discountedAmount = 0.0,
@@ -330,12 +330,12 @@ class CustomerViewModel @Inject constructor(
             )
 
             val couponGenerated = generateCouponImageUseCase(
-                "AppGeneratedCouponTemplate_two.png",
+                "Coupon_On_The_Go_Three.png",
                 couponCode,
                 customer.name,
                 "10%",
-                "March 07 2026",
-                "March 18 2026"
+                dateUtility.daysAfterInDateString(10, "MMM dd, yyyy"),
+                dateUtility.daysAfterInDateString(30, "MMM dd, yyyy"),
             )
 
             if (couponGenerated != null) {

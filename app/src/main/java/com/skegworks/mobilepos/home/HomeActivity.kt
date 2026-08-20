@@ -25,7 +25,7 @@ import com.skegworks.mobilepos.category.CategoryActivity
 import com.skegworks.mobilepos.customer.CustomerActivity
 import com.skegworks.mobilepos.dashboard.DashboardActivity
 import com.skegworks.mobilepos.invoice.InvoicesActivity
-import com.skegworks.mobilepos.utils.files.FileHandlerImpl
+import com.skegworks.mobilepos.utils.files.PDFFileHandler
 import com.skegworks.mobilepos.login.LoginActivity
 import com.skegworks.mobilepos.pdf.PdfGeneratorImpl
 import com.skegworks.mobilepos.pos.POSActivity
@@ -111,8 +111,8 @@ class HomeActivity : ComponentActivity() {
                                     val pdfGenerator = PdfGeneratorImpl()
                                     val pdf = pdfGenerator.generatePdf(listOfBitmaps)
                                     println("PDF File generated")
-                                    val fileHandler = FileHandlerImpl(context)
-                                    val pdfFile = fileHandler.writePdfDocument(pdf, "FileNameSample")
+                                    val fileHandler = PDFFileHandler(context)
+                                    val pdfFile = fileHandler.writeDocument(pdf, "FileNameSample")
                                     println("PDF File written at: $pdfFile")
                                 }
                             }

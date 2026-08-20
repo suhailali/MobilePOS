@@ -1,4 +1,5 @@
 package com.skegworks.mobilepos.invoice
+
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -18,6 +19,9 @@ interface InvoiceDao {
 
     @Query("SELECT * FROM invoices ORDER BY updated_at DESC, invoice_number DESC")
     suspend fun getAllInvoices(): List<InvoiceEntity>
+
+    @Query("SELECT * FROM invoices ORDER BY updated_at DESC, invoice_number DESC LIMIT :limit OFFSET :offset")
+    suspend fun getPagedInvoices(limit: Int, offset: Int): List<InvoiceEntity>
 
     @Query("SELECT * FROM invoices WHERE is_synced = 0 ORDER BY invoice_number DESC")
     suspend fun getUnsyncedInvoices(): List<InvoiceEntity>

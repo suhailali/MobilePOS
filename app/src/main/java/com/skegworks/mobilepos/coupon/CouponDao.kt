@@ -18,7 +18,10 @@ interface CouponDao {
     suspend fun getCouponById(id: String): CouponEntity?
 
     @Query("SELECT * FROM coupons WHERE discount_code LIKE '%' || :sku || '%'")
-    suspend fun getCouponByCode(sku: String): List<CouponEntity>?
+    suspend fun getCouponByCode(sku: String): List<CouponEntity>
+
+    @Query("SELECT * FROM coupons WHERE discount_given_to_id = :customerId ORDER BY created_at DESC")
+    suspend fun getCouponByCustomer(customerId: String): List<CouponEntity>
 
     @Query("SELECT * FROM coupons")
     suspend fun getAllCoupons(): List<CouponEntity>

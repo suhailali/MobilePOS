@@ -4,12 +4,14 @@ import android.content.Context
 import android.graphics.pdf.PdfDocument
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.BuildConfig
 import com.skegworks.mobilepos.print.PrintPdfUseCase
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
 import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCase
 import com.skegworks.mobilepos.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,12 +39,19 @@ class InvoiceViewModel @Inject constructor(
     private val _events = MutableSharedFlow<InvoiceEvents>()
     val events = _events.asSharedFlow()
 
+    private val pageSize = 30
+
     fun handleIntent(intent: InvoiceIntent) {
         when (intent) {
             InvoiceIntent.PrintInvoice -> {
                 state.value.selectedInvoice?.let {
+                    val customerInfo = if (BuildConfig.VENDOR_NAME == "Salwariya") {
+                        Constants.Invoice.infoForCustomerPremium
+                    } else {
+                        Constants.Invoice.infoForCustomerDefault
+                    }
                     viewModelScope.launch(Dispatchers.IO) {
-                        val pdfDocument = generateInvoicePdfUseCase.generatePdf(it, Constants.Invoice.infoForCustomer)
+                        val pdfDocument = generateInvoicePdfUseCase.generatePdf(it, customerInfo)
                         _state.update { invoiceState ->
                             invoiceState.copy(
                                 invoicePDF = pdfDocument,
@@ -53,11 +62,12 @@ class InvoiceViewModel @Inject constructor(
                 }
             }
             InvoiceIntent.LoadInvoices -> loadInvoices()
+            InvoiceIntent.LoadNextPage -> loadNextPage()
             is InvoiceIntent.SelectInvoice -> selectInvoice(intent.id)
             InvoiceIntent.SyncInvoices -> {
                 _state.update {
                     it.copy(
-                        isLoading = true,
+                        isSyncing = true,
                         errorMessage = null
                     )
                 }
@@ -122,13 +132,14 @@ class InvoiceViewModel @Inject constructor(
     private fun syncInvoices() {
         if (state.value.unsyncedInvoices > 0) {
             viewModelScope.launch(Dispatchers.IO) {
+                delay(2000)
                 syncPendingInvoicesUseCase.invoke()
             }
         }
         loadInvoicesFromFireStoreUseCase.invoke {
             _state.update {
                 it.copy(
-                    isLoading = false,
+                    isSyncing = false,
                     errorMessage = null,
                 )
             }
@@ -152,10 +163,31 @@ class InvoiceViewModel @Inject constructor(
 
     private fun loadInvoices() {
         viewModelScope.launch(Dispatchers.IO) {
-            val result = getInvoicesUseCase.invoke()
+            _state.update { it.copy(isLoading = true, currentPage = 0, isLastPage = false) }
+            val result = getInvoicesUseCase.invoke(limit = pageSize, offset = 0)
             _state.update {
                 it.copy(
-                    invoices = result
+                    invoices = result,
+                    isLoading = false,
+                    isLastPage = result.size < pageSize
+                )
+            }
+        }
+    }
+
+    private fun loadNextPage() {
+        if (state.value.isLoading || state.value.isLastPage) return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            _state.update { it.copy(isLoading = true) }
+            val nextPage = state.value.currentPage + 1
+            val result = getInvoicesUseCase.invoke(limit = pageSize, offset = nextPage * pageSize)
+            _state.update {
+                it.copy(
+                    invoices = it.invoices + result,
+                    isLoading = false,
+                    currentPage = nextPage,
+                    isLastPage = result.size < pageSize
                 )
             }
         }

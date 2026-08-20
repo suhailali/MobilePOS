@@ -80,14 +80,36 @@ class InvoiceRepositoryImpl @Inject constructor(
             if (customer == null || business == null) {
                 return@map null
             }
-            val invoice = invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
-            if (creditNoteInvoices.contains(invoice.id)) {
-                invoice.isCreditNote = true
+            val invoiceDomain = invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
+            if (creditNoteInvoices.contains(invoiceDomain.id)) {
+                invoiceDomain.isCreditNote = true
             }
-            invoice
+            invoiceDomain
         }
         if (newInvoices.isEmpty()) {
             return emptyList()
+        }
+        return newInvoices.filterNotNull()
+    }
+
+    override suspend fun getPagedInvoices(limit: Int, offset: Int): List<Invoice> {
+        val creditNoteInvoices = creditNoteDao.getAllInvoiceId().toSet()
+        val invoices = invoiceDao.getPagedInvoices(limit, offset)
+        val newInvoices = invoices.map { invoice ->
+            val invoiceItems = invoiceItemDao.getAllInvoiceItems(invoice.id).map {
+                it.toDomain()
+            }
+            val customer = customerDao.getCustomerById(invoice.customerId)
+            val business = businessDao.getBusiness()
+            val coupon = couponDao.getCouponById(invoice.couponId)?.toDomain()
+            if (customer == null || business == null) {
+                return@map null
+            }
+            val invoiceDomain = invoice.toDomain(customer.toDomain(), business.toDomain(), coupon, invoiceItems)
+            if (creditNoteInvoices.contains(invoiceDomain.id)) {
+                invoiceDomain.isCreditNote = true
+            }
+            invoiceDomain
         }
         return newInvoices.filterNotNull()
     }

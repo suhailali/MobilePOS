@@ -17,4 +17,5 @@ interface CouponRepository {
     )
 
     suspend fun syncAllCoupons(onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit)
+    suspend fun getCouponsByCustomer(customerId: String): kotlin.collections.List<com.skegworks.mobilepos.data.domain.Coupon>
 }

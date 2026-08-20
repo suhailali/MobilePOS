@@ -24,6 +24,23 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    flavorDimensions += "vendor"
+    productFlavors {
+        create("Nadhika") {
+            dimension = "vendor"
+            applicationId = "com.skegworks.mobilepos"
+            resValue("string", "app_name", "Nadhika POS")
+            buildConfigField("String", "VENDOR_NAME", "\"Nadhika\"")
+        }
+        create("Salwariya") {
+            dimension = "vendor"
+            applicationId = "com.skegworks.mobilepos.salwariya"
+            versionNameSuffix = "-salwariya"
+            resValue("string", "app_name", "Salwariya POS")
+            buildConfigField("String", "VENDOR_NAME", "\"Salwariya\"")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -44,6 +61,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     configurations.implementation.get().exclude(group = "com.intellij", module = "annotations")

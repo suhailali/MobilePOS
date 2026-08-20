@@ -25,6 +25,8 @@ interface InvoiceRepository {
 
     suspend fun getAllInvoices(): List<Invoice>
 
+    suspend fun getPagedInvoices(limit: Int, offset: Int): List<Invoice>
+
     suspend fun getInvoicesByCustomer(customerId: String): List<Invoice>
     suspend fun getUnsyncedInvoices(): List<Invoice>
 

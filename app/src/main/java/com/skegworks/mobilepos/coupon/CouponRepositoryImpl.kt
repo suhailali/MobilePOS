@@ -1,7 +1,5 @@
 package com.skegworks.mobilepos.coupon
 
-import com.skegworks.mobilepos.coupon.CouponDao
-import com.skegworks.mobilepos.coupon.CouponRepository
 import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.mapper.toDomain
 import com.skegworks.mobilepos.data.mapper.toEntity
@@ -10,7 +8,10 @@ import com.skegworks.mobilepos.sync.SyncData
 import com.skegworks.mobilepos.utils.Constants
 import javax.inject.Inject
 
-class CouponRepositoryImpl @Inject constructor(private val couponDao: CouponDao, private val syncData: SyncData): CouponRepository {
+class CouponRepositoryImpl @Inject constructor(
+    private val couponDao: CouponDao,
+    private val syncData: SyncData
+) : CouponRepository {
     override suspend fun insertCoupon(coupon: Coupon) {
         couponDao.insertCoupon(coupon.toEntity())
     }
@@ -37,7 +38,11 @@ class CouponRepositoryImpl @Inject constructor(private val couponDao: CouponDao,
         couponDao.deleteAllCoupons()
     }
 
-    override suspend fun syncCoupon(coupon: Coupon, onSuccess: (String) -> Unit, onFailure: (Exception) -> Unit) {
+    override suspend fun syncCoupon(
+        coupon: Coupon,
+        onSuccess: (String) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         syncData.uploadData(
             name = Constants.FirebaseDocument.COUPONS,
             id = coupon.id,
@@ -63,6 +68,13 @@ class CouponRepositoryImpl @Inject constructor(private val couponDao: CouponDao,
             )
         }
     }
+
+    override suspend fun getCouponsByCustomer(customerId: String): List<Coupon> {
+        return couponDao.getCouponByCustomer(customerId).map {
+            it.toDomain()
+        }
+    }
+
     override suspend fun getCouponFromCode(barcode: String): List<Coupon>? {
         return couponDao.getCouponByCode(barcode)?.map {
             it.toDomain()

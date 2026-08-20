@@ -1,5 +1,6 @@
 package com.skegworks.mobilepos.di
 
+import android.graphics.Bitmap
 import com.skegworks.mobilepos.appsettings.AppSettingsRepository
 import com.skegworks.mobilepos.appsettings.GenerateNewProductCounterUseCase
 import com.skegworks.mobilepos.appsettings.GenerateNewProductCounterUseCaseImpl
@@ -11,10 +12,19 @@ import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCase
 import com.skegworks.mobilepos.appsettings.UpdateProductCounterUseCaseImpl
 import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.coupon.CouponRepository
+import com.skegworks.mobilepos.coupon.GenerateCouponImageUseCase
+import com.skegworks.mobilepos.coupon.GenerateCouponImageUseCaseImpl
+import com.skegworks.mobilepos.coupon.GenerateCouponQRCode
 import com.skegworks.mobilepos.coupon.UpdateCouponPostInvoice
 import com.skegworks.mobilepos.coupon.UpdateCouponPostInvoiceImpl
+import com.skegworks.mobilepos.coupon.UploadCouponForCustomerUseCase
+import com.skegworks.mobilepos.coupon.UploadCouponForCustomerUseCaseImpl
 import com.skegworks.mobilepos.creditnote.CreditNoteRepository
 import com.skegworks.mobilepos.customer.CustomerRepository
+import com.skegworks.mobilepos.customer.FetchCustomerCouponUseCase
+import com.skegworks.mobilepos.customer.FetchCustomerCouponUseCaseImpl
+import com.skegworks.mobilepos.customer.FetchCustomerInvoiceUseCase
+import com.skegworks.mobilepos.customer.FetchCustomerInvoiceUseCaseImpl
 import com.skegworks.mobilepos.customer.FetchCustomerUseCase
 import com.skegworks.mobilepos.customer.FetchCustomerUseCaseImpl
 import com.skegworks.mobilepos.dashboard.GetDashboardDataUseCase
@@ -55,6 +65,8 @@ import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCase
 import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCaseImpl
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
+import com.skegworks.mobilepos.utils.bitmap.LoadBitmap
+import com.skegworks.mobilepos.utils.files.FileHandler
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.Module
 import dagger.Provides
@@ -232,5 +244,35 @@ class UseCaseModule {
         dateUtility: DateUtility
     ): UpdateCouponPostInvoice {
         return UpdateCouponPostInvoiceImpl(couponRepository, userPreferenceHandler, dateUtility)
+    }
+
+    @Provides
+    fun providesGenerateCouponImageUseCase(
+        loadBitmap: LoadBitmap,
+        generateCouponQRCode: GenerateCouponQRCode,
+        fileHandler: FileHandler<Bitmap>
+    ): GenerateCouponImageUseCase {
+        return GenerateCouponImageUseCaseImpl(loadBitmap, generateCouponQRCode, fileHandler)
+    }
+
+    @Provides
+    fun providesFetchCustomerCouponUseCase(
+        couponRepository: CouponRepository
+    ): FetchCustomerCouponUseCase {
+        return FetchCustomerCouponUseCaseImpl(couponRepository)
+    }
+
+    @Provides
+    fun providesFetchCustomerInvoiceUseCase(
+        invoiceRepository: InvoiceRepository
+    ): FetchCustomerInvoiceUseCase {
+        return FetchCustomerInvoiceUseCaseImpl(invoiceRepository)
+    }
+
+    @Provides
+    fun providesUploadCouponForCustomerUseCase(
+        couponRepository: CouponRepository
+    ): UploadCouponForCustomerUseCase {
+        return UploadCouponForCustomerUseCaseImpl(couponRepository)
     }
 }

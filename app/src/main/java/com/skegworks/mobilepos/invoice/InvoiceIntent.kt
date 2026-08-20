@@ -4,6 +4,7 @@ import com.skegworks.mobilepos.data.domain.InvoiceItem
 
 sealed class InvoiceIntent {
     object LoadInvoices : InvoiceIntent()
+    object LoadNextPage : InvoiceIntent()
     object SyncInvoices : InvoiceIntent()
     object PrintInvoice : InvoiceIntent()
     data class CreditNoteInvoiceItem(val invoiceItem: InvoiceItem, val quantity: Int, val addItem: Boolean) : InvoiceIntent()

@@ -2,13 +2,14 @@ package com.skegworks.mobilepos.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.cashcounter.CashCounterRepository
 import com.skegworks.mobilepos.data.domain.CashCounterStatus
 import com.skegworks.mobilepos.data.domain.UserRole
-import com.skegworks.mobilepos.utils.Constants
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +23,8 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val userPreferenceHandler: UserPreferenceHandler,
     private val cashCounterRepository: CashCounterRepository,
-    private val dateUtility: DateUtility
+    private val dateUtility: DateUtility,
+    private val businessRepository: BusinessRepository
 ) :
     ViewModel() {
 
@@ -43,6 +45,13 @@ class HomeViewModel @Inject constructor(
                     userRole = role,
                     userEmail = email,
                     features = features
+                )
+            }
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            _state.update {
+                it.copy(
+                    businessName = businessRepository.getBusiness()?.name ?: ""
                 )
             }
         }

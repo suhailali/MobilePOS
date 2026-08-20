@@ -102,4 +102,16 @@ class FirestoreHelper(val db: FirebaseFirestore = FirebaseFirestore.getInstance(
             .get().await()
         snapshot.documents.mapNotNull { it.toObject(clazz) }
     }
+
+    /** Get all documents from a collection **/
+    suspend fun <T> getLatestDocuments(
+        collection: String,
+        updatedDate: Long,
+        clazz: Class<T>
+    ): Result<List<T>> = runCatching {
+        val snapshot = db.collection(collection)
+            .whereGreaterThan("updatedAt", updatedDate)
+            .get().await()
+        snapshot.documents.mapNotNull { it.toObject(clazz) }
+    }
 }

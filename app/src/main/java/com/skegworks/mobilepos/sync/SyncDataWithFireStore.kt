@@ -39,4 +39,16 @@ class SyncDataWithFireStore @Inject constructor(private val firestoreHelper: Fir
     ): Result<List<T>> {
         return firestoreHelper.getAllDocuments(collection = name, clazz = clazz)
     }
+
+    override suspend fun <T> downloadLatest(
+        name: String,
+        lastUpdateTimeInLong: Long,
+        clazz: Class<T>
+    ): Result<List<T>> {
+        return firestoreHelper.getLatestDocuments(
+            collection = name,
+            updatedDate = lastUpdateTimeInLong,
+            clazz = clazz
+        )
+    }
 }

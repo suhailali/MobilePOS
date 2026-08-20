@@ -10,5 +10,7 @@ data class CustomerDetailState(
     val customerId: String = "",
     val invoiceList: List<Invoice> = emptyList(),
     val couponList: List<Coupon> = emptyList(),
-    val generatedCoupon: Bitmap? = null
+    val generatedCoupon: Bitmap? = null,
+    val isLastPage: Boolean = false,
+    val currentPage: Int = 0
 )
