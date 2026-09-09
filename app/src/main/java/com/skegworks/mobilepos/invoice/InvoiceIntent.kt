@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 
 sealed class InvoiceIntent {
+    data class SearchInvoices(val searchValue: String) : InvoiceIntent()
     object LoadInvoices : InvoiceIntent()
     object LoadNextPage : InvoiceIntent()
     object SyncInvoices : InvoiceIntent()

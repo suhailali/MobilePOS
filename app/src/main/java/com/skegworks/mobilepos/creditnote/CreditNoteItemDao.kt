@@ -18,6 +18,9 @@ interface CreditNoteItemDao {
     @Query("SELECT * FROM credit_note_items WHERE invoice_item_id = :id")
     suspend fun getCreditNoteItemByInvoiceItemId(id: String): CreditNoteItemEntity?
 
+    @Query("SELECT * FROM credit_note_items WHERE vendor_id = :id")
+    suspend fun getCreditNoteItemByVendorId(id: String): CreditNoteItemEntity?
+
     @Query("SELECT * FROM credit_note_items WHERE credit_note_id = :creditNoteId")
     suspend fun getAllCreditNoteItems(creditNoteId: String): List<CreditNoteItemEntity>
 

@@ -76,7 +76,7 @@ class ProductViewModel @Inject constructor(
             }
 
             is ProductDetailIntent.UpdateProduct -> {
-                if (!areFieldsValid()) return
+                if (!areFieldsValid(true)) return
                 viewModelScope.launch(Dispatchers.IO) {
                     val product = createProductModel(true)
                     product.apply {
@@ -96,7 +96,7 @@ class ProductViewModel @Inject constructor(
             }
 
             is ProductDetailIntent.AddAnotherProduct -> {
-                if (!areFieldsValid()) return
+                if (!areFieldsValid(false)) return
                 viewModelScope.launch(Dispatchers.IO) {
                     val product = createProductModel()
                     productRepository.insertProduct(product)
@@ -320,7 +320,7 @@ class ProductViewModel @Inject constructor(
             is AddProductIntent.AddAnother,
             is AddProductIntent.Save -> {
 
-                if (!areFieldsValid()) return
+                if (!areFieldsValid(false)) return
 
                 viewModelScope.launch(Dispatchers.IO) {
                     val product = createProductModel()
@@ -409,14 +409,14 @@ class ProductViewModel @Inject constructor(
         return product
     }
 
-    private fun areFieldsValid(): Boolean {
+    private fun areFieldsValid(isUpdate: Boolean): Boolean {
         val isSkuValid = haveFieldsForSkuValid()
         updateSkuValidationState(isSkuValid)
 
         val isPriceValid = haveFieldForPriceCalculationValid()
         updatePriceCalculationValidationState(isPriceValid)
 
-        val isSaveValid = haveFieldForSaveProductValid()
+        val isSaveValid = haveFieldForSaveProductValid(isUpdate)
         updateSaveProductValidationState(isSaveValid)
 
         return !(isSaveValid.not() || isPriceValid.not() || isSaveValid.not())
@@ -517,7 +517,7 @@ class ProductViewModel @Inject constructor(
             try {
                 val productList =
                     if (sku.isEmpty()) {
-                        productRepository.getAllProducts()
+                        productRepository.getLastUpdatedProducts()
                     } else {
                         productRepository.getProductForSku(sku)
                     }
@@ -666,7 +666,7 @@ class ProductViewModel @Inject constructor(
         }
     }
 
-    private fun haveFieldForSaveProductValid(): Boolean {
+    private fun haveFieldForSaveProductValid(isUpdate: Boolean): Boolean {
         val hsnCode = state.value.textStateHsnCode
         val quantity = state.value.textStateQuantity
 
@@ -675,9 +675,12 @@ class ProductViewModel @Inject constructor(
 
         val sku = state.value.textStateSku
 
-        val isValid = hsnCode.isNotEmpty() && quantity > 0
+        var isValid = hsnCode.isNotEmpty()
                 && size.isNotEmpty() && color.isNotEmpty()
                 && sku.isNotEmpty()
+
+        if (!isUpdate)
+            isValid = isValid && quantity > 0
         return isValid
     }
 

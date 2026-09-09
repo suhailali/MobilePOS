@@ -29,6 +29,10 @@ import com.skegworks.mobilepos.customer.FetchCustomerUseCase
 import com.skegworks.mobilepos.customer.FetchCustomerUseCaseImpl
 import com.skegworks.mobilepos.dashboard.GetDashboardDataUseCase
 import com.skegworks.mobilepos.dashboard.GetDashboardDataUseCaseImpl
+import com.skegworks.mobilepos.dashboard.InventorySalesByVendorUseCase
+import com.skegworks.mobilepos.dashboard.InventorySalesByVendorUseCaseImpl
+import com.skegworks.mobilepos.dashboard.SalesByMonthUseCase
+import com.skegworks.mobilepos.dashboard.SalesByMonthUseCaseImpl
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCaseImpl
 import com.skegworks.mobilepos.invoice.GenerateNewCreditNoteUseCase
@@ -190,14 +194,16 @@ class UseCaseModule {
         invoiceRepository: InvoiceRepository,
         customerRepository: CustomerRepository,
         businessRepository: BusinessRepository,
-        couponRepository: CouponRepository
+        couponRepository: CouponRepository,
+        creditNoteRepository: CreditNoteRepository
     ): LoadInvoicesFromFireStoreUseCase {
         return LoadInvoicesFromFireStoreUseCaseImpl(
             syncData,
             invoiceRepository,
             customerRepository,
             businessRepository,
-            couponRepository
+            couponRepository,
+            creditNoteRepository
         )
     }
 
@@ -274,5 +280,23 @@ class UseCaseModule {
         couponRepository: CouponRepository
     ): UploadCouponForCustomerUseCase {
         return UploadCouponForCustomerUseCaseImpl(couponRepository)
+    }
+
+    @Provides
+    fun providesInventorySalesByVendorUseCase(
+        productRepository: ProductRepository,
+        invoiceRepository: InvoiceRepository
+    ): InventorySalesByVendorUseCase {
+        return InventorySalesByVendorUseCaseImpl(
+            productRepository,
+            invoiceRepository
+        )
+    }
+
+    @Provides
+    fun providesSalesByMonthUseCase(
+        invoiceRepository: InvoiceRepository
+    ): SalesByMonthUseCase {
+        return SalesByMonthUseCaseImpl(invoiceRepository)
     }
 }

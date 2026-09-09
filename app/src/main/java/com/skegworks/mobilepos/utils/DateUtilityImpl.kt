@@ -112,8 +112,8 @@ class DateUtilityImpl : DateUtility {
         return endOfDayMillisExclusive
     }
 
-    override fun daysBeforeInMillis(days: Int, today: LocalDate): Long {
-        return today.minusDays(7)
+    override fun daysBeforeInMillis(days: Long, today: LocalDate): Long {
+        return today.minusDays(days)
             .atStartOfDay(ZoneId.systemDefault())
             .toInstant()
             .toEpochMilli()

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import com.skegworks.mobilepos.product.ProductViewModel
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -21,9 +22,12 @@ class DashboardActivity: ComponentActivity() {
         setContent {
             val context = LocalContext.current
             MobilePOSTheme {
-                val viewModel: DashboardViewModel by viewModels<DashboardViewModel>()
+                val dashboardViewModel: DashboardViewModel by viewModels<DashboardViewModel>()
+                val productViewModel: ProductViewModel by viewModels<ProductViewModel>()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    DashboardScreen(modifier = Modifier.padding(innerPadding), viewModel)
+                    DashboardScreenNavigation(modifier = Modifier.padding(innerPadding),
+                        dashboardViewModel = dashboardViewModel,
+                        productViewModel = productViewModel)
                 }
             }
         }

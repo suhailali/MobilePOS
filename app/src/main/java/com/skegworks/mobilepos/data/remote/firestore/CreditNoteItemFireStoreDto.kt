@@ -42,5 +42,5 @@ data class CreditNoteItemFireStoreDto(
     var invoiceItemId: String = "",
     var invoiceNumber: String = "",
     var invoiceDate: Long = 0L,
-    val creditNoteId: String,
+    val creditNoteId: String = "",
 )

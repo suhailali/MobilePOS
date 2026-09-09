@@ -97,9 +97,9 @@ class InvoiceRepositoryImpl @Inject constructor(
         return newInvoices.filterNotNull()
     }
 
-    override suspend fun getPagedInvoices(limit: Int, offset: Int): List<Invoice> {
+    override suspend fun getPagedInvoices(limit: Int, offset: Int, searchValue: String): List<Invoice> {
         val creditNoteInvoices = creditNoteDao.getAllInvoiceId().toSet()
-        val invoices = invoiceDao.getPagedInvoices(limit, offset)
+        val invoices = invoiceDao.getPagedInvoices(limit, offset, searchValue)
         val newInvoices = invoices.map { invoice ->
             val invoiceItems = invoiceItemDao.getAllInvoiceItems(invoice.id).map {
                 it.toDomain()
@@ -148,7 +148,7 @@ class InvoiceRepositoryImpl @Inject constructor(
     override suspend fun getInvoicesAmountByDate(): List<ChartPoint> {
         val invoiceAmountByDate = invoiceDao.getInvoiceAmountByDay().take(7)
         val chartPoints = invoiceAmountByDate.map { invoiceAmount ->
-            ChartPoint(invoiceAmount.date, invoiceAmount.totalAmount)
+            ChartPoint(invoiceAmount.invoiceNumber, invoiceAmount.amount)
         }
         return chartPoints
     }
@@ -170,7 +170,7 @@ class InvoiceRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getInvoiceForLastSevenDays(): List<Invoice> {
-        val invoices = invoiceDao.getInvoicesForLastSevenDays(
+        val invoices = invoiceDao.getInvoicesForAPeriod(
             dateUtility.daysBeforeInMillis(
                 7,
                 LocalDate.now()
@@ -180,7 +180,24 @@ class InvoiceRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getInvoiceForToday(): List<Invoice> {
-        return listOf()
+        val invoices = invoiceDao.getInvoicesForAPeriod(
+            dateUtility.daysBeforeInMillis(
+                0,
+                LocalDate.now()
+            )
+        )
+        return getInvoiceDetails(invoices)
+    }
+
+    override suspend fun getInvoiceForThisMonth(): List<Invoice> {
+        val dayOfMonth = LocalDate.now().dayOfMonth
+        val invoices = invoiceDao.getInvoicesForAPeriod(
+            dateUtility.daysBeforeInMillis(
+                dayOfMonth.toLong() - 1,
+                LocalDate.now()
+            )
+        )
+        return getInvoiceDetails(invoices)
     }
 
     suspend fun getInvoiceDetails(invoices: List<InvoiceEntity>): List<Invoice> {

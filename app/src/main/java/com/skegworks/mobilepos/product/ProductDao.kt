@@ -21,6 +21,9 @@ interface ProductDao {
     suspend fun getProductBySku(sku: String): List<ProductEntity>
 
     @Query("SELECT * FROM products WHERE is_deleted = false AND is_active = true ORDER by updated_at DESC LIMIT 100")
+    suspend fun getLastUpdatedProducts(): List<ProductEntity>
+
+    @Query("SELECT * FROM products WHERE is_deleted = false AND is_active = true ORDER by vendor_Name ASC")
     suspend fun getAllProducts(): List<ProductEntity>
 
     @Update
@@ -67,4 +70,7 @@ interface ProductDao {
 
     @Query("SELECT SUM(output_gst) FROM products WHERE quantity > 0 AND is_active = :isActive")
     suspend fun getTotalOutputGSTOfProductsInStock(isActive: Boolean = true): Double
+
+    @Query("SELECT * FROM products WHERE vendor_id = :vendorId")
+    suspend fun getProductsForVendor(vendorId: String): List<ProductEntity>
 }

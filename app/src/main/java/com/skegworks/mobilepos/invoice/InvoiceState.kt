@@ -22,5 +22,6 @@ data class InvoiceState(
     val invoicePDF: PdfDocument? = null,
     val pdfGenerated: Boolean = false,
     val isLastPage: Boolean = false,
-    val currentPage: Int = 0
+    val currentPage: Int = 0,
+    val textStatePhone: String = ""
     )

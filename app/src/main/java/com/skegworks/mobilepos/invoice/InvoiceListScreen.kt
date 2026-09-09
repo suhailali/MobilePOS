@@ -23,8 +23,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.skegworks.mobilepos.customer.SearchCustomerIntent
 import com.skegworks.mobilepos.data.domain.Invoice
+import com.skegworks.mobilepos.ui.component.SimpleTextField
 import com.skegworks.mobilepos.ui.component.SpacerLarge
+import com.skegworks.mobilepos.ui.component.SpacerMedium
 import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
@@ -49,6 +52,10 @@ fun InvoiceListScreen(modifier: Modifier, viewModel: InvoiceViewModel, onInvoice
                     Text("" + state.unsyncedInvoices)
                 }
             }
+        }
+        SpacerMedium()
+        SimpleTextField(textState = state.textStatePhone, "Search Phone Number / Name") {
+            viewModel.handleIntent(InvoiceIntent.SearchInvoices(it))
         }
 
         if (state.isSyncing) {

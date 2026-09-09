@@ -25,7 +25,7 @@ interface InvoiceRepository {
 
     suspend fun getAllInvoices(): List<Invoice>
 
-    suspend fun getPagedInvoices(limit: Int, offset: Int): List<Invoice>
+    suspend fun getPagedInvoices(limit: Int, offset: Int, searchValue: String): List<Invoice>
 
     suspend fun getInvoicesByCustomer(customerId: String): List<Invoice>
     suspend fun getUnsyncedInvoices(): List<Invoice>
@@ -37,4 +37,5 @@ interface InvoiceRepository {
     suspend fun getInvoiceForLastSevenDays(): List<Invoice>
 
     suspend fun getInvoiceForToday(): List<Invoice>
+    suspend fun getInvoiceForThisMonth(): List<Invoice>
 }

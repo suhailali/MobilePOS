@@ -47,6 +47,12 @@ class ProductRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getLastUpdatedProducts(): List<Product> {
+        return productDao.getLastUpdatedProducts().map {
+            it.toDomain()
+        }
+    }
+
     override suspend fun getTotalProductCount(): Int {
         return productDao.getTotalProductCount()
     }
@@ -85,6 +91,12 @@ class ProductRepositoryImpl @Inject constructor(
 
     override suspend fun getTotalOutputGSTOfProductsInStock(): Double {
         return productDao.getTotalOutputGSTOfProductsInStock()
+    }
+
+    override suspend fun getProductForVendor(vendorId: String): List<Product> {
+        return productDao.getProductsForVendor(vendorId).map {
+            it.toDomain()
+        }.sortedBy { it.sku }
     }
 
     override suspend fun getMaxId(): Int? {

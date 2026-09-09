@@ -18,8 +18,12 @@ class CreditNoteRepositoryImpl @Inject constructor (
     override suspend fun insertCreditNote(creditNote: CreditNote) {
         creditNoteDao.insertCreditNote(creditNote.toEntity())
         creditNote.items.forEach {
-            creditNoteItemDao.insertCreditNoteItem(it.toEntity())
+            insertCreditNoteItem(it)
         }
+    }
+
+    override suspend fun insertCreditNoteItem(creditNoteItem: CreditNoteItem) {
+        creditNoteItemDao.insertCreditNoteItem(creditNoteItem.toEntity())
     }
 
     override suspend fun updateCreditNote(creditNote: CreditNote) {
@@ -32,6 +36,10 @@ class CreditNoteRepositoryImpl @Inject constructor (
 
     override suspend fun getCreditNoteItemByInvoiceItemId(invoiceItemId: String): CreditNoteItem? {
         return creditNoteItemDao.getCreditNoteItemByInvoiceItemId(invoiceItemId)?.toDomain()
+    }
+
+    override suspend fun getCreditNoteItemByVendorId(vendorId: String): CreditNoteItem? {
+        return creditNoteItemDao.getCreditNoteItemByVendorId(vendorId)?.toDomain()
     }
 
     override suspend fun isInvoiceAddedToCreditNote(invoiceId: String): Boolean {

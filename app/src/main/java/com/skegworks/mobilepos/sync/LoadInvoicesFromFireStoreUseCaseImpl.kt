@@ -2,8 +2,11 @@ package com.skegworks.mobilepos.sync
 
 import com.skegworks.mobilepos.business.BusinessRepository
 import com.skegworks.mobilepos.coupon.CouponRepository
+import com.skegworks.mobilepos.creditnote.CreditNoteRepository
 import com.skegworks.mobilepos.customer.CustomerRepository
 import com.skegworks.mobilepos.data.mapper.toDomain
+import com.skegworks.mobilepos.data.remote.firestore.CreditNoteFireStoreDto
+import com.skegworks.mobilepos.data.remote.firestore.CreditNoteItemFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.InvoiceFireStoreDto
 import com.skegworks.mobilepos.data.remote.firestore.InvoiceItemFireStoreDto
 import com.skegworks.mobilepos.invoice.InvoiceRepository
@@ -23,7 +26,8 @@ class LoadInvoicesFromFireStoreUseCaseImpl(
     private val invoiceRepository: InvoiceRepository,
     private val customerRepository: CustomerRepository,
     private val businessRepository: BusinessRepository,
-    private val couponRepository: CouponRepository
+    private val couponRepository: CouponRepository,
+    private val creditNoteRepository: CreditNoteRepository
 ) : LoadInvoicesFromFireStoreUseCase {
 
     private val supervisor = SupervisorJob()
@@ -46,7 +50,21 @@ class LoadInvoicesFromFireStoreUseCaseImpl(
                         } catch (ex: Exception) {
                             // Log or handle the exception as needed
                         }
-                    }
+                    },
+                    async {
+                        try {
+                            getCreditNotes()
+                        } catch (ex: Exception) {
+                            // Log or handle the exception as needed
+                        }
+                    },
+                    async {
+                        try {
+                            getCreditNoteItems()
+                        } catch (ex: Exception) {
+                            // Log or handle the exception as needed
+                        }
+                    },
                 )
                 tasks.awaitAll()
                 withContext(Dispatchers.Main) {
@@ -56,11 +74,60 @@ class LoadInvoicesFromFireStoreUseCaseImpl(
         }
     }
 
+    private suspend fun getCreditNoteItems() {
+//        val result = syncDataWithFireStore.downloadLatest(
+//            Constants.FirebaseDocument.INVOICE_ITEMS,
+//            0,
+//            InvoiceItemFireStoreDto::class.java
+//        )
+        val result = syncDataWithFireStore.downloadAll(
+            Constants.FirebaseDocument.CREDIT_NOTE_ITEMS,
+            CreditNoteItemFireStoreDto::class.java
+        )
+        if (result.isSuccess) {
+            for (creditNoteItem in result.getOrNull().orEmpty()) {
+                creditNoteRepository.insertCreditNoteItem(creditNoteItem.toDomain())
+            }
+        } else {
+            throw result.exceptionOrNull() ?: Exception("Unknown error while loading credit note items")
+        }
+    }
+    private suspend fun getCreditNotes() {
+        val result = syncDataWithFireStore.downloadAll(
+            Constants.FirebaseDocument.CREDIT_NOTES,
+            CreditNoteFireStoreDto::class.java
+        )
+        if (result.isSuccess) {
+            for (creditNote in result.getOrNull().orEmpty()) {
+                val customer = customerRepository.getCustomerById(creditNote.customerId)
+                val business = businessRepository.getBusiness()
+                val coupon = couponRepository.getCouponById(creditNote.couponId)
+
+                if (customer != null && business != null) {
+                    creditNoteRepository.insertCreditNote(
+                        creditNote.toDomain(
+                            customer,
+                            business,
+                            coupon,
+                            listOf()
+                        )
+                    )
+                }
+            }
+        } else {
+            throw result.exceptionOrNull() ?: Exception("Unknown error while loading credit notes")
+        }
+    }
+
 
     private suspend fun getInvoices() {
-        val result = syncDataWithFireStore.downloadLatest(
+//        val result = syncDataWithFireStore.downloadLatest(
+//            Constants.FirebaseDocument.INVOICES,
+//            0,
+//            InvoiceFireStoreDto::class.java
+//        )
+        val result = syncDataWithFireStore.downloadAll(
             Constants.FirebaseDocument.INVOICES,
-            1781891638294,
             InvoiceFireStoreDto::class.java
         )
         if (result.isSuccess) {
@@ -86,9 +153,13 @@ class LoadInvoicesFromFireStoreUseCaseImpl(
     }
 
     private suspend fun getInvoiceItems() {
-        val result = syncDataWithFireStore.downloadLatest(
+//        val result = syncDataWithFireStore.downloadLatest(
+//            Constants.FirebaseDocument.INVOICE_ITEMS,
+//            0,
+//            InvoiceItemFireStoreDto::class.java
+//        )
+        val result = syncDataWithFireStore.downloadAll(
             Constants.FirebaseDocument.INVOICE_ITEMS,
-            1781891638294,
             InvoiceItemFireStoreDto::class.java
         )
         if (result.isSuccess) {

@@ -5,6 +5,7 @@ import android.graphics.pdf.PdfDocument
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.BuildConfig
+import com.skegworks.mobilepos.customer.SearchCustomerIntent
 import com.skegworks.mobilepos.print.PrintPdfUseCase
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
 import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCase
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class InvoiceViewModel @Inject constructor(
@@ -61,7 +63,7 @@ class InvoiceViewModel @Inject constructor(
                     }
                 }
             }
-            InvoiceIntent.LoadInvoices -> loadInvoices()
+            InvoiceIntent.LoadInvoices -> loadInvoices(state.value.textStatePhone)
             InvoiceIntent.LoadNextPage -> loadNextPage()
             is InvoiceIntent.SelectInvoice -> selectInvoice(intent.id)
             InvoiceIntent.SyncInvoices -> {
@@ -126,16 +128,29 @@ class InvoiceViewModel @Inject constructor(
                     _events.emit(InvoiceEvents.NAVIGATE_BACK)
                 }
             }
+
+            is InvoiceIntent.SearchInvoices -> {
+                _state.update {
+                    it.copy(
+                        textStatePhone = intent.searchValue
+                    )
+                }
+                loadInvoices(searchValue = state.value.textStatePhone)
+            }
         }
     }
 
     private fun syncInvoices() {
+        // First push all the unsynced invoices
         if (state.value.unsyncedInvoices > 0) {
             viewModelScope.launch(Dispatchers.IO) {
-                delay(2000)
+                // may be added for delay as timestamp is used
+                delay(2000.milliseconds)
                 syncPendingInvoicesUseCase.invoke()
             }
         }
+
+        // Pull all invoices from Firebase
         loadInvoicesFromFireStoreUseCase.invoke {
             _state.update {
                 it.copy(
@@ -143,7 +158,8 @@ class InvoiceViewModel @Inject constructor(
                     errorMessage = null,
                 )
             }
-            loadInvoices()
+            // state update invoices to load ui
+            loadInvoices(state.value.textStatePhone)
         }
     }
 
@@ -161,10 +177,10 @@ class InvoiceViewModel @Inject constructor(
         }
     }
 
-    private fun loadInvoices() {
+    private fun loadInvoices(searchValue: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _state.update { it.copy(isLoading = true, currentPage = 0, isLastPage = false) }
-            val result = getInvoicesUseCase.invoke(limit = pageSize, offset = 0)
+            val result = getInvoicesUseCase.invoke(limit = pageSize, offset = 0, searchValue = searchValue)
             _state.update {
                 it.copy(
                     invoices = result,
@@ -181,7 +197,7 @@ class InvoiceViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _state.update { it.copy(isLoading = true) }
             val nextPage = state.value.currentPage + 1
-            val result = getInvoicesUseCase.invoke(limit = pageSize, offset = nextPage * pageSize)
+            val result = getInvoicesUseCase.invoke(limit = pageSize, offset = nextPage * pageSize, searchValue = state.value.textStatePhone)
             _state.update {
                 it.copy(
                     invoices = it.invoices + result,

@@ -12,6 +12,6 @@ interface DateUtility {
     fun dateToMillis(date: String): Long
     fun millisToDateString(millis: Long): String?
     fun daysAfterInMillis(days: Int): Long
-    fun daysBeforeInMillis(days: Int, today : LocalDate): Long
+    fun daysBeforeInMillis(days: Long, today : LocalDate): Long
     fun daysAfterInDateString(days: Int, format: String = "yyyy-MM-dd HH:mm:ss"): String
 }

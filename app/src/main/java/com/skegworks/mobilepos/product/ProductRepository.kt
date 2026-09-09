@@ -11,6 +11,7 @@ interface ProductRepository {
     suspend fun getProductById(id: String): Product?
     suspend fun getProductForSku(sku: String): List<Product>
     suspend fun getAllProducts(): List<Product>
+    suspend fun getLastUpdatedProducts(): List<Product>
 
     suspend fun getTotalProductCount(): Int
 
@@ -32,6 +33,7 @@ interface ProductRepository {
 
     suspend fun getTotalOutputGSTOfProductsInStock(): Double
 
+    suspend fun getProductForVendor(vendorId: String): List<Product>
 
     suspend fun getMaxId(): Int?
 
