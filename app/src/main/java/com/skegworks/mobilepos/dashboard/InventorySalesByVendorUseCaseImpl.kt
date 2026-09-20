@@ -1,14 +1,19 @@
 package com.skegworks.mobilepos.dashboard
 
+import android.util.Log
+import com.skegworks.mobilepos.creditnote.CreditNoteRepository
 import com.skegworks.mobilepos.invoice.InvoiceRepository
 import com.skegworks.mobilepos.product.ProductRepository
 import javax.inject.Inject
 
 class InventorySalesByVendorUseCaseImpl @Inject constructor(
     private val productRepository: ProductRepository,
-    private val invoiceRepository: InvoiceRepository
+    private val invoiceRepository: InvoiceRepository,
+    private val creditNoteRepository: CreditNoteRepository
 ) : InventorySalesByVendorUseCase {
     override suspend fun invoke(): List<InventorySaleByVendor> {
+
+        val timeStart = System.currentTimeMillis()
 
         var products = productRepository.getAllProducts().sortedBy { it.vendorName }
 
@@ -39,6 +44,9 @@ class InventorySalesByVendorUseCaseImpl @Inject constructor(
 
         products = listOf()
 
+        val timeProduct = System.currentTimeMillis()
+        Log.d("Time Taken", "Product: ${timeProduct - timeStart}")
+
         var invoices = invoiceRepository.getAllInvoices()
 
         invoices.forEach { invoice ->
@@ -68,6 +76,26 @@ class InventorySalesByVendorUseCaseImpl @Inject constructor(
 
         invoices = listOf()
 
-        return vendorMap.values.toList().sortedBy { it.vendorName }
+        val timeInvoice = System.currentTimeMillis()
+        Log.d("Time Taken", "Invoice: ${timeInvoice - timeProduct}")
+
+        vendorMap.forEach { (vendorId, _) ->
+            val creditNoteItems = creditNoteRepository.getCreditNoteItemsByVendorId(vendorId)
+            creditNoteItems.forEach { item ->
+                val value = vendorMap[item.vendorId]
+                if (value != null) {
+                    vendorMap[item.vendorId] = value.copy(
+                        soldQuantity = value.soldQuantity - item.quantity,
+                        salesAmount = value.salesAmount - (item.quantity * item.finalRoundedOffPrice),
+                        profit = value.profit - (item.quantity * (item.finalRoundedOffPrice - item.cost))
+                    )
+                }
+            }
+        }
+
+        val result = vendorMap.values.toList().sortedBy { it.vendorName }
+
+        Log.d("Time Taken", "Total: ${timeInvoice - timeStart}")
+        return result
     }
 }

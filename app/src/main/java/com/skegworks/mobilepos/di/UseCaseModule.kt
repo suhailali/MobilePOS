@@ -285,11 +285,13 @@ class UseCaseModule {
     @Provides
     fun providesInventorySalesByVendorUseCase(
         productRepository: ProductRepository,
-        invoiceRepository: InvoiceRepository
+        invoiceRepository: InvoiceRepository,
+        creditNoteRepository: CreditNoteRepository
     ): InventorySalesByVendorUseCase {
         return InventorySalesByVendorUseCaseImpl(
             productRepository,
-            invoiceRepository
+            invoiceRepository,
+            creditNoteRepository
         )
     }
 

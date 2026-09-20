@@ -91,7 +91,7 @@ class DashboardViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     salesPerDay = emptyList(),
-                    yStepSize = 0,
+                    yStepSize = 1,
                     maxRange = 0,
                     totalSales = 0.0,
                     averageSales = 0.0,
@@ -106,6 +106,7 @@ class DashboardViewModel @Inject constructor(
         }
         val maxRange = chartData.maxOf { it.yValue }.toInt()
         _state.update {
+            val yStepSize = maxRange / getStepSizeDivider(maxRange)
             it.copy(
                 //dashboardValue = total,
                 salesPerDay = getBarChartData(
@@ -114,7 +115,7 @@ class DashboardViewModel @Inject constructor(
                     BarChartType.VERTICAL,
                     DataCategorySettings()
                 ),
-                yStepSize = maxRange / getStepSizeDivider(maxRange),
+                yStepSize = if (yStepSize < 1) 1 else yStepSize,
                 maxRange = maxRange,
                 totalSales = total,
                 averageSales = total / 7,

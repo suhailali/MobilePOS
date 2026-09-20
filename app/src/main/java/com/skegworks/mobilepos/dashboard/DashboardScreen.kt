@@ -94,7 +94,8 @@ fun DashboardScreen(modifier: Modifier, viewModel: DashboardViewModel,
                         offset = 0.dp,
                         categoryOptions = DataCategorySettings(
                         ),
-                        labelFormatter = { index -> (index * (state.maxRange / state.yStepSize)).toString() }
+                        labelFormatter = { index ->
+                            (index * (state.maxRange / state.yStepSize)).toString() }
                     )
 
                     val barChartData = BarChartConfig(

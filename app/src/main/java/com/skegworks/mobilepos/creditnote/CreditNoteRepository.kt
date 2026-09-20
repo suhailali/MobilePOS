@@ -11,7 +11,7 @@ interface CreditNoteRepository {
 
     suspend fun updateCreditNoteItem(creditNoteItem: CreditNoteItem)
     suspend fun getCreditNoteItemByInvoiceItemId(invoiceItemId: String): CreditNoteItem?
-    suspend fun getCreditNoteItemByVendorId(vendorId: String): CreditNoteItem?
+    suspend fun getCreditNoteItemsByVendorId(vendorId: String): List<CreditNoteItem>
     suspend fun isInvoiceAddedToCreditNote(invoiceId: String): Boolean
     suspend fun syncCreditNote(creditNote: CreditNote,  onSuccess: (String) -> Unit,
                                onFailure: (Exception) -> Unit)

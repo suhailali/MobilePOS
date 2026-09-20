@@ -38,8 +38,10 @@ class CreditNoteRepositoryImpl @Inject constructor (
         return creditNoteItemDao.getCreditNoteItemByInvoiceItemId(invoiceItemId)?.toDomain()
     }
 
-    override suspend fun getCreditNoteItemByVendorId(vendorId: String): CreditNoteItem? {
-        return creditNoteItemDao.getCreditNoteItemByVendorId(vendorId)?.toDomain()
+    override suspend fun getCreditNoteItemsByVendorId(vendorId: String): List<CreditNoteItem> {
+        return creditNoteItemDao.getCreditNoteItemsByVendorId(vendorId).map {
+            it.toDomain()
+        }
     }
 
     override suspend fun isInvoiceAddedToCreditNote(invoiceId: String): Boolean {
