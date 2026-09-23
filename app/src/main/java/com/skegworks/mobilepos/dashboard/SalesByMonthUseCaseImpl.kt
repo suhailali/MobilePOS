@@ -1,6 +1,7 @@
 package com.skegworks.mobilepos.dashboard
 
 import android.util.Log
+import com.skegworks.mobilepos.BuildConfig
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.invoice.InvoiceRepository
 import java.time.YearMonth
@@ -12,7 +13,12 @@ class SalesByMonthUseCaseImpl @Inject constructor(
 ) : SalesByMonthUseCase {
     override suspend fun invoke(): List<SalesByMonth> {
         val sales = invoiceRepository.getAllInvoices().sortedBy { it.updatedAt }
-        val monthRanges = getMonthRangesFromDecember2025()
+        val monthRanges =
+            if (BuildConfig.VENDOR_NAME == "Salwariya") {
+                getMonthRangesFromMay2026()
+            } else {
+                getMonthRangesFromDecember2025()
+            }
         var currentMonthRangeIndex = 0
         var currentMonthRange = monthRanges[currentMonthRangeIndex]
         val mapSales = mutableMapOf<YearMonth, SalesByMonth>()
@@ -96,8 +102,16 @@ class SalesByMonthUseCaseImpl @Inject constructor(
         )
     }
 
-    private fun getMonthRangesFromDecember2025(): List<MonthRange> {
-        val startMonth = YearMonth.of(2025, 12)
+    private fun getMonthRangesFromMay2026(): List<com.skegworks.mobilepos.dashboard.MonthRange> {
+        return getMonthRangesFrom(2026, 5)
+    }
+
+    private fun getMonthRangesFromDecember2025(): List<com.skegworks.mobilepos.dashboard.MonthRange> {
+        return getMonthRangesFrom(2025, 12)
+    }
+
+    private fun getMonthRangesFrom(year: Int, month: Int): List<MonthRange> {
+        val startMonth = YearMonth.of(year, month)
         val currentMonth = YearMonth.now()
         val zoneId = ZoneId.systemDefault()
 

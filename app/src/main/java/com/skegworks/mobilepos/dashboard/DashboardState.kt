@@ -17,5 +17,7 @@ data class DashboardState(
     val inventorySalesByVendor: List<InventorySaleByVendor> = listOf(),
     val totalInventorySales: InventorySaleByVendor? = null,
     val productList: List<Product> = listOf(),
-    val salesByMonth: List<SalesByMonth> = listOf()
+    val salesByMonth: List<SalesByMonth> = listOf(),
+    val topCustomers: List<TopCustomer> = listOf(),
+    val monthlyExpense: Int = 0
 )

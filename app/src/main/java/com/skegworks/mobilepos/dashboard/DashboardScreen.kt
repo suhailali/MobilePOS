@@ -27,6 +27,7 @@ import network.chaintech.cmpcharts.ui.barchart.config.SelectionHighlightData
 
 @Composable
 fun DashboardScreen(modifier: Modifier, viewModel: DashboardViewModel,
+                    navigateToTopCustomer: () -> Unit,
                     navigateToMonthlySales: () -> Unit,
                     navigateToInventorySales: () -> Unit) {
     val state by viewModel.state.collectAsState()
@@ -48,6 +49,14 @@ fun DashboardScreen(modifier: Modifier, viewModel: DashboardViewModel,
         ) {
             Text(text = "Monthly Sales")
         }
+
+        Button(
+            onClick = { navigateToTopCustomer() },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text(text = "Top Customer")
+        }
+
 
         SpacerLarge()
 

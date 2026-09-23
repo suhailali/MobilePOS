@@ -1,5 +1,7 @@
 package com.skegworks.mobilepos.invoice
 
+import com.skegworks.mobilepos.dashboard.TopCustomer
+import com.skegworks.mobilepos.dashboard.TopCustomers
 import com.skegworks.mobilepos.data.domain.ChartPoint
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
@@ -38,4 +40,5 @@ interface InvoiceRepository {
 
     suspend fun getInvoiceForToday(): List<Invoice>
     suspend fun getInvoiceForThisMonth(): List<Invoice>
+    suspend fun getTopCustomer(): List<TopCustomer>
 }

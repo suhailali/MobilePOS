@@ -33,6 +33,8 @@ import com.skegworks.mobilepos.dashboard.InventorySalesByVendorUseCase
 import com.skegworks.mobilepos.dashboard.InventorySalesByVendorUseCaseImpl
 import com.skegworks.mobilepos.dashboard.SalesByMonthUseCase
 import com.skegworks.mobilepos.dashboard.SalesByMonthUseCaseImpl
+import com.skegworks.mobilepos.dashboard.TopCustomerUseCase
+import com.skegworks.mobilepos.dashboard.TopCustomerUseCaseImpl
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCaseImpl
 import com.skegworks.mobilepos.invoice.GenerateNewCreditNoteUseCase
@@ -300,5 +302,12 @@ class UseCaseModule {
         invoiceRepository: InvoiceRepository
     ): SalesByMonthUseCase {
         return SalesByMonthUseCaseImpl(invoiceRepository)
+    }
+
+    @Provides
+    fun providesTopCustomerUseCase(
+        invoiceRepository: InvoiceRepository
+    ): TopCustomerUseCase {
+        return TopCustomerUseCaseImpl(invoiceRepository)
     }
 }

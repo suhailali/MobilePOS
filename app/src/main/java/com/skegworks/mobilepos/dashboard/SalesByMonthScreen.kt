@@ -42,14 +42,14 @@ fun SalesByMonthScreen(modifier: Modifier, viewModel: DashboardViewModel) {
             itemsIndexed(
                 items = list,
                 key = { _, item -> item.month }) { index, item ->
-                MonthlySaleRow(index, item)
+                MonthlySaleRow(index, item, state.monthlyExpense)
             }
         }
     }
 }
 
 @Composable
-fun MonthlySaleRow(index: Int, salesByMonth: SalesByMonth) {
+fun MonthlySaleRow(index: Int, salesByMonth: SalesByMonth, monthlyExpense: Int) {
     val backgroundColor =
         if (index % 2 == 0) MaterialTheme.colorScheme.tertiaryFixed else MaterialTheme.colorScheme.primaryFixedDim
 
@@ -97,6 +97,6 @@ fun MonthlySaleRow(index: Int, salesByMonth: SalesByMonth) {
         }
         SpacerMedium()
         Text("Profit/Loss")
-        Text(" ${salesByMonth.salesProfit.roundTwoDecimal() - 100000  - salesByMonth.cashDiscountGiven}")
+        Text(" ${salesByMonth.salesProfit.roundTwoDecimal() - monthlyExpense  - salesByMonth.cashDiscountGiven}")
     }
 }

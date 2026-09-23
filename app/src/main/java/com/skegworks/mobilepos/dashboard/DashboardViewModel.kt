@@ -3,9 +3,11 @@ package com.skegworks.mobilepos.dashboard
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.BuildConfig
 import com.skegworks.mobilepos.data.domain.ChartPoint
 import com.skegworks.mobilepos.data.local.InvoiceByDay
 import com.skegworks.mobilepos.product.ProductRepository
+import com.skegworks.mobilepos.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +29,8 @@ class DashboardViewModel @Inject constructor(
     private val productRepository: ProductRepository,
     private val dashboardRepository: DashboardRepository,
     private val inventorySalesByVendorUseCase: InventorySalesByVendorUseCase,
-    private val salesByMonthUseCase: SalesByMonthUseCase
+    private val salesByMonthUseCase: SalesByMonthUseCase,
+    private val topCustomerUseCase: TopCustomerUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(DashboardState())
     val state: StateFlow<DashboardState> = _state.asStateFlow()
@@ -36,6 +39,7 @@ class DashboardViewModel @Inject constructor(
         _state.update {
             it.copy(isLoading = true)
         }
+        loadMonthlyExpense()
         getTodaySale()
     }
 
@@ -259,6 +263,27 @@ class DashboardViewModel @Inject constructor(
             val sales = salesByMonthUseCase()
             _state.update {
                 it.copy(salesByMonth = sales)
+            }
+        }
+    }
+
+    fun loadTopCustomers() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val topCustomers = topCustomerUseCase()
+            _state.update {
+                it.copy(topCustomers = topCustomers)
+            }
+        }
+    }
+
+    private fun loadMonthlyExpense() {
+        if (BuildConfig.VENDOR_NAME == "Salwariya") {
+            _state.update {
+                it.copy(monthlyExpense = 6000)
+            }
+        } else {
+            _state.update {
+                it.copy(monthlyExpense = 100000)
             }
         }
     }

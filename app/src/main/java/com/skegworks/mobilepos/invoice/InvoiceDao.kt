@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.skegworks.mobilepos.dashboard.TopCustomer
 import com.skegworks.mobilepos.data.local.DayInvoiceAmount
 import com.skegworks.mobilepos.data.local.InvoiceEntity
 
@@ -40,4 +41,40 @@ interface InvoiceDao {
 
     @Query("SELECT * FROM invoices WHERE updated_at > :time ORDER BY invoice_date DESC")
     fun getInvoicesForAPeriod(time: Long): List<InvoiceEntity>
+
+    @Query("""
+    SELECT
+        customer_id AS id,
+        customer_name AS name,
+        customer_phone AS phone,
+
+        SUM(final_price) AS totalSpend,
+
+        COUNT(id) AS totalVisits,
+
+        0 AS totalReturns,
+
+        MAX(final_price) AS maxSpend,
+
+        SUM(
+            total_discount +
+            cash_discount +
+            coupon_discount
+        ) AS totalDiscountReceived
+
+    FROM invoices
+
+    WHERE customer_id IS NOT NULL
+      AND customer_id != ''
+
+    GROUP BY customer_id
+
+    ORDER BY totalSpend DESC
+
+    LIMIT :limit
+""")
+    suspend fun getTopCustomers(
+        limit: Int = 100
+    ): List<TopCustomer>
+
 }

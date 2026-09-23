@@ -17,6 +17,9 @@ object InventorySalesReport
 object Dashboard
 
 @Serializable
+object TopCustomers
+
+@Serializable
 class ProductList(val vendorId: String)
 
 @Serializable
@@ -34,7 +37,11 @@ fun DashboardScreenNavigation(
         startDestination = Dashboard
     ) {
         composable<Dashboard> {
-            DashboardScreen(modifier = modifier, viewModel = dashboardViewModel, navigateToMonthlySales = {
+            DashboardScreen(modifier = modifier, viewModel = dashboardViewModel,
+                navigateToTopCustomer = {
+                    navController.navigate(TopCustomers)
+                },
+                navigateToMonthlySales = {
                 navController.navigate(SalesByMonthScreen)
             }) {
                 navController.navigate(InventorySalesReport)
@@ -65,6 +72,9 @@ fun DashboardScreenNavigation(
                     navController.popBackStack()
                 }
             }
+        }
+        composable<TopCustomers> {
+            TopCustomersScreen(modifier = modifier, viewModel = dashboardViewModel)
         }
     }
 }

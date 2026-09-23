@@ -139,15 +139,24 @@ class LoginViewModel @Inject constructor(
                             errorMessage = null
                         )
                     }
-                    // loadAllData()
+                    loadAllData()
 
-                    _state.update {
-                        it.copy(
-                            success = true,
-                            isLoading = false,
-                            errorMessage = null
-                        )
-                    }
+
+
+
+
+
+
+
+
+
+//                    _state.update {
+//                        it.copy(
+//                            success = true,
+//                            isLoading = false,
+//                            errorMessage = null
+//                        )
+//                    }
                 }
             }
         }) {

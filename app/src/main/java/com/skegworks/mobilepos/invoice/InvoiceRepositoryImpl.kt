@@ -4,6 +4,7 @@ import com.skegworks.mobilepos.business.BusinessDao
 import com.skegworks.mobilepos.coupon.CouponDao
 import com.skegworks.mobilepos.creditnote.CreditNoteDao
 import com.skegworks.mobilepos.customer.CustomerDao
+import com.skegworks.mobilepos.dashboard.TopCustomer
 import com.skegworks.mobilepos.data.domain.ChartPoint
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
@@ -198,6 +199,10 @@ class InvoiceRepositoryImpl @Inject constructor(
             )
         )
         return getInvoiceDetails(invoices)
+    }
+
+    override suspend fun getTopCustomer(): List<TopCustomer> {
+        return invoiceDao.getTopCustomers()
     }
 
     suspend fun getInvoiceDetails(invoices: List<InvoiceEntity>): List<Invoice> {
