@@ -6,6 +6,8 @@ import com.skegworks.mobilepos.barcode.ZxingBarcodeGenerator
 import com.skegworks.mobilepos.coupon.GenerateCouponQRCode
 import com.skegworks.mobilepos.coupon.GenerateCouponQRCodeImpl
 import com.skegworks.mobilepos.data.remote.firestore.FirestoreHelper
+import com.skegworks.mobilepos.print.BlePrinterManager
+import com.skegworks.mobilepos.print.BluetoothDiscoveryHelper
 import com.skegworks.mobilepos.sku.SkuGenerator
 import com.skegworks.mobilepos.sku.SkuGeneratorImpl
 import com.skegworks.mobilepos.sync.SyncData
@@ -87,5 +89,17 @@ class UtilModule {
     @Provides
     fun providesGenerateCouponQRCode(barcodeGenerator: BarcodeGenerator): GenerateCouponQRCode {
         return GenerateCouponQRCodeImpl(barcodeGenerator)
+    }
+
+    @Singleton
+    @Provides
+    fun provideBluetoothDiscoveryHelper(@ApplicationContext context: Context): BluetoothDiscoveryHelper {
+        return BluetoothDiscoveryHelper(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideBluetoothPrinterManager(@ApplicationContext context: Context): BlePrinterManager {
+        return BlePrinterManager(context)
     }
 }

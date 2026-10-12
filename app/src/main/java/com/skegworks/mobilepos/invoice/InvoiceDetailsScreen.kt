@@ -32,7 +32,9 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skegworks.mobilepos.data.domain.InvoiceItem
+import com.skegworks.mobilepos.print.PrinterState
 import com.skegworks.mobilepos.ui.component.AlertDialogWithTextInput
 import com.skegworks.mobilepos.ui.component.SpacerLarge
 import com.skegworks.mobilepos.ui.component.SpacerSmall
@@ -40,9 +42,17 @@ import com.skegworks.mobilepos.ui.component.TextFieldBottomSheet
 import com.skegworks.mobilepos.utils.Dimens
 
 @Composable
-fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoiceId: String, navigateBack: () -> Unit) {
+fun InvoiceDetailsScreen(
+    modifier: Modifier,
+    viewModel: InvoiceViewModel,
+    invoiceId: String,
+    navigateBack: () -> Unit
+) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    val printerState by
+    viewModel.printerState
+        .collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(InvoiceIntent.SelectInvoice(invoiceId))
@@ -58,8 +68,11 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
 
     LaunchedEffect(state.pdfGenerated) {
         if (state.pdfGenerated) {
-            state.invoicePDF?.let {
-                viewModel.printPdf(context, it, state.selectedInvoice?.invoiceNumber ?: "Invoice")
+//            state.invoicePDF?.let {
+//                viewModel.printPdf(context, it, state.selectedInvoice?.invoiceNumber ?: "Invoice")
+//            }
+            state.bleInvoiceContent?.let {
+                viewModel.printBleInvoice(it)
             }
         }
     }
@@ -75,6 +88,37 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Invoice", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
+            Text(
+                text = when (printerState) {
+
+                    PrinterState.Idle ->
+                        "Printer idle"
+
+                    PrinterState.Scanning ->
+                        "Searching for printer..."
+
+                    PrinterState.Connecting ->
+                        "Connecting to printer..."
+
+                    PrinterState.DiscoveringServices ->
+                        "Preparing printer..."
+
+                    PrinterState.Ready ->
+                        "Printer ready"
+
+                    PrinterState.Printing ->
+                        "Printing..."
+
+                    PrinterState.Printed ->
+                        "Printed successfully"
+
+                    PrinterState.Disconnected ->
+                        "Printer disconnected"
+
+                    is PrinterState.Error ->
+                        "Error: "
+                }
+            )
             TextButton(onClick = {
                 viewModel.handleIntent(InvoiceIntent.PrintInvoice)
             }) {
@@ -82,7 +126,9 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
             }
         }
 
-        Box(Modifier.background(MaterialTheme.colorScheme.onPrimary).padding(2.dp)) {
+        Box(Modifier
+            .background(MaterialTheme.colorScheme.onPrimary)
+            .padding(2.dp)) {
             state.selectedInvoice?.let {
                 InvoiceListRow(index = 1, invoice = it) {
                     //ignore
@@ -110,8 +156,7 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
                             false
                         )
                     )
-                }
-                else {
+                } else {
                     if (invoiceItem.quantity < 2) {
                         viewModel.handleIntent(
                             InvoiceIntent.CreditNoteInvoiceItem(
@@ -153,7 +198,7 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
             onItemSelected = {
                 if (it.isNotEmpty() && it.isDigitsOnly()) {
                     state.invoiceItemForPartialQuantityUpdate?.let { item ->
-                        if (it.toInt() >0 && it.toInt() <= item.quantity) {
+                        if (it.toInt() > 0 && it.toInt() <= item.quantity) {
                             viewModel.handleIntent(
                                 InvoiceIntent.CreditNoteInvoiceItem(
                                     item,
@@ -178,7 +223,7 @@ fun InvoiceDetailsScreen(modifier: Modifier, viewModel: InvoiceViewModel, invoic
 }
 
 @Composable
-fun InvoiceItemList(list: List<InvoiceItem>, onItemSelected :(InvoiceItem, Boolean) -> Unit) {
+fun InvoiceItemList(list: List<InvoiceItem>, onItemSelected: (InvoiceItem, Boolean) -> Unit) {
     LazyColumn {
         itemsIndexed(
             items = list,
@@ -214,7 +259,7 @@ fun InvoiceItemListRow(index: Int, invoiceItem: InvoiceItem, onLongClick: (Boole
             if (checked) {
                 Checkbox(
                     checked = checked,
-                    onCheckedChange = { checked = it}
+                    onCheckedChange = { checked = it }
                 )
             }
         }

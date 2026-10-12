@@ -77,7 +77,8 @@ class HomeViewModel @Inject constructor(
                     "Category",
                     "Login",
                     "CreateUser",
-                    "Invoices"
+                    "Invoices",
+                    "BLE Printer"
                 )
 
             UserRole.ROLE_OWNER ->

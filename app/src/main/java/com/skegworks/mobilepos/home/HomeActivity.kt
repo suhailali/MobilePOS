@@ -29,6 +29,7 @@ import com.skegworks.mobilepos.utils.files.PDFFileHandler
 import com.skegworks.mobilepos.login.LoginActivity
 import com.skegworks.mobilepos.pdf.PdfGeneratorImpl
 import com.skegworks.mobilepos.pos.POSActivity
+import com.skegworks.mobilepos.print.BLEPrinterConnectActivity
 import com.skegworks.mobilepos.product.GenerateBarCodeUseCase
 import com.skegworks.mobilepos.product.ProductActivity
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
@@ -145,6 +146,10 @@ class HomeActivity : ComponentActivity() {
                             }
                             "Invoices" -> {
                                 val intent = Intent(context, InvoicesActivity::class.java)
+                                context.startActivity(intent)
+                            }
+                            "BLE Printer" -> {
+                                val intent = Intent(context, BLEPrinterConnectActivity::class.java)
                                 context.startActivity(intent)
                             }
                         }

@@ -16,11 +16,14 @@ import com.skegworks.mobilepos.data.domain.InvoiceState
 import com.skegworks.mobilepos.data.domain.PriceInput
 import com.skegworks.mobilepos.data.domain.Product
 import com.skegworks.mobilepos.data.mapper.toInvoiceItem
+import com.skegworks.mobilepos.invoice.GenerateBLEInvoiceContentUseCase
 import com.skegworks.mobilepos.invoice.GenerateInvoicePdfUseCase
 import com.skegworks.mobilepos.invoice.GenerateNewInvoiceNumberUseCase
 import com.skegworks.mobilepos.invoice.SyncInvoiceUseCase
 import com.skegworks.mobilepos.invoice.UpdateInvoiceNumberUseCase
+import com.skegworks.mobilepos.print.BlePrinterManager
 import com.skegworks.mobilepos.print.PrintPdfUseCase
+import com.skegworks.mobilepos.print.PrinterState
 import com.skegworks.mobilepos.product.CalculateProductPriceUseCase
 import com.skegworks.mobilepos.utils.Constants
 import com.skegworks.mobilepos.utils.DateUtility
@@ -56,11 +59,36 @@ class POSViewModel @Inject constructor(
     private val updateInventoryAfterSaleUseCase: UpdateInventoryAfterSaleUseCase,
     private val userPreferenceHandler: UserPreferenceHandler,
     private val fileHandler: FileHandler<PdfDocument>,
-    private val updateCouponPostInvoice: UpdateCouponPostInvoice
+    private val updateCouponPostInvoice: UpdateCouponPostInvoice,
+    private val generateBLEInvoiceContentUseCase: GenerateBLEInvoiceContentUseCase,
+    private val blePrinterManager: BlePrinterManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(POSState())
     val state: StateFlow<POSState> = _state.asStateFlow()
+
+    val printerState:
+            StateFlow<PrinterState> =
+        blePrinterManager.printerState
+
+    init {
+        blePrinterManager.startScan()
+    }
+
+    fun printBleInvoice(invoiceContent: String) {
+        _state.update {
+            it.copy(
+                pdfGenerated = false
+            )
+        }
+        blePrinterManager.printInvoice(invoiceContent)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        blePrinterManager.close()
+    }
 
     private val _events = MutableSharedFlow<POSEvents>()
     val events = _events.asSharedFlow()
@@ -414,10 +442,12 @@ class POSViewModel @Inject constructor(
                     customerInfo
                 )
                 fileHandler.writeDocument(pdf, invoice.invoiceNumber)
+                val invoiceContent = generateBLEInvoiceContentUseCase(invoice, customerInfo)
                 _state.update {
                     it.copy(
                         invoicePDF = pdf,
                         pdfGenerated = true,
+                        bleInvoiceContent = invoiceContent,
                         invoice = invoice
                     )
                 }

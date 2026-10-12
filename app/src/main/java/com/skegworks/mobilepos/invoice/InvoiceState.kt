@@ -20,6 +20,7 @@ data class InvoiceState(
     val invoiceItemForPartialQuantityUpdate: InvoiceItem? = null,
     val unsyncedInvoices: Int = 0,
     val invoicePDF: PdfDocument? = null,
+    val bleInvoiceContent: String? = null,
     val pdfGenerated: Boolean = false,
     val isLastPage: Boolean = false,
     val currentPage: Int = 0,

@@ -5,8 +5,9 @@ import android.graphics.pdf.PdfDocument
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.skegworks.mobilepos.BuildConfig
-import com.skegworks.mobilepos.customer.SearchCustomerIntent
+import com.skegworks.mobilepos.print.BlePrinterManager
 import com.skegworks.mobilepos.print.PrintPdfUseCase
+import com.skegworks.mobilepos.print.PrinterState
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
 import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCase
 import com.skegworks.mobilepos.utils.Constants
@@ -32,8 +33,61 @@ class InvoiceViewModel @Inject constructor(
     private val updateInventoryAfterCreditNoteUseCase: UpdateInventoryAfterCreditNoteUseCase,
     private val printPdfUseCase: PrintPdfUseCase,
     private val generateInvoicePdfUseCase: GenerateInvoicePdfUseCase,
-    private val syncPendingInvoicesUseCase: SyncPendingInvoicesUseCase
+    private val syncPendingInvoicesUseCase: SyncPendingInvoicesUseCase,
+    private val generateBLEInvoiceContentUseCase: GenerateBLEInvoiceContentUseCase,
+    private val blePrinterManager: BlePrinterManager
 ) : ViewModel() {
+
+    val printerState:
+            StateFlow<PrinterState> =
+        blePrinterManager.printerState
+
+    init {
+        //observePrinterState()
+        blePrinterManager.startScan()
+    }
+
+
+    private fun observePrinterState() {
+
+        viewModelScope.launch {
+
+            blePrinterManager
+                .printerState
+                .collect { state ->
+
+                    when (state) {
+
+                        PrinterState.Ready -> {
+
+                            /*
+                             * Printer is connected and
+                             * the write characteristic is
+                             * available.
+                             */
+                        }
+
+                        PrinterState.Printed -> {
+
+                            /*
+                             * Printing completed.
+                             */
+                        }
+
+                        is PrinterState.Error -> {
+
+                            /*
+                             * Handle error if required.
+                             */
+                        }
+
+                        else -> {
+                            // Nothing to do.
+                        }
+                    }
+                }
+        }
+    }
 
     private val _state = MutableStateFlow(InvoiceState())
     val state: StateFlow<InvoiceState> = _state.asStateFlow()
@@ -54,9 +108,11 @@ class InvoiceViewModel @Inject constructor(
                     }
                     viewModelScope.launch(Dispatchers.IO) {
                         val pdfDocument = generateInvoicePdfUseCase.generatePdf(it, customerInfo)
+                        val invoiceContent = generateBLEInvoiceContentUseCase(it, customerInfo)
                         _state.update { invoiceState ->
                             invoiceState.copy(
                                 invoicePDF = pdfDocument,
+                                bleInvoiceContent = invoiceContent,
                                 pdfGenerated = true
                             )
                         }
@@ -216,5 +272,20 @@ class InvoiceViewModel @Inject constructor(
             )
         }
         printPdfUseCase.invoke(context, pdfDocument, jobName)
+    }
+
+    fun printBleInvoice(invoiceContent: String) {
+        _state.update {
+            it.copy(
+                pdfGenerated = false
+            )
+        }
+        blePrinterManager.printInvoice(invoiceContent)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
+        blePrinterManager.close()
     }
 }

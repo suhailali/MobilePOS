@@ -31,8 +31,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skegworks.mobilepos.data.domain.InvoiceItem
 import com.skegworks.mobilepos.home.HomeActivity
+import com.skegworks.mobilepos.print.PrinterState
 import com.skegworks.mobilepos.ui.component.DeleteButton
 import com.skegworks.mobilepos.ui.component.SimpleAlertDialog
 import com.skegworks.mobilepos.ui.component.SpacerSmall
@@ -43,6 +45,9 @@ import com.skegworks.mobilepos.utils.findActivity
 @Composable
 fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigator) {
     val state by viewModel.state.collectAsState()
+    val printerState by
+    viewModel.printerState
+        .collectAsStateWithLifecycle()
     var isDiscountSheetOpen by remember { mutableStateOf(false) }
     var isErrorCouponDialogOpen by remember { mutableStateOf(false) }
 
@@ -64,8 +69,11 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
     }
     LaunchedEffect(state.pdfGenerated) {
         if (state.pdfGenerated) {
-            state.invoicePDF?.let {
-                viewModel.printPdf(context, it, state.invoiceNumber)
+//            state.invoicePDF?.let {
+//                viewModel.printPdf(context, it, state.invoiceNumber)
+//            }
+            state.bleInvoiceContent?.let {
+                viewModel.printBleInvoice(it)
             }
         }
     }
@@ -134,6 +142,38 @@ fun POSScreen(modifier: Modifier, viewModel: POSViewModel, navigator: POSNavigat
                     onClick = { viewModel.handleIntent(POSIntent.Payment) }) {
                     Text("Pay")
                 }
+
+                Text(
+                    text = when (printerState) {
+
+                        PrinterState.Idle ->
+                            "Printer idle"
+
+                        PrinterState.Scanning ->
+                            "Searching for printer..."
+
+                        PrinterState.Connecting ->
+                            "Connecting to printer..."
+
+                        PrinterState.DiscoveringServices ->
+                            "Preparing printer..."
+
+                        PrinterState.Ready ->
+                            "Printer ready"
+
+                        PrinterState.Printing ->
+                            "Printing..."
+
+                        PrinterState.Printed ->
+                            "Printed successfully"
+
+                        PrinterState.Disconnected ->
+                            "Printer disconnected"
+
+                        is PrinterState.Error ->
+                            "Error: "
+                    }
+                )
 
                 Button(
                     enabled = state.invoiceItems.isNotEmpty(),
