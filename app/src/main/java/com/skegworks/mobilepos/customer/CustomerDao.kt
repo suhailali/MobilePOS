@@ -13,6 +13,9 @@ interface CustomerDao {
     @Query("SELECT * FROM customers")
     suspend fun getAllCustomers(): List<CustomerEntity>
 
+    @Query("SELECT * FROM customers WHERE is_synced = 0")
+    suspend fun getUnsyncedCustomers(): List<CustomerEntity>
+
     @Update
     suspend fun updateCustomer(customer: CustomerEntity)
 

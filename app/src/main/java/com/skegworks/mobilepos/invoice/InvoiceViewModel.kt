@@ -9,6 +9,7 @@ import com.skegworks.mobilepos.print.BlePrinterManager
 import com.skegworks.mobilepos.print.PrintPdfUseCase
 import com.skegworks.mobilepos.print.PrinterState
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
+import com.skegworks.mobilepos.sync.SyncPendingCustomersUseCase
 import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCase
 import com.skegworks.mobilepos.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +35,7 @@ class InvoiceViewModel @Inject constructor(
     private val printPdfUseCase: PrintPdfUseCase,
     private val generateInvoicePdfUseCase: GenerateInvoicePdfUseCase,
     private val syncPendingInvoicesUseCase: SyncPendingInvoicesUseCase,
+    private val syncPendingCustomersUseCase: SyncPendingCustomersUseCase,
     private val generateBLEInvoiceContentUseCase: GenerateBLEInvoiceContentUseCase,
     private val blePrinterManager: BlePrinterManager
 ) : ViewModel() {
@@ -204,6 +206,11 @@ class InvoiceViewModel @Inject constructor(
                 delay(2000.milliseconds)
                 syncPendingInvoicesUseCase.invoke()
             }
+        }
+
+        // Push unsynced customers
+        viewModelScope.launch(Dispatchers.IO) {
+            syncPendingCustomersUseCase.invoke()
         }
 
         // Pull all invoices from Firebase

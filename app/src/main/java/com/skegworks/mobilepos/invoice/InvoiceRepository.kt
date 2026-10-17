@@ -41,4 +41,6 @@ interface InvoiceRepository {
     suspend fun getInvoiceForToday(): List<Invoice>
     suspend fun getInvoiceForThisMonth(): List<Invoice>
     suspend fun getTopCustomer(): List<TopCustomer>
+
+    suspend fun getLastestRecordSyncTime(): Long
 }

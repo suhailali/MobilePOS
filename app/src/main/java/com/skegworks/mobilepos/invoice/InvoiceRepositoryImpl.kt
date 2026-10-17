@@ -205,6 +205,10 @@ class InvoiceRepositoryImpl @Inject constructor(
         return invoiceDao.getTopCustomers()
     }
 
+    override suspend fun getLastestRecordSyncTime(): Long {
+        return invoiceDao.getLastestRecordSyncTime()
+    }
+
     suspend fun getInvoiceDetails(invoices: List<InvoiceEntity>): List<Invoice> {
         val newInvoices = invoices.map { invoice ->
             val invoiceItems = invoiceItemDao.getAllInvoiceItems(invoice.id).map {

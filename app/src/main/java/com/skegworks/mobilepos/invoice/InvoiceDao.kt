@@ -77,4 +77,6 @@ interface InvoiceDao {
         limit: Int = 100
     ): List<TopCustomer>
 
+    @Query("SELECT updated_at FROM invoices ORDER BY updated_at DESC LIMIT 1")
+    suspend fun getLastestRecordSyncTime(): Long
 }

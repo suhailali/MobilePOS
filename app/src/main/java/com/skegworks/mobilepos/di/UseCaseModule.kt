@@ -69,6 +69,8 @@ import com.skegworks.mobilepos.product.SyncProductUseCase
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
 import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCaseImpl
 import com.skegworks.mobilepos.sync.SyncData
+import com.skegworks.mobilepos.sync.SyncPendingCustomersUseCase
+import com.skegworks.mobilepos.sync.SyncPendingCustomersUseCaseImpl
 import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCase
 import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCaseImpl
 import com.skegworks.mobilepos.utils.DateUtility
@@ -250,6 +252,13 @@ class UseCaseModule {
         invoiceRepository: InvoiceRepository
     ): SyncPendingInvoicesUseCase {
         return SyncPendingInvoicesUseCaseImpl(invoiceRepository)
+    }
+
+    @Provides
+    fun providesSyncPendingCustomersUseCase(
+        customerRepository: CustomerRepository
+    ): SyncPendingCustomersUseCase {
+        return SyncPendingCustomersUseCaseImpl(customerRepository)
     }
 
     @Provides

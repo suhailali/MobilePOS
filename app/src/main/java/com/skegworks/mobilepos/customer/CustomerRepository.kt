@@ -8,6 +8,7 @@ interface CustomerRepository {
     suspend fun getCustomerById(id: String) : Customer?
 
     suspend fun getAllCustomers(): List<Customer>
+    suspend fun getUnsyncedCustomers(): List<Customer>
 
     suspend fun getCustomersByPhone(phone: String): List<Customer>?
     suspend fun getCustomersByPhoneOrName(value: String): List<Customer>?
