@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.skegworks.mobilepos.data.domain.InvoiceItem
+import com.skegworks.mobilepos.data.domain.UserRole
 import com.skegworks.mobilepos.print.PrinterState
 import com.skegworks.mobilepos.ui.component.AlertDialogWithTextInput
 import com.skegworks.mobilepos.ui.component.SpacerLarge
@@ -46,7 +47,8 @@ fun InvoiceDetailsScreen(
     modifier: Modifier,
     viewModel: InvoiceViewModel,
     invoiceId: String,
-    navigateBack: () -> Unit
+    onNavigateToProductDetail: (id: String) -> Unit,
+    navigateBack: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
@@ -56,6 +58,7 @@ fun InvoiceDetailsScreen(
 
     LaunchedEffect(Unit) {
         viewModel.handleIntent(InvoiceIntent.SelectInvoice(invoiceId))
+        viewModel.handleIntent(InvoiceIntent.SetUserRole)
     }
 
     LaunchedEffect(Unit) {
@@ -147,7 +150,12 @@ fun InvoiceDetailsScreen(
         Text("Invoice Items", style = MaterialTheme.typography.titleLarge, fontWeight = Bold)
         SpacerSmall()
         state.selectedInvoiceItems?.let {
-            InvoiceItemList(it) { invoiceItem, checked ->
+            InvoiceItemList(it, { invoiceItem ->
+                // on item clicked, open item only for owner, admin
+                if (state.userRole != UserRole.ROLE_STAFF) {
+                    onNavigateToProductDetail(invoiceItem.productId)
+                }
+            }) { invoiceItem, checked ->
                 if (!checked) {
                     viewModel.handleIntent(
                         InvoiceIntent.CreditNoteInvoiceItem(
@@ -223,12 +231,14 @@ fun InvoiceDetailsScreen(
 }
 
 @Composable
-fun InvoiceItemList(list: List<InvoiceItem>, onItemSelected: (InvoiceItem, Boolean) -> Unit) {
+fun InvoiceItemList(list: List<InvoiceItem>, onItemClicked:(InvoiceItem) -> Unit, onItemSelected: (InvoiceItem, Boolean) -> Unit) {
     LazyColumn {
         itemsIndexed(
             items = list,
             key = { _, item -> item.id }) { index, invoiceItem ->
-            InvoiceItemListRow(index, invoiceItem) {
+            InvoiceItemListRow(index, invoiceItem, {
+                onItemClicked(invoiceItem)
+            }) {
                 onItemSelected(invoiceItem, it)
             }
         }
@@ -236,7 +246,7 @@ fun InvoiceItemList(list: List<InvoiceItem>, onItemSelected: (InvoiceItem, Boole
 }
 
 @Composable
-fun InvoiceItemListRow(index: Int, invoiceItem: InvoiceItem, onLongClick: (Boolean) -> Unit) {
+fun InvoiceItemListRow(index: Int, invoiceItem: InvoiceItem, onInvoiceItemClicked:() -> Unit, onLongClick: (Boolean) -> Unit) {
     var checked by remember { mutableStateOf(false) }
     val backgroundColor =
         if (index % 2 == 0) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.inversePrimary
@@ -247,7 +257,9 @@ fun InvoiceItemListRow(index: Int, invoiceItem: InvoiceItem, onLongClick: (Boole
             .background(backgroundColor)
             .padding(Dimens.MEDIUM_PADDING.dp)
             .combinedClickable(
-                onClick = {},
+                onClick = {
+                    onInvoiceItemClicked()
+                },
                 onLongClick = {
                     checked = !checked
                     onLongClick(checked)

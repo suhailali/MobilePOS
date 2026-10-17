@@ -8,6 +8,7 @@ sealed class InvoiceIntent {
     object LoadNextPage : InvoiceIntent()
     object SyncInvoices : InvoiceIntent()
     object PrintInvoice : InvoiceIntent()
+    object SetUserRole : InvoiceIntent()
     data class CreditNoteInvoiceItem(val invoiceItem: InvoiceItem, val quantity: Int, val addItem: Boolean) : InvoiceIntent()
     data class SelectInvoice(val id: String) : InvoiceIntent()
     data class ConfirmCreditNote(val returnDescription: String) : InvoiceIntent()

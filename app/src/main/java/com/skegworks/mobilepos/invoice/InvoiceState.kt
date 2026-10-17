@@ -3,6 +3,7 @@ package com.skegworks.mobilepos.invoice
 import android.graphics.pdf.PdfDocument
 import com.skegworks.mobilepos.data.domain.Invoice
 import com.skegworks.mobilepos.data.domain.InvoiceItem
+import com.skegworks.mobilepos.data.domain.UserRole
 
 data class InvoiceState(
     // list of total invoices
@@ -24,5 +25,6 @@ data class InvoiceState(
     val pdfGenerated: Boolean = false,
     val isLastPage: Boolean = false,
     val currentPage: Int = 0,
-    val textStatePhone: String = ""
+    val textStatePhone: String = "",
+    val userRole: UserRole = UserRole.ROLE_STAFF
     )

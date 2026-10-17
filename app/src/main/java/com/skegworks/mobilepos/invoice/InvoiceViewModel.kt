@@ -12,6 +12,7 @@ import com.skegworks.mobilepos.sync.LoadInvoicesFromFireStoreUseCase
 import com.skegworks.mobilepos.sync.SyncPendingCustomersUseCase
 import com.skegworks.mobilepos.sync.SyncPendingInvoicesUseCase
 import com.skegworks.mobilepos.utils.Constants
+import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -37,7 +38,8 @@ class InvoiceViewModel @Inject constructor(
     private val syncPendingInvoicesUseCase: SyncPendingInvoicesUseCase,
     private val syncPendingCustomersUseCase: SyncPendingCustomersUseCase,
     private val generateBLEInvoiceContentUseCase: GenerateBLEInvoiceContentUseCase,
-    private val blePrinterManager: BlePrinterManager
+    private val blePrinterManager: BlePrinterManager,
+    private val userPreferenceHandler: UserPreferenceHandler,
 ) : ViewModel() {
 
     val printerState:
@@ -46,6 +48,7 @@ class InvoiceViewModel @Inject constructor(
 
     init {
         //observePrinterState()
+        //TODO Fix crash if the bluetooth permission is not given
         blePrinterManager.startScan()
     }
 
@@ -194,6 +197,18 @@ class InvoiceViewModel @Inject constructor(
                     )
                 }
                 loadInvoices(searchValue = state.value.textStatePhone)
+            }
+
+            InvoiceIntent.SetUserRole -> {
+                viewModelScope.launch {
+                    userPreferenceHandler.getUserRole()?.let { role ->
+                        _state.update {
+                            it.copy(
+                                userRole = role
+                            )
+                        }
+                    }
+                }
             }
         }
     }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import com.skegworks.mobilepos.product.ProductViewModel
 import com.skegworks.mobilepos.ui.theme.MobilePOSTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,8 +23,10 @@ class InvoicesActivity : ComponentActivity() {
             MobilePOSTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val viewModel: InvoiceViewModel by viewModels<InvoiceViewModel>()
+                    val productViewModel: ProductViewModel by viewModels<ProductViewModel>()
                     InvoiceScreenNavigation(
                         viewModel = viewModel,
+                        productViewModel = productViewModel,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
