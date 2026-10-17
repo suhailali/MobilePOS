@@ -1,10 +1,16 @@
 package com.skegworks.mobilepos.home
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -27,6 +34,7 @@ import com.skegworks.mobilepos.dashboard.DashboardActivity
 import com.skegworks.mobilepos.invoice.InvoicesActivity
 import com.skegworks.mobilepos.utils.files.PDFFileHandler
 import com.skegworks.mobilepos.login.LoginActivity
+import com.skegworks.mobilepos.notification.FcmTokenRepository
 import com.skegworks.mobilepos.pdf.PdfGeneratorImpl
 import com.skegworks.mobilepos.pos.POSActivity
 import com.skegworks.mobilepos.print.BLEPrinterConnectActivity
@@ -37,14 +45,19 @@ import com.skegworks.mobilepos.vendors.VendorActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 import kotlin.getValue
 
 @AndroidEntryPoint
 class HomeActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var fcmTokenRepository: FcmTokenRepository
     private val viewModel: HomeViewModel by viewModels<HomeViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        requestNotificationPermission()
         viewModel.setupUser()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -157,6 +170,40 @@ class HomeActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private val notificationPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { granted ->
+            if (granted) {
+                registerDevice()
+            }
+        }
+
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                registerDevice()
+            } else {
+                notificationPermissionLauncher.launch(
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+            }
+        } else {
+            registerDevice()
+        }
+    }
+
+    @SuppressLint("HardwareIds")
+    private fun registerDevice() {
+        val mId = Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        val deviceName = Build.MODEL
+        fcmTokenRepository.registerDevice(mId, deviceName)
     }
 }
 
