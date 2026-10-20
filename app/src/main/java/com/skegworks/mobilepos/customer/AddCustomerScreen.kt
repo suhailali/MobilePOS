@@ -1,5 +1,8 @@
 package com.skegworks.mobilepos.customer
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
@@ -11,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import com.skegworks.mobilepos.ui.component.SimpleTextField
 import com.skegworks.mobilepos.ui.component.SpacerLarge
 import com.skegworks.mobilepos.ui.component.SpacerMedium
@@ -23,7 +27,7 @@ fun AddCustomerScreen(
     onSuccess: () -> Unit
 ) {
     val state = viewModel.state.collectAsState()
-
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         if (!isUpdate) {
             viewModel.handleIntent(AddCustomerIntent.SetData)
@@ -36,7 +40,7 @@ fun AddCustomerScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         SpacerLarge()
-        Text("Add New Customer", style = MaterialTheme.typography.titleLarge)
+        Text(if (isUpdate) "Update Customer" else "Add New Customer", style = MaterialTheme.typography.titleLarge)
         SpacerLarge()
         SimpleTextField(textState = state.value.textStateName, "Name") {
             viewModel.handleIntent(AddCustomerIntent.UpdateName(it))
@@ -65,6 +69,36 @@ fun AddCustomerScreen(
         if (state.value.isSaved) {
             Text("Customer Saved Successfully")
             onSuccess()
+        }
+        SpacerLarge()
+        if (isUpdate) {
+            Button(onClick = {
+                val builder = StringBuilder()
+                builder.append("Name: ${state.value.textStateName}").append(",")
+                builder.append("Address: ${state.value.textStateAddress}").append(",")
+                builder.append("Phone: ${state.value.textStatePhone}").append(",")
+                builder.append("Email: ${state.value.textStateEmail}")
+                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                clipboard.setPrimaryClip(ClipData.newPlainText("Customer", builder.toString()))
+            }) {
+                Text("Copy")
+            }
+        } else {
+            Button(onClick = {
+                val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val text = clipboard.primaryClip?.getItemAt(0)?.text
+                val parts = text?.split(",")
+                val name = parts?.get(0)?.split(":")?.get(1)?.trim()
+                val address = parts?.get(1)?.split(":")?.get(1)?.trim()
+                val phone = parts?.get(2)?.split(":")?.get(1)?.trim()
+                val email = parts?.get(3)?.split(":")?.get(1)?.trim()
+                viewModel.handleIntent(AddCustomerIntent.UpdateName(name ?: ""))
+                viewModel.handleIntent(AddCustomerIntent.UpdateAddress(address ?: ""))
+                viewModel.handleIntent(AddCustomerIntent.UpdatePhone(phone ?: ""))
+                viewModel.handleIntent(AddCustomerIntent.UpdateEmail(email ?: ""))
+            }) {
+                Text("Paste")
+            }
         }
 
         state.value.error?.let {

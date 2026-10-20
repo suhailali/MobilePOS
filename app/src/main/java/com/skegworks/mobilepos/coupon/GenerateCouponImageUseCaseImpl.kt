@@ -8,6 +8,7 @@ import android.graphics.Typeface
 import com.skegworks.mobilepos.utils.bitmap.LoadBitmap
 import com.skegworks.mobilepos.utils.files.FileHandler
 
+// Salwariya Template
 class GenerateCouponImageUseCaseImpl(
     private val loadBitmap: LoadBitmap,
     private val generateCouponQRCode: GenerateCouponQRCode,
@@ -25,15 +26,18 @@ class GenerateCouponImageUseCaseImpl(
         // Create a mutable copy of the bitmap to allow drawing on it
         val couponBitmap = loadedBitmap.copy(Bitmap.Config.ARGB_8888, true)
 
+        val width = loadedBitmap.width
+        val height = loadedBitmap.height
+
         // Todo Pass in the QR Code
-        val qrBitmap = generateCouponQRCode.generateQR(400, couponCode)
+        val qrBitmap = generateCouponQRCode.generateQR(220, couponCode)
 
 
-        val qrLeft = couponBitmap.width/2 + 120f
-        val qrTop = couponBitmap.height - qrBitmap.height - 350f
+        val qrLeft = (width/2).toFloat()
+        val qrTop = (height/2).toFloat()
 
         val canvas = Canvas(couponBitmap)
-        canvas.drawBitmap(qrBitmap, qrLeft, qrTop, null)
+        canvas.drawBitmap(qrBitmap, qrLeft- qrBitmap.width/2, qrTop - qrBitmap.height/2, null)
 
         val namePaint = Paint().apply {
             color = Color.BLACK
@@ -43,20 +47,28 @@ class GenerateCouponImageUseCaseImpl(
         }
 
         // Todo Pass in the Customer Details
-        canvas.drawText(customerName, 1700f, 800f, namePaint)
+        val nameTextLength = namePaint.measureText(customerName)
+        canvas.drawText(customerName, (width - nameTextLength)/2, 450f, namePaint)
 
         namePaint.textSize = 48f
         // Todo Pass in the Customer Details
-        canvas.drawText(couponCode, 1725f, 1420f, namePaint)
+        val couponCodeWidth = namePaint.measureText(couponCode)
+        canvas.drawText(couponCode, (width - couponCodeWidth)/2, 900f, namePaint)
 
         namePaint.textSize = 64f
         namePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD))
 
-        canvas.drawText(discount, 210f, 1350f, namePaint)
+        // canvas.drawText(discount, width/2.toFloat() - discount.length * 16 - 30, 1050f, namePaint)
 
-        canvas.drawText(validFrom, 550f, 1440f, namePaint)
+        namePaint.textSize = 36f
 
-        canvas.drawText(validTill, 550f, 1525f, namePaint)
+        val validFromText = "valid from $validFrom"
+        val fromTextWidth = width - namePaint.measureText(validFromText)
+        canvas.drawText(validFromText, fromTextWidth/2, 1340f, namePaint)
+
+        val validTillText = "valid till $validTill"
+        val tillTextWidth = width - namePaint.measureText(validTillText)
+        canvas.drawText(validTillText, tillTextWidth/2, 1400f, namePaint)
 
 
         fileHandler.writeDocument(couponBitmap, "$customerName-$couponCode")

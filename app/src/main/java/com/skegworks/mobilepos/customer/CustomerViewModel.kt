@@ -4,10 +4,12 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.skegworks.mobilepos.BuildConfig
 import com.skegworks.mobilepos.coupon.GenerateCouponImageUseCase
 import com.skegworks.mobilepos.coupon.UploadCouponForCustomerUseCase
 import com.skegworks.mobilepos.data.domain.Coupon
 import com.skegworks.mobilepos.data.domain.Customer
+import com.skegworks.mobilepos.utils.Constants
 import com.skegworks.mobilepos.utils.DateUtility
 import com.skegworks.mobilepos.utils.UUIDGenerator
 import com.skegworks.mobilepos.utils.preferences.UserPreferenceHandler
@@ -175,6 +177,7 @@ class CustomerViewModel @Inject constructor(
             is AddCustomerIntent.SetData -> {
                 _state.update {
                     it.copy(
+                        textStateName = "",
                         textStatePhone = stateSearch.value.textStatePhone
                     )
                 }
@@ -309,11 +312,11 @@ class CustomerViewModel @Inject constructor(
                 title = "Thank You Coupon",
                 discountCode = couponCode,
                 description = "Coupon for Purchase",
-                discountPercentage = 10.0,
+                discountPercentage = BuildConfig.COUPON_OFFER_VALUE,
                 discountGivenToName = customer.name,
                 discountGivenToId = customer.id,
                 discountGivenToNumber = customer.phone,
-                discountType = "PERCENTAGE",
+                discountType = BuildConfig.COUPON_TYPE,
                 discountValidTill = dateUtility.daysAfterInMillis(30),
                 discountAvailedBy = "",
                 discountAvailedOn = "",
@@ -329,13 +332,15 @@ class CustomerViewModel @Inject constructor(
                 isSynced = false
             )
 
+            val couponImageName = BuildConfig.COUPON_IMAGE
+
             val couponGenerated = generateCouponImageUseCase(
-                "Coupon_On_The_Go_Three.png",
+                couponImageName,
                 couponCode,
                 customer.name,
-                "10%",
+                BuildConfig.COUPON_OFFER,
                 dateUtility.daysAfterInDateString(10, "MMM dd, yyyy"),
-                dateUtility.daysAfterInDateString(30, "MMM dd, yyyy"),
+                dateUtility.daysAfterInDateString(40, "MMM dd, yyyy"),
             )
 
             if (couponGenerated != null) {

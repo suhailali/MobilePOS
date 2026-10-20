@@ -31,6 +31,10 @@ android {
             applicationId = "com.skegworks.mobilepos"
             resValue("string", "app_name", "Nadhika POS")
             buildConfigField("String", "VENDOR_NAME", "\"Nadhika\"")
+            buildConfigField("String", "COUPON_IMAGE", "\"Coupon_On_The_Go_Three.png\"")
+            buildConfigField("String", "COUPON_OFFER", "\"10%\"")
+            buildConfigField("Double", "COUPON_OFFER_VALUE", "10.0")
+            buildConfigField("String", "COUPON_TYPE", "\"PERCENTAGE\"")
         }
         create("Salwariya") {
             dimension = "vendor"
@@ -38,6 +42,10 @@ android {
             versionNameSuffix = "-salwariya"
             resValue("string", "app_name", "Salwariya POS")
             buildConfigField("String", "VENDOR_NAME", "\"Salwariya\"")
+            buildConfigField("String", "COUPON_IMAGE", "\"coupon_salwariya.png\"")
+            buildConfigField("String", "COUPON_OFFER", "\"₹200 OFF\"")
+            buildConfigField("Double", "COUPON_OFFER_VALUE", "200.0")
+            buildConfigField("String", "COUPON_TYPE", "\"FLAT_AMOUNT\"")
         }
     }
 

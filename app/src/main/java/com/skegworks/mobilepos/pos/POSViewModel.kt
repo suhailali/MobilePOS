@@ -554,6 +554,15 @@ class POSViewModel @Inject constructor(
                     }
                 }
 
+                CouponType.FLAT_AMOUNT -> {
+                    _state.update { state ->
+                        state.copy(
+                            couponDiscount = coupon.discountPercentage
+                        )
+                    }
+                    calculateTotalPrice()
+                }
+
                 else -> {}
             }
         }
